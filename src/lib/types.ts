@@ -44,6 +44,7 @@ export interface User {
   full_name: string | null;
   role: UserRole;
   local_id: string | null;
+  photo_url: string | null;
   push_token: string | null;
   created_at: string;
   updated_at: string;
@@ -64,6 +65,7 @@ export interface Member {
   photo_url: string | null;
   contact_number: string | null;
   role_in_church: string | null;
+  ministry_group: string | null;
   ministry_group_id: string | null;
   member_since: string | null;
   birthday: string | null;
@@ -72,6 +74,9 @@ export interface Member {
   user_id: string | null;
   created_at: string;
   updated_at: string;
+  // Computed / joined fields (not in DB, populated by queries or locally)
+  attendance_rate?: number;
+  latest_status?: AttendanceStatus;
 }
 
 export interface Event {
@@ -88,6 +93,9 @@ export interface Event {
   template_id: string | null;
   created_at: string;
   updated_at: string;
+  // Computed / joined fields
+  expected_count?: number;
+  banner_url?: string | null;
 }
 
 export interface EventTemplate {

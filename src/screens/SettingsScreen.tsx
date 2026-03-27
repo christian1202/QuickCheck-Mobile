@@ -98,7 +98,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         {/* Secretary Profile */}
         <SectionTitle title="SECRETARY PROFILE" />
         <Card>
-          <SettingRow label="Full Name" value={MOCK_USER.full_name} />
+          <SettingRow label="Full Name" value={MOCK_USER.full_name || ''} />
           <SettingRow label="Email Address" value={MOCK_USER.email} />
           <SettingRow label="Local Branch" value={MOCK_LOCAL.name} />
         </Card>

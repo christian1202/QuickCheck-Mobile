@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme';
 import { Card, FAB, Avatar, StatusChip, Button } from '../components/ui';
 import { MOCK_EVENTS, MOCK_MEMBERS } from '../data/mockData';
-import { EVENT_TYPE_LABELS } from '../types';
+import { EVENT_TYPE_LABELS } from '../constants';
 
 export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();

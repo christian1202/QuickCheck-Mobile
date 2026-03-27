@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../theme';
 import { Avatar, SearchBar, Card, Button } from '../components/ui';
 import { MOCK_MEMBERS, MOCK_EVENTS } from '../data/mockData';
-import type { Member } from '../types';
+import type { Member } from '../lib/types';
 
 type MarkStatus = 'present' | 'late' | 'absent' | null;
 

@@ -202,7 +202,7 @@ export async function registerPushToken(token: string): Promise<void> {
   const session = await getSession();
   if (!session) return;
 
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("users")
     .update({ push_token: token })
     .eq("id", session.user.id);
@@ -218,7 +218,7 @@ export async function registerPushToken(token: string): Promise<void> {
  * Fetch a user profile with local name.
  */
 async function getUserProfile(userId: string): Promise<UserProfile> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("users")
     .select("id, email, full_name, role, local_id, locals(name)")
     .eq("id", userId)

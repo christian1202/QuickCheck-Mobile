@@ -14,7 +14,7 @@
 // Returns: CSV file download
 // ============================================================
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { serve } from "@std/http/server";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { requireAuth, requireRole, createUserClient } from "../_shared/auth.ts";
 

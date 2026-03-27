@@ -9,17 +9,17 @@
 // Returns: { uploadUrl: string, publicUrl: string }
 // ============================================================
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { serve } from "@std/http/server";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { requireAuth, requireRole } from "../_shared/auth.ts";
-import { S3Client, PutObjectCommand } from "https://esm.sh/@aws-sdk/client-s3@3.485.0";
-import { getSignedUrl } from "https://esm.sh/@aws-sdk/s3-request-presigner@3.485.0";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // ─── R2 Configuration ─────────────────────────────────────
 
-const R2_ACCOUNT_ID = "0c34f2339329210d7f357c0b698ff431";
-const R2_BUCKET = "quickcheck-mobile";
-const R2_PUBLIC_URL = "https://pub-dfa4fcc28ef44f88ab16402d6f97637c.r2.dev";
+const R2_ACCOUNT_ID = Deno.env.get("R2_ACCOUNT_ID") ?? "";
+const R2_BUCKET = Deno.env.get("R2_BUCKET") ?? "quickcheck-mobile";
+const R2_PUBLIC_URL = Deno.env.get("R2_PUBLIC_URL") ?? "";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -72,7 +72,7 @@ serve(async (req: Request) => {
       region: "auto",
       endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: Deno.env.get("R2_ACCESS_KEY_ID") ?? "61f0f3a6e68032344ea40d28a0091e2f",
+        accessKeyId: Deno.env.get("R2_ACCESS_KEY_ID") ?? "",
         secretAccessKey: Deno.env.get("R2_SECRET_ACCESS_KEY") ?? "",
       },
     });

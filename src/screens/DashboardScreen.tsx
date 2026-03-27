@@ -31,7 +31,7 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
         paddingVertical: spacing.lg,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-          <Avatar uri={MOCK_USER.photo_url} name={MOCK_USER.full_name} size={40} />
+          <Avatar uri={MOCK_USER.photo_url} name={MOCK_USER.full_name || ''} size={40} />
           <View>
             <Text style={{
               fontFamily: 'Manrope-Bold',
@@ -82,7 +82,7 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
             color: colors.primary,
             letterSpacing: -1,
           }}>
-            {greeting()}, {MOCK_USER.full_name.split(' ')[0]}
+            {greeting()}, {(MOCK_USER.full_name || '').split(' ')[0]}
           </Text>
           <Text style={{
             fontFamily: 'Inter',

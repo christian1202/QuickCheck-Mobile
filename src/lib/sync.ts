@@ -42,7 +42,7 @@ export async function syncDatabase(): Promise<void> {
         const timestamp = lastPulledAt ? Math.floor(lastPulledAt / 1000) : 0;
 
         const response = await fetch(
-          `${supabase.supabaseUrl}/functions/v1/${SYNC_FUNCTION_NAME}?last_pulled_at=${timestamp}`,
+          `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/${SYNC_FUNCTION_NAME}?last_pulled_at=${timestamp}`,
           {
             method: "GET",
             headers: {
@@ -66,7 +66,7 @@ export async function syncDatabase(): Promise<void> {
 
       pushChanges: async ({ changes, lastPulledAt }) => {
         const response = await fetch(
-          `${supabase.supabaseUrl}/functions/v1/${SYNC_FUNCTION_NAME}`,
+          `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/${SYNC_FUNCTION_NAME}`,
           {
             method: "POST",
             headers: {

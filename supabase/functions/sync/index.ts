@@ -8,7 +8,7 @@
 // Protocol: https://watermelondb.dev/docs/Sync/Backend
 // ============================================================
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { serve } from "@std/http/server";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { requireAuth, createUserClient, createServiceClient } from "../_shared/auth.ts";
 

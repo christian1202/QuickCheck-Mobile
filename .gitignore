@@ -8,9 +8,7 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
-veda
 .idea/
-.vscode/
 *.swp
 .DS_Store
 
@@ -18,3 +16,13 @@ veda
 .env
 .env.*
 !.env.example
+
+# Sensitive — never commit
+Connection string*
+*.secret
+*.credentials
+
+# Scratch fix scripts
+fix*.js
+create-assets.js
+download-fonts.ps1
