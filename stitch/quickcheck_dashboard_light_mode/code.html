@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickCheck Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#00210c",
+              "on-tertiary-container": "#e49000",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#663e00",
+              "background": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "surface-tint": "#455f87",
+              "on-secondary-container": "#00743a",
+              "inverse-on-surface": "#eaf1ff",
+              "on-error-container": "#93000a",
+              "secondary-container": "#6bfe9c",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffddb9",
+              "on-primary-fixed": "#001c3b",
+              "surface-container": "#e6eeff",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#0d1c2e",
+              "outline-variant": "#c4c6cf",
+              "primary-fixed": "#d5e3ff",
+              "primary-fixed-dim": "#adc8f5",
+              "secondary": "#006d37",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2d486d",
+              "secondary-fixed": "#6bfe9c",
+              "tertiary": "#361f00",
+              "on-primary": "#ffffff",
+              "on-surface-variant": "#43474e",
+              "secondary-fixed-dim": "#4ae183",
+              "primary": "#022448",
+              "on-primary-container": "#8aa4cf",
+              "surface-container-low": "#eff4ff",
+              "surface-bright": "#f8f9ff",
+              "tertiary-container": "#533200",
+              "surface-container-high": "#dce9ff",
+              "inverse-surface": "#233144",
+              "on-background": "#0d1c2e",
+              "surface-container-highest": "#d5e3fc",
+              "on-secondary": "#ffffff",
+              "outline": "#74777f",
+              "inverse-primary": "#adc8f5",
+              "primary-container": "#1e3a5f",
+              "surface-variant": "#d5e3fc",
+              "on-secondary-fixed-variant": "#005228",
+              "tertiary-fixed-dim": "#ffb961",
+              "on-tertiary-fixed": "#2b1700",
+              "surface-dim": "#ccdbf3"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-primary-gradient {
+            background: linear-gradient(135deg, #022448 0%, #1e3a5f 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-[#f8f9ff] dark:bg-slate-950 sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border-2 border-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a woman secretary in a clean office setting, soft corporate lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC01SgxxJXewVAsbIlb01BArOmde8coPAEMpD89Ms_Ytl-42IsLll8voEiZGkSwsekKVZsdEzB4ip3QHqfoX__FBLdTcMsorNLuycd0Hpq4DwLinQnbKNJfz-by6Fmun-Bt9LYVDJhSITRUETdpiBS3t-NSYdygSZqAcWNyxCWm6MHoUyUmRtnNgiVmLl6TLDOeCAqxUz9KpkrXZNviUZsN-AQ_nk7k6P-YQc3KVq0W3DWt7GttgWGDM-SzABtfzljdq6gkk8Zco8I-"/>
+</div>
+<div>
+<h1 class="font-manrope font-bold text-2xl tracking-tight text-[#1e3a5f]">QuickCheck</h1>
+<p class="text-label text-[10px] uppercase tracking-[0.1em] text-on-surface-variant font-semibold">Central District Branch</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-500">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-500 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 rounded-xl hover:bg-slate-100 transition-colors text-[#1e3a5f]">
+<span class="material-symbols-outlined" data-icon="wifi_off">wifi_off</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-4 pb-32">
+<!-- Hero Greeting Section -->
+<section class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<h2 class="font-headline font-extrabold text-4xl tracking-tight text-primary">Good morning, Sarah</h2>
+<p class="text-on-surface-variant text-lg">Your dashboard for <span class="font-semibold text-primary">St. Jude's Cathedral</span></p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-3 bg-surface-container-highest text-primary font-semibold rounded-xl hover:bg-surface-container-high transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="file_download">file_download</span>
+                    Export Data
+                </button>
+</div>
+</section>
+<!-- Summary Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<!-- Today's Event Card -->
+<div class="md:col-span-2 bg-primary-gradient rounded-xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary-container" data-icon="calendar_today">calendar_today</span>
+<span class="font-label text-xs uppercase tracking-widest opacity-80">Today's Main Event</span>
+</div>
+<h3 class="text-2xl font-headline font-bold mb-1">Morning Prayer Service</h3>
+<p class="opacity-70 text-sm">Starts in 45 minutes • Hall A</p>
+</div>
+<div class="relative z-10 mt-6">
+<button class="bg-secondary-container text-on-secondary-container font-bold px-6 py-3 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="how_to_reg">how_to_reg</span>
+                        Start Attendance
+                    </button>
+</div>
+<div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
+</div>
+<!-- Total Members -->
+<div class="bg-surface-container-low rounded-xl p-6 flex flex-col justify-between">
+<div>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Active Members</span>
+<p class="text-5xl font-headline font-extrabold text-primary mt-2">1,284</p>
+</div>
+<div class="flex items-center gap-2 text-secondary font-semibold text-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+                    +12 this month
+                </div>
+</div>
+<!-- Attendance Rate -->
+<div class="bg-surface-container-low rounded-xl p-6 flex flex-col justify-between">
+<div>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Monthly Avg</span>
+<p class="text-5xl font-headline font-extrabold text-primary mt-2">94%</p>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 94%"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+<!-- Analytics Column -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Attendance Trend -->
+<div class="bg-surface-container-low rounded-xl p-8">
+<div class="flex justify-between items-center mb-8">
+<h4 class="font-headline font-bold text-xl text-primary">Attendance Trend</h4>
+<select class="bg-transparent border-none text-sm font-semibold text-on-surface-variant focus:ring-0">
+<option>Last 6 Months</option>
+</select>
+</div>
+<!-- Mock Sparkline/Graph -->
+<div class="h-48 flex items-end justify-between gap-1">
+<div class="w-full bg-primary-fixed-dim rounded-t-lg transition-all hover:bg-primary" style="height: 60%"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-lg transition-all hover:bg-primary" style="height: 75%"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-lg transition-all hover:bg-primary" style="height: 45%"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-lg transition-all hover:bg-primary" style="height: 90%"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-lg transition-all hover:bg-primary" style="height: 82%"></div>
+<div class="w-full bg-primary rounded-t-lg shadow-lg" style="height: 95%"></div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Distribution Pie Chart Mockup -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="font-headline font-bold text-lg text-primary mb-6">Status Distribution</h4>
+<div class="flex items-center gap-6">
+<div class="relative w-32 h-32 rounded-full border-[12px] border-secondary" style="border-right-color: #e49000; border-bottom-color: #ba1a1a;">
+<div class="absolute inset-0 flex items-center justify-center font-bold text-xs">JUNE</div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Present
+                                </div>
+<div class="flex items-center gap-2 text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span> Late
+                                </div>
+<div class="flex items-center gap-2 text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-error"></span> Absent
+                                </div>
+</div>
+</div>
+</div>
+<!-- Ministry Comparison -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="font-headline font-bold text-lg text-primary mb-4">Ministry Groups</h4>
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+<span>Youth</span>
+<span>98%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 98%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+<span>Choir</span>
+<span>84%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 84%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+<span>Ushers</span>
+<span>91%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 91%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Contextual Info -->
+<div class="space-y-8">
+<!-- At-Risk Members -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-headline font-bold text-lg text-primary">At-Risk Members</h4>
+<span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-1 rounded-full uppercase">3 New</span>
+</div>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-error shadow-sm flex items-center justify-between">
+<div>
+<p class="font-semibold text-primary">Julian Casablancas</p>
+<p class="text-xs text-on-surface-variant">Missed 3 consecutive weeks</p>
+</div>
+<div class="text-error font-bold text-sm">42%</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-error shadow-sm flex items-center justify-between">
+<div>
+<p class="font-semibold text-primary">Marcus Aurelius</p>
+<p class="text-xs text-on-surface-variant">Monthly drop detected</p>
+</div>
+<div class="text-error font-bold text-sm">68%</div>
+</div>
+</div>
+</div>
+<!-- Upcoming Birthdays -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="font-headline font-bold text-lg text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="cake">cake</span>
+                        Birthdays this week
+                    </h4>
+<div class="flex -space-x-3 overflow-hidden p-1">
+<img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Portrait of a young man smiling, natural outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5JXcX9jJJ9lnGU0cY0oy1zxA5dfgAfPn1grnJCQIceMjG_fxsSOWyWoY44VI6S1TBlgp9wRZrJALNx7j0sM1KTaUZsUaEQ6poe17L3-jk2J9wwiE31vFJ8QHP0eY0DW7z6b5ihwwinkk2h4HuqPskYYtiV5W1CBYMoqd6guQDCwxWFnwPEal8I0VdHMuxgegZ94tP8sh4TM9upOjSy-IahaKciabMYnPFNXGBNKRfXFFggIAzkJt4n-tK5ACfoFW03EuZDxXcNWc"/>
+<img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Portrait of a woman with curly hair laughing, bright studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDarviToLc3eDhQ44Uo_FSVIQ4qee63h6y8NWKo0aGZld951zGYwiPlNK9BaoZIhm1u4SlAwfJ7eNrKvn-lOUg6NSvZ3CycWO693wTBLulWq1XgN-1nJk05gduBu7CMDanKsQOLiY_h7u-jbi7zsbZev_sh4kvt6pjsV2A721ocGWRTtCKW-YwROgIrtzG7_4fI2TrJikLSYPI-snoHCRdFIDRZIZA1RHNXBRh8JnzhQpPXiE_Z9oGjx5ZLal7wbdlzfiSHivp60v6P"/>
+<img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Portrait of a man wearing glasses in a casual office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCli9gFX0ucZvSkKxOfC8EeKQV9Cw6sXUnRxk6vfRB3oBfu2pU6BYzfXJkEV_1RpxZGMZrWKAEqSvio_DVv-EGB33rVDC-v9XIuiAl4TCLYSPbyICFTL3veNJzZYcdjFo5zESMNzFAzkoKLS2B6DMcNMM3lwbjfIklCjsHhnHrBvBlppXIpqLLaiuEbkLnUKg4OC1kFTCUduw8CDlFaavhG33Sb-yn47tTd16bXlX6WXLiyQJfcOL-g38jSg6wuuVk6_qLA5egSmxzx"/>
+<div class="flex items-center justify-center h-10 w-10 rounded-full bg-primary text-white text-[10px] font-bold ring-2 ring-white">+2</div>
+</div>
+<p class="mt-3 text-xs text-on-surface-variant font-medium">Next: <span class="text-primary font-bold">Marcus Thorne</span> (Tomorrow)</p>
+</div>
+<!-- Upcoming Events -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="font-headline font-bold text-lg text-primary mb-4">Upcoming Schedule</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-highest rounded-lg flex flex-col items-center justify-center text-primary">
+<span class="text-[10px] font-bold uppercase">Jun</span>
+<span class="text-lg font-bold leading-none">18</span>
+</div>
+<div>
+<h5 class="font-bold text-sm text-primary">Leadership Retreat</h5>
+<p class="text-xs text-on-surface-variant">09:00 AM • Main Campus</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-highest rounded-lg flex flex-col items-center justify-center text-primary">
+<span class="text-[10px] font-bold uppercase">Jun</span>
+<span class="text-lg font-bold leading-none">21</span>
+</div>
+<div>
+<h5 class="font-bold text-sm text-primary">Community Outreach</h5>
+<p class="text-xs text-on-surface-variant">02:30 PM • City Park</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-highest rounded-lg flex flex-col items-center justify-center text-primary">
+<span class="text-[10px] font-bold uppercase">Jun</span>
+<span class="text-lg font-bold leading-none">24</span>
+</div>
+<div>
+<h5 class="font-bold text-sm text-primary">Bible Study Series</h5>
+<p class="text-xs text-on-surface-variant">07:00 PM • Zoom</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 shadow-[0px_-12px_32px_rgba(13,28,46,0.06)] flex justify-around items-center px-4 pb-6 pt-2">
+<a class="flex flex-col items-center justify-center bg-[#1e3a5f] text-white rounded-xl px-3 py-1.5 transition-transform duration-200 scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#1e3a5f] px-3 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider mt-1">Members</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#1e3a5f] px-3 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#1e3a5f] px-3 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-[#1e3a5f] px-3 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider mt-1">Reports</span>
+</a>
+</nav>
+<!-- Floating Action Button Contextual (Hidden as per rule on Dashboard focus but included for potential quick attendance access if needed, though today's event card handles it) -->
+</body></html>

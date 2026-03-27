@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "QuickCheck",
+    "slug": "quickcheck-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#f8f9ff"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.quickcheck.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#f8f9ff"
+      },
+      "package": "com.quickcheck.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}

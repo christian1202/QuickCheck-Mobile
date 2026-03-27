@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickCheck - Events</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#00210c",
+              "on-tertiary-container": "#e49000",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#663e00",
+              "background": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "surface-tint": "#455f87",
+              "on-secondary-container": "#00743a",
+              "inverse-on-surface": "#eaf1ff",
+              "on-error-container": "#93000a",
+              "secondary-container": "#6bfe9c",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffddb9",
+              "on-primary-fixed": "#001c3b",
+              "surface-container": "#e6eeff",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#0d1c2e",
+              "outline-variant": "#c4c6cf",
+              "primary-fixed": "#d5e3ff",
+              "primary-fixed-dim": "#adc8f5",
+              "secondary": "#006d37",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2d486d",
+              "secondary-fixed": "#6bfe9c",
+              "tertiary": "#361f00",
+              "on-primary": "#ffffff",
+              "on-surface-variant": "#43474e",
+              "secondary-fixed-dim": "#4ae183",
+              "primary": "#022448",
+              "on-primary-container": "#8aa4cf",
+              "surface-container-low": "#eff4ff",
+              "surface-bright": "#f8f9ff",
+              "tertiary-container": "#533200",
+              "surface-container-high": "#dce9ff",
+              "inverse-surface": "#233144",
+              "on-background": "#0d1c2e",
+              "surface-container-highest": "#d5e3fc",
+              "on-secondary": "#ffffff",
+              "outline": "#74777f",
+              "inverse-primary": "#adc8f5",
+              "primary-container": "#1e3a5f",
+              "surface-variant": "#d5e3fc",
+              "on-secondary-fixed-variant": "#005228",
+              "tertiary-fixed-dim": "#ffb961",
+              "on-tertiary-fixed": "#2b1700",
+              "surface-dim": "#ccdbf3"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .cta-gradient {
+        background: linear-gradient(135deg, #022448 0%, #1e3a5f 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-[#f8f9ff] sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img alt="Secretary Profile" class="w-full h-full object-cover" data-alt="professional portrait of a confident woman in a modern office setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh0s8l5tu_ib2ZXHvU7NyG27uxndnBA4HT0uk9xfRz5TDZEkfE4jRBisHG5CDV9kTgqcdjSdkvSHQKZldXkhCmuKFu7R3vgFYhXyMDm3COvLWvsAad6q2wL8tw86hR8_LQLvQ_ukosOgVlMJ4dcfVx_vQMmjRE_jvFU49Ho3_nbQ0bbiZpuDJNsrliJ6zEExKV4S1AD72oab1CRsJCtXDSd_DqJFuH-wVYhVHYi_VYguv3pQ31tIbFizUQJIvHxyUDCerZJeC3KhIO"/>
+</div>
+<h1 class="font-headline font-bold text-2xl tracking-tight text-[#1e3a5f]">QuickCheck</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-500">
+<span class="material-symbols-outlined">wifi_off</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-8">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<p class="font-label text-[0.75rem] uppercase tracking-wider font-bold text-on-primary-container mb-2">Central Registry</p>
+<h2 class="font-headline text-5xl font-extrabold tracking-tight text-primary">Events</h2>
+</div>
+<!-- Tab Toggle (Tonal Architecture) -->
+<div class="bg-surface-container-low p-1.5 rounded-xl flex items-center w-full md:w-auto shadow-sm">
+<button class="flex-1 md:flex-none px-8 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 bg-surface-container-lowest text-primary shadow-sm">
+                    Upcoming
+                </button>
+<button class="flex-1 md:flex-none px-8 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 text-slate-500 hover:text-primary">
+                    Past
+                </button>
+</div>
+</section>
+<!-- Bento Grid Layout for Events -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Featured Event Card (Asymmetric Span) -->
+<div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest p-8 rounded-3xl relative overflow-hidden flex flex-col justify-between min-h-[320px] shadow-[0px_12px_32px_rgba(13,28,46,0.06)] group">
+<div class="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
+<img alt="Event Decoration" class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-110" data-alt="abstract architectural details with soft geometric shadows and clean blue tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPWlVgWX3zWRGtY5q73NU1kN5JbPl9bpfVeszcd-cOpTASmWCrNhkJky-OFe2evUwaO9K52CgBaleBRLw5tHIu-YqAlq7qmdKhwXXycRIrbFa7RLnaFjDv0hhdedj-vvaaIUWeiO1eaES438zom70If8uTru27K7zzACFS2xhQbLIY3YUn4MEEJn5dbq-tGY7UOJH0rUIaBnvg6J-Cn_DEw0NLurhuKRaEmKwqbSY-4a_pBrXSM7UFm3eg-229F358AE17JSsgGF3W"/>
+</div>
+<div class="relative z-10">
+<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap gap-2">
+<span class="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full font-label text-[0.75rem] font-bold uppercase tracking-wide">Conference</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-4 py-1.5 rounded-full font-label text-[0.75rem] font-bold uppercase tracking-wide flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sync</span> Recurring
+                            </span>
+</div>
+</div>
+<h3 class="font-headline text-3xl font-bold text-primary mb-2 max-w-md">Annual Community Leadership Forum 2024</h3>
+<p class="text-slate-500 font-medium flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-[18px]">location_on</span> Grand Hall, Civic Center
+                    </p>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+<div class="flex gap-10">
+<div>
+<p class="font-label text-[0.65rem] font-bold uppercase tracking-widest text-slate-400 mb-1">Date &amp; Time</p>
+<p class="font-semibold text-primary">Oct 24 • 09:00 AM</p>
+</div>
+<div>
+<p class="font-label text-[0.65rem] font-bold uppercase tracking-widest text-slate-400 mb-1">Expected</p>
+<p class="font-semibold text-primary">1,240 Souls</p>
+</div>
+</div>
+<button class="cta-gradient text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95">
+                        Manage Roster
+                    </button>
+</div>
+</div>
+<!-- Standard Event Card -->
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-surface-container-high">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label text-[0.7rem] font-bold uppercase tracking-wide">Workshop</span>
+<span class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-4 leading-tight">Digital Literacy Training for Seniors</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="text-sm font-medium">Tuesday, Oct 12</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="text-sm font-medium">02:00 PM — 04:30 PM</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">45 Attendees</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="user" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="portrait of a young woman with a friendly smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5gj88FPwVTxtQMrFi8w6IRTnhEs_BWolsFhIo6G6YaDPkM45eS6zZYx4WTHdIAJwphhGK5hbc4459DUMm9XmurOUWOrrJ_Z0jEk_9dffcpaX_jJ3pNYZfCr_X0hO_QIrjS_okN6LXJ09j2Uyp3yCEGu4vkMjLffubx_d_WozVlKjHvGr6atWXhKfa_2qvPiGhPmpdqj9HmId0QZ64r6tTsv8hjtmgJ6aOqJxIp0ZLHVcuAoiyOub9gMq5phzoe_xSe0xSSNGez-RL"/>
+<img alt="user" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="portrait of a professional man with short hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyMEOgefcc0RNxexEr__u0sI_53JrggA2mzgOK-so-5pvXFJ_4_5PJB0hLRRdYYeIKs7WCibKQzL702jjgaeq26ndreQxed-gNa0OCTA3R3kpE3yNRevk8UaF_L3CFkPLF1UkOQ2S6e_P9-uf2g_cN1lArOcKt5VsqruACdJveTMm3oGBJT10wEW86BoJhSnFlB_xVTjhTfPNiiM_wbEGSmlzqbvbNq60yGA_D8ImqIF_vBnrBbSscywzlNesFkzDquWoONdewgyqq"/>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold border-2 border-surface">+12</div>
+</div>
+</div>
+</div>
+<!-- Another Event Card -->
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-surface-container-high">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label text-[0.7rem] font-bold uppercase tracking-wide">Social</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full font-label text-[0.7rem] font-bold uppercase">
+<span class="material-symbols-outlined text-[14px] align-middle">sync</span>
+</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-4 leading-tight">Weekly Morning Prayer &amp; Coffee</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="text-sm font-medium">Every Monday</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span class="text-sm font-medium">West Wing Lounge</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">120 Attendees</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between">
+<p class="font-label text-[0.7rem] font-bold text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> 85% CONFIRMED
+                    </p>
+<button class="text-primary font-bold text-sm underline underline-offset-4 decoration-primary/30">View Series</button>
+</div>
+</div>
+<!-- Detailed Event Card -->
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-surface-container-high">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label text-[0.7rem] font-bold uppercase tracking-wide">Outreach</span>
+<span class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-4 leading-tight">Downtown Neighborhood Clean-up</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="text-sm font-medium">Nov 02</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span class="text-sm font-medium">Market Square</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">200 Expected</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+</div>
+<p class="font-label text-[0.65rem] font-bold text-on-error-container leading-none uppercase">Volunteers<br/>Needed</p>
+</div>
+<button class="bg-primary text-white text-[11px] font-bold px-3 py-1.5 rounded-lg uppercase">Sign Up</button>
+</div>
+</div>
+<!-- Empty State / Add New Placeholder -->
+<button class="border-2 border-dashed border-outline-variant/30 p-6 rounded-3xl flex flex-col items-center justify-center min-h-[280px] hover:bg-surface-container-low/50 transition-colors group">
+<div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">add_circle</span>
+</div>
+<p class="font-headline text-lg font-bold text-primary">Schedule New Event</p>
+<p class="text-slate-400 text-sm mt-1">Start planning your next gathering</p>
+</button>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-8 w-16 h-16 rounded-full cta-gradient text-white flex items-center justify-center shadow-[0px_12px_32px_rgba(13,28,46,0.25)] scale-100 active:scale-90 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 backdrop-blur-xl border-t border-slate-100 shadow-[0px_-12px_32px_rgba(13,28,46,0.06)]">
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="group">group</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Members</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#1e3a5f] text-white rounded-xl px-5 py-2.5 scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="event">event</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="calendar_month">calendar_month</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="assessment">assessment</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Reports</span>
+</a>
+</nav>
+</body></html>

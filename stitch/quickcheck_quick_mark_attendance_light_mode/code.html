@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickCheck - Quick Mark Attendance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed": "#00210c",
+                        "on-tertiary-container": "#e49000",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#663e00",
+                        "background": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#455f87",
+                        "on-secondary-container": "#00743a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#6bfe9c",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffddb9",
+                        "on-primary-fixed": "#001c3b",
+                        "surface-container": "#e6eeff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#0d1c2e",
+                        "outline-variant": "#c4c6cf",
+                        "primary-fixed": "#d5e3ff",
+                        "primary-fixed-dim": "#adc8f5",
+                        "secondary": "#006d37",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#2d486d",
+                        "secondary-fixed": "#6bfe9c",
+                        "tertiary": "#361f00",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#43474e",
+                        "secondary-fixed-dim": "#4ae183",
+                        "primary": "#022448",
+                        "on-primary-container": "#8aa4cf",
+                        "surface-container-low": "#eff4ff",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#533200",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-surface": "#233144",
+                        "on-background": "#0d1c2e",
+                        "surface-container-highest": "#d5e3fc",
+                        "on-secondary": "#ffffff",
+                        "outline": "#74777f",
+                        "inverse-primary": "#adc8f5",
+                        "primary-container": "#1e3a5f",
+                        "surface-variant": "#d5e3fc",
+                        "on-secondary-fixed-variant": "#005228",
+                        "tertiary-fixed-dim": "#ffb961",
+                        "on-tertiary-fixed": "#2b1700",
+                        "surface-dim": "#ccdbf3"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Header Navigation (TopAppBar) -->
+<header class="sticky top-0 z-50 bg-[#f8f9ff] dark:bg-slate-950">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<img alt="Secretary Profile" class="w-10 h-10 rounded-full bg-surface-container-highest" data-alt="professional portrait of a community manager in a bright office setting with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVsM6VI-xbG1RQrALjGp4Qi7_s9ystBXfxnxshfPZEBiOAwybbGhqYGdPsny5oqrxCl0N2Htwn2WnvkvzksR4LQ7YZv6vp1w2i0wwwgNJ6DeVFTsbyGHBzbU6k8e4UaRTyGabuyJ94-tpLaOC_vqGp24S_H_rGl4xeSIKw2v7SXAebZ1d0ABioaYt3TIx76ItMY92Wsqw1mXIWk9dY8J4wce-Q_aay68Lge2tC1rIH-wVt7H2yvsAmv8vXm0CeLFaIuDpsyuRe3922"/>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-2xl tracking-tight text-[#1e3a5f] dark:text-blue-200">QuickCheck</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex items-center gap-6 mr-8">
+<span class="text-[#1e3a5f] dark:text-blue-300 font-bold cursor-pointer transition-all active:opacity-80 scale-95">Dashboard</span>
+<span class="text-slate-500 dark:text-slate-400 hover:text-[#1e3a5f] dark:hover:text-blue-300 cursor-pointer transition-colors">Members</span>
+<span class="text-slate-500 dark:text-slate-400 hover:text-[#1e3a5f] dark:hover:text-blue-300 cursor-pointer transition-colors">Events</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-[18px]" data-icon="wifi_off">wifi_off</span>
+<span class="font-label text-[10px] font-bold uppercase tracking-wider">Offline Mode</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pb-32">
+<!-- Event Pinned Section -->
+<section class="mt-4 mb-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline font-extrabold text-4xl text-primary tracking-tight">Weekly Youth Seminar</h1>
+<div class="flex items-center gap-2 mt-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-medium">Thursday, Oct 24 • 06:30 PM</span>
+</div>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-container-highest hover:bg-surface-container-high transition-colors text-primary font-bold">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+                    Mark All Present
+                </button>
+</div>
+</section>
+<!-- Stats Bento Grid (Tonal Architecture) -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-1">
+<span class="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Present</span>
+<span class="font-headline font-extrabold text-4xl text-secondary">42</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-1">
+<span class="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Late</span>
+<span class="font-headline font-extrabold text-4xl text-tertiary-container">08</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-1">
+<span class="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Absent</span>
+<span class="font-headline font-extrabold text-4xl text-error">12</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-1 border-2 border-primary-container/10">
+<span class="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Unmarked</span>
+<span class="font-headline font-extrabold text-4xl text-on-surface">15</span>
+</div>
+</section>
+<!-- Member Search & Filter Shell -->
+<div class="flex items-center gap-4 mb-6 sticky top-[88px] bg-surface/80 backdrop-blur-md py-4 z-40">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary text-lg" placeholder="Search members by name..." type="text"/>
+</div>
+<button class="p-4 bg-surface-container-low rounded-xl text-primary">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+<!-- Scrollable Member List -->
+<div class="space-y-4">
+<!-- Member Card 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-4">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="close-up portrait of a young man with a friendly smile, outdoor park setting, soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5ooDLvCkONSwaidMnv_ZjdKOAxxRW0vWwTp-1-B42LlYOSGPyjGUPY2Z_boHkfkvfQgYcEJh0tFoJGif8mhB6dDdOHMrZiK6P9PMUi8KG_YpIH9x3xs-izoqDemOUEVgqMeWPdU1BrdPUGi5RgPLmPNwM5FjByIjGbS_5gDI_QIFG3LmNJYrks2IfOkHGri7MPWovVjRlExqswZoOfFQs7aja_nu5B5YXP6z3SAbGV_g4pGqV7XzHtJdcL4ufHlGDjwOHvs-eHKWU"/>
+<div>
+<h3 class="font-body font-bold text-lg text-on-surface">Alex Murphy</h3>
+<div class="flex items-center gap-2">
+<div class="w-12 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-secondary"></div>
+</div>
+<span class="font-label text-[10px] text-on-surface-variant">85% ATTENDANCE</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+<span class="font-label text-[10px] font-bold uppercase">Pres</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed-variant border-2 border-tertiary shadow-sm transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined" data-icon="schedule" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="font-label text-[10px] font-bold uppercase">Late</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+<span class="font-label text-[10px] font-bold uppercase">Abs</span>
+</button>
+</div>
+</div>
+<!-- Member Card 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-4">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="portrait of a young woman with glasses, library background, soft interior lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATqkgSEtsoa4di5DIsiyhpelzKBfTPfL9s6dke_SEizbGbE-Ch2amRWfqvx40uA8NWghhl4FngCKVVXQNW-4LfTMF_uO473HNgEZX2lt-GVjnc0xfMIoiIq8UpVMcshPQvc5VVyvYEYs0W-EbSSM1w-b5pIIpp9D2tCMxYWc7vw3MIuTJUURusH3DMbuAWdNkLv_ebM3On8x3zopmt6Rxd85-1kVcsj_gAYOJFRpRQ72zt8kRfZgt1oL1KU25zS9rWNcAVa_LCeddQ"/>
+<div>
+<h3 class="font-body font-bold text-lg text-on-surface">Sarah Chen</h3>
+<div class="flex items-center gap-2">
+<div class="w-12 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[98%] h-full bg-secondary"></div>
+</div>
+<span class="font-label text-[10px] text-on-surface-variant">98% ATTENDANCE</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-secondary-container text-on-secondary-container border-2 border-secondary shadow-sm transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined" data-icon="check" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="font-label text-[10px] font-bold uppercase">Pres</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-tertiary-fixed hover:text-on-tertiary-fixed-variant transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label text-[10px] font-bold uppercase">Late</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+<span class="font-label text-[10px] font-bold uppercase">Abs</span>
+</button>
+</div>
+</div>
+<!-- Member Card 3 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-4">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="portrait of a teenage boy in a casual hoodie, bright daylight, outdoor playground background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXm5i4QM2pDXz2EIqfJOW5k5D5v285GA46EgKjUlahK-6hLoeVIdMSycQVbQZc6pLlSIHx6_f3SvFlB2yanYKw0I0G4VpDqWa9YaN0TBccLHpRvrJUZmMAxr0clxKFbsJ_IeI_AwRplPjHgdOoeoMKAHzzylpCgrxyvL76_KG2KZ6yHcFwyVb2I2fm_mn-qtGYr6x6SRcHikJV3fsOfF_uUHWDKtncOi9Y97i9vKCMjdeCHMIFJXiMuRcA4n83eC5s1x7Zu9WWyB13"/>
+<div>
+<h3 class="font-body font-bold text-lg text-on-surface">Jordan Williams</h3>
+<div class="flex items-center gap-2">
+<div class="w-12 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[45%] h-full bg-error"></div>
+</div>
+<span class="font-label text-[10px] text-on-surface-variant">45% ATTENDANCE</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+<span class="font-label text-[10px] font-bold uppercase">Pres</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-tertiary-fixed hover:text-on-tertiary-fixed-variant transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label text-[10px] font-bold uppercase">Late</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-error-container text-on-error-container border-2 border-error shadow-sm transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined" data-icon="close" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="font-label text-[10px] font-bold uppercase">Abs</span>
+</button>
+</div>
+</div>
+<!-- Member Card 4 (Unmarked) -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="flex items-center gap-4">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="smiling young woman with braided hair, soft focus urban background at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNJ4OV10zspDmiXTu2gC4m6zTv0o4XDMeABKUm1bXT-X9gTDLTI4VYfKnKvVWfIp6DysFFsi_Cfz-OPi7peWJaGaEsGtY1s6eUG3BMKkF5t4pAsxoYHhSLvkuVyoDQDfXrIOFMjS9PUBOdBr9SVbjBHksmZP-d4Xq8tMfvoQDwGtjPf86uruHJp3P234XFuly7DZ68irlTV4o_dHR09r7JiJ9UugFvPoSaIww1ux6wDC9DxRnL1gFO74XEzrd33_q6W-tzB-ZMg026"/>
+<div>
+<h3 class="font-body font-bold text-lg text-on-surface">Elena Hernandez</h3>
+<div class="flex items-center gap-2">
+<div class="w-12 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[70%] h-full bg-secondary"></div>
+</div>
+<span class="font-label text-[10px] text-on-surface-variant">70% ATTENDANCE</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+<span class="font-label text-[10px] font-bold uppercase">Pres</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-tertiary-fixed hover:text-on-tertiary-fixed-variant transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label text-[10px] font-bold uppercase">Late</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-all scale-98 active:scale-95">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+<span class="font-label text-[10px] font-bold uppercase">Abs</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Finish Button -->
+<div class="fixed bottom-24 right-6 z-50 md:bottom-12 md:right-12">
+<button class="flex items-center gap-3 px-8 py-5 rounded-full bg-gradient-to-br from-primary to-primary-container text-white shadow-[0px_12px_32px_rgba(13,28,46,0.3)] hover:scale-105 transition-transform duration-200">
+<span class="font-headline font-bold text-lg tracking-tight">Finish Session</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Bottom Navigation Shell (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 shadow-[0px_-12px_32px_rgba(13,28,46,0.06)]">
+<div class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] transition-transform scale-98">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] transition-transform scale-98">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Members</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#1e3a5f] text-white rounded-xl px-4 py-2 transition-transform scale-100">
+<span class="material-symbols-outlined" data-icon="event" style="font-variation-settings: 'FILL' 1;">event</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Events</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] transition-transform scale-98">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Calendar</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#1e3a5f] transition-transform scale-98">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-inter text-[11px] font-medium uppercase tracking-wider">Reports</span>
+</div>
+</nav>
+</body></html>
