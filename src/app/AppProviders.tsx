@@ -29,7 +29,6 @@ import { ErrorBoundary } from '../core/errors/ErrorBoundary';
 import { DIProvider } from '../core/di/container';
 import { logger } from '../core/logging/logger';
 import { networkMonitor } from '../core/monitoring/networkMonitor';
-import { syncEngine } from '../core/api/syncEngine';
 import { createProductionContainer } from './container';
 import { RootNavigator } from './navigation/RootNavigator';
 import type { Dependencies } from '../core/di/container';

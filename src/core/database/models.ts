@@ -43,7 +43,7 @@ export class UserModel extends Model {
   @text("full_name") fullName!: string | null;
   @text("role") role!: string;
   @text("local_id") localId!: string | null;
-  @text("push_token") pushToken!: string | null;
+  @text("password_hash") passwordHash!: string;
   @readonly @date("created_at") createdAt!: Date;
   @readonly @date("updated_at") updatedAt!: Date;
 

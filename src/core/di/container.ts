@@ -29,6 +29,8 @@ export interface IAuthService {
   logout(): Promise<void>;
   getCurrentUser(): Promise<{ id: string; email: string; role: string } | null>;
   isAuthenticated(): Promise<boolean>;
+  createAccount(email: string, password: string, fullName: string, role: string): Promise<void>;
+  isFirstRun(): Promise<boolean>;
 }
 
 export interface IMemberService {
@@ -154,6 +156,8 @@ export function createMockContainer(overrides: Partial<Dependencies> = {}): Depe
       logout: noopAsync,
       getCurrentUser: async () => null,
       isAuthenticated: async () => false,
+      createAccount: noopAsync,
+      isFirstRun: async () => true,
     },
 
     memberService: {

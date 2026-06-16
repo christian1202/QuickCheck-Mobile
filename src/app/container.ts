@@ -1,9 +1,9 @@
 // ============================================================
 // QuickCheck — Production DI Container
 // ============================================================
-// Wires up all real service implementations with their
-// dependencies. This is the single place where concrete
-// implementations are chosen.
+// Wires up all real service implementations. Local-first —
+// all data lives in WatermelonDB on device.
+// No cloud dependency. No Supabase.
 //
 // For testing, use createMockContainer() from core/di/container.ts
 // ============================================================
@@ -12,30 +12,17 @@
 declare var __DEV__: boolean;
 
 import { logger } from '../core/logging/logger';
-import { syncEngine } from '../core/api/syncEngine';
 import { networkMonitor } from '../core/monitoring/networkMonitor';
+import { createAuthService } from '../features/auth/services/authService';
 import type { Dependencies } from '../core/di/container';
 
-// ─── Placeholder Services (to be replaced with real implementations) ───
+// ─── Services ───────────────────────────────────────────────
 
-// These stubbed implementations allow the app to compile and run
-// while services are built incrementally. Each service will be
-// moved to its feature folder and imported here.
+const authService = createAuthService();
 
-const authService: Dependencies['authService'] = {
-  login: async (_email, _password) => {
-    logger.debug('AuthService', 'login called (stub)');
-  },
-  logout: async () => {
-    logger.debug('AuthService', 'logout called (stub)');
-  },
-  getCurrentUser: async () => {
-    return null;
-  },
-  isAuthenticated: async () => {
-    return false;
-  },
-};
+// Stubs for features not yet migrated to WatermelonDB services.
+// Each will be replaced with a real implementation importing
+// from its feature folder (memberService.ts, eventService.ts, etc.)
 
 const memberService: Dependencies['memberService'] = {
   getMembers: async (_filters) => [],
@@ -67,17 +54,11 @@ const reportService: Dependencies['reportService'] = {
   exportReport: async (_type, _filters) => '',
 };
 
-// ─── Sync Engine Adapter ───────────────────────────────────
-
-// Wraps syncEngine for the DI container
-const syncEngineAdapter: Dependencies['syncEngine'] = {
-  sync: async () => {
-    logger.info('SyncEngineAdapter', 'sync requested but sync function not yet wired');
-  },
-  requestSync: () => {
-    syncEngine.requestSync();
-  },
-  getLastSyncTime: () => syncEngine.getLastSyncTime(),
+// Sync engine stub (no remote sync in local-first mode)
+const syncEngineStub: Dependencies['syncEngine'] = {
+  sync: async () => {},
+  requestSync: () => {},
+  getLastSyncTime: () => null,
   isOnline: () => networkMonitor.isOnline(),
 };
 
@@ -85,20 +66,13 @@ const syncEngineAdapter: Dependencies['syncEngine'] = {
 
 export function createProductionContainer(): Dependencies {
   return {
-    // Core infrastructure
     logger,
-
-    // Services
     authService,
     memberService,
     eventService,
     attendanceService,
     reportService,
-
-    // Infrastructure
-    syncEngine: syncEngineAdapter,
-
-    // Config
+    syncEngine: syncEngineStub,
     isDev: __DEV__,
     appVersion: '1.0.0',
   };

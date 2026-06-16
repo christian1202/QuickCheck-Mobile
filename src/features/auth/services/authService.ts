@@ -1,239 +1,166 @@
 // ============================================================
-// QuickCheck — Authentication Service
+// QuickCheck — Local Authentication Service
 // ============================================================
-// Wraps Supabase Auth for React Native.
-// Handles sign-in, sign-out, session management, and
-// biometric re-authentication.
+// Pure local auth: email + password stored in WatermelonDB.
+// Passwords hashed with bcryptjs. Session persisted via
+// expo-secure-store (encrypted device keychain).
+// No cloud dependency. No network required.
 // ============================================================
 
-import { supabase } from "./supabase";
-import type { User, UserRole } from "./types";
+import { database, usersCollection } from '../../../core/database';
 
-// ─── Auth Types ───────────────────────────────────────────
+let bcrypt: typeof import('bcryptjs') | null = null;
+let SecureStore: typeof import('expo-secure-store') | null = null;
+const SESSION_KEY = 'quickcheck_session_user_id';
+const FIRST_RUN_KEY = 'quickcheck_first_run_done';
 
-export interface AuthSession {
-  user: {
-    id: string;
-    email: string;
-  };
-  accessToken: string;
-  refreshToken: string;
+async function getBcrypt() {
+  if (!bcrypt) bcrypt = await import('bcryptjs');
+  return bcrypt;
+}
+async function getSecureStore() {
+  if (!SecureStore) SecureStore = await import('expo-secure-store');
+  return SecureStore;
 }
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  fullName: string | null;
-  role: UserRole;
-  localId: string | null;
-  localName?: string;
+// ─── Session Persistence ──────────────────
+async function saveSession(userId: string): Promise<void> {
+  (await getSecureStore()).setItemAsync(SESSION_KEY, userId);
+}
+async function clearSession(): Promise<void> {
+  (await getSecureStore()).deleteItemAsync(SESSION_KEY).catch(() => {});
+}
+async function getSavedSession(): Promise<string | null> {
+  return (await getSecureStore()).getItemAsync(SESSION_KEY).catch(() => null);
 }
 
-// ─── Sign In ──────────────────────────────────────────────
-
-/**
- * Sign in with email and password.
- * Returns the authenticated user profile.
- */
-export async function signIn(
-  email: string,
-  password: string
-): Promise<UserProfile> {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!data.user) {
-    throw new Error("Sign in failed: no user returned");
-  }
-
-  // Fetch the user profile with role and local info
-  return await getUserProfile(data.user.id);
+// ─── First Run ─────────────────────────────
+async function isFirstRun(): Promise<boolean> {
+  return (await getSecureStore()).getItemAsync(FIRST_RUN_KEY).catch(() => null) !== 'true';
+}
+async function markFirstRunDone(): Promise<void> {
+  (await getSecureStore()).setItemAsync(FIRST_RUN_KEY, 'true');
 }
 
-// ─── Sign Up (Admin-initiated) ────────────────────────────
-
-/**
- * Create a new user account.
- * Typically called by an admin to onboard a new secretary or member.
- */
-export async function signUp(
-  email: string,
-  password: string,
-  metadata: {
-    full_name: string;
-    role: UserRole;
-    local_id?: string;
-  }
-): Promise<{ userId: string }> {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: metadata,
-    },
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!data.user) {
-    throw new Error("Sign up failed: no user returned");
-  }
-
-  return { userId: data.user.id };
+// ─── User Lookup ────────────────────────────
+interface LocalUserRecord {
+  id: string; email: string; fullName: string | null;
+  role: string; localId: string | null; passwordHash: string;
 }
 
-// ─── Sign Out ─────────────────────────────────────────────
-
-/**
- * Sign out the current user and clear session.
- */
-export async function signOut(): Promise<void> {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    throw new Error(error.message);
-  }
-}
-
-// ─── Session Management ──────────────────────────────────
-
-/**
- * Get the current session, or null if not authenticated.
- */
-export async function getSession(): Promise<AuthSession | null> {
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
-
-  if (error || !session) {
-    return null;
-  }
-
+async function findUserByEmail(email: string): Promise<LocalUserRecord | null> {
+  const n = email.toLowerCase().trim();
+  const users = await usersCollection.query().fetch();
+  const m = users.find((u: any) => (u.email || '').toLowerCase() === n);
+  if (!m) return null;
   return {
-    user: {
-      id: session.user.id,
-      email: session.user.email ?? "",
-    },
-    accessToken: session.access_token,
-    refreshToken: session.refresh_token,
+    id: m.id, email: m.email, fullName: m.fullName ?? null,
+    role: m.role ?? 'member', localId: m.localId ?? null,
+    passwordHash: m._raw?.password_hash ?? m.passwordHash ?? '',
   };
 }
 
-/**
- * Get the current authenticated user's profile.
- */
-export async function getCurrentUser(): Promise<UserProfile | null> {
-  const session = await getSession();
-  if (!session) return null;
-
+async function getSessionUser(): Promise<LocalUserRecord | null> {
+  const sid = await getSavedSession();
+  if (!sid) return null;
   try {
-    return await getUserProfile(session.user.id);
-  } catch {
-    return null;
-  }
-}
+// ─── Public Auth API ────────────────────────
 
-/**
- * Listen for auth state changes.
- * Returns an unsubscribe function.
- */
-export function onAuthStateChange(
-  callback: (event: string, session: AuthSession | null) => void
-): () => void {
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((event, session) => {
-    callback(
-      event,
-      session
-        ? {
-            user: {
-              id: session.user.id,
-              email: session.user.email ?? "",
-            },
-            accessToken: session.access_token,
-            refreshToken: session.refresh_token,
-          }
-        : null
-    );
+export async function createFirstAdmin(
+  email: string, password: string, fullName: string,
+): Promise<LocalUserRecord> {
+  if ((await usersCollection.query().fetchCount()) > 0) {
+    throw new Error('Admin account already exists. Please log in.');
+  }
+  if (password.length < 6) throw new Error('Password must be at least 6 characters.');
+  const bc = await getBcrypt();
+  const hash = bc.hashSync(password, bc.genSaltSync(10));
+  await database.write(async () => {
+    await usersCollection.create((u: any) => {
+      u.email = email.toLowerCase().trim(); u.fullName = fullName;
+      u.role = 'admin'; u._raw.password_hash = hash;
+      u.localId = null; u.createdAt = Date.now(); u.updatedAt = Date.now();
+    });
   });
-
-  return () => subscription.unsubscribe();
+  await markFirstRunDone();
+  const created = await findUserByEmail(email);
+  if (!created) throw new Error('Failed to create admin account.');
+  await saveSession(created.id);
+  return created;
 }
 
-// ─── Password Management ─────────────────────────────────
-
-/**
- * Send a password reset email.
- */
-export async function resetPassword(email: string): Promise<void> {
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
-  if (error) {
-    throw new Error(error.message);
+export async function loginUser(
+  email: string, password: string,
+): Promise<LocalUserRecord> {
+  const user = await findUserByEmail(email);
+  if (!user) throw new Error('Invalid email or password.');
+  if (!(await getBcrypt()).compareSync(password, user.passwordHash)) {
+    throw new Error('Invalid email or password.');
   }
+  await saveSession(user.id);
+  return user;
 }
 
-/**
- * Update the current user's password.
- */
-export async function updatePassword(newPassword: string): Promise<void> {
-  const { error } = await supabase.auth.updateUser({
-    password: newPassword,
+export async function logoutUser(): Promise<void> { await clearSession(); }
+
+export async function getCurrentUser(): Promise<{
+  id: string; email: string; role: string; fullName: string | null; localId: string | null;
+} | null> {
+  const u = await getSessionUser();
+  return u ? { id: u.id, email: u.email, role: u.role, fullName: u.fullName, localId: u.localId } : null;
+}
+
+export async function changePassword(
+  oldPassword: string, newPassword: string,
+): Promise<void> {
+  const u = await getSessionUser();
+  if (!u) throw new Error('Not authenticated.');
+  if (!(await getBcrypt()).compareSync(oldPassword, u.passwordHash))
+    throw new Error('Current password is incorrect.');
+  if (newPassword.length < 6)
+    throw new Error('New password must be at least 6 characters.');
+  const bc = await getBcrypt();
+  const hash = bc.hashSync(newPassword, bc.genSaltSync(10));
+  const rec = await usersCollection.find(u.id);
+  await database.write(async () => {
+    await rec.update((r: any) => { r._raw.password_hash = hash; r.updatedAt = Date.now(); });
   });
-  if (error) {
-    throw new Error(error.message);
-  }
 }
 
-// ─── Push Token Registration ──────────────────────────────
+// ─── DI Adapter ─────────────────────────────
+import type { IAuthService } from '../../../core/di/container';
 
-/**
- * Register an Expo push token for the current user.
- */
-export async function registerPushToken(token: string): Promise<void> {
-  const session = await getSession();
-  if (!session) return;
-
-  const { error } = await (supabase as any)
-    .from("users")
-    .update({ push_token: token })
-    .eq("id", session.user.id);
-
-  if (error) {
-    console.error("Failed to register push token:", error);
-  }
-}
-
-// ─── Internal Helpers ─────────────────────────────────────
-
-/**
- * Fetch a user profile with local name.
- */
-async function getUserProfile(userId: string): Promise<UserProfile> {
-  const { data, error } = await (supabase as any)
-    .from("users")
-    .select("id, email, full_name, role, local_id, locals(name)")
-    .eq("id", userId)
-    .single();
-
-  if (error || !data) {
-    throw new Error("Failed to fetch user profile");
-  }
-
+export function createAuthService(): IAuthService {
   return {
-    id: data.id,
-    email: data.email,
-    fullName: data.full_name,
-    role: data.role as UserRole,
-    localId: data.local_id,
-    localName: (data as any).locals?.name,
+    login: async (email, password) => { await loginUser(email, password); },
+    logout: async () => { await logoutUser(); },
+    getCurrentUser: async () => {
+      const u = await getCurrentUser();
+      return u ? { id: u.id, email: u.email, role: u.role } : null;
+    },
+    isAuthenticated: async () => (await getSavedSession()) !== null,
+    createAccount: async (email, password, fullName, role) => {
+      if (password.length < 6)
+        throw new Error('Password must be at least 6 characters.');
+      const bc = await getBcrypt();
+      const hash = bc.hashSync(password, bc.genSaltSync(10));
+      await database.write(async () => {
+        await usersCollection.create((u: any) => {
+          u.email = email.toLowerCase().trim(); u.fullName = fullName;
+          u.role = role; u._raw.password_hash = hash;
+          u.localId = null; u.createdAt = Date.now(); u.updatedAt = Date.now();
+        });
+      });
+    },
+    isFirstRun: async () => isFirstRun(),
   };
+}
+
+    const u = await usersCollection.find(sid);
+    return {
+      id: u.id, email: (u as any).email ?? '', fullName: (u as any).fullName ?? null,
+      role: (u as any).role ?? 'member', localId: (u as any).localId ?? null,
+      passwordHash: (u as any)._raw?.password_hash ?? (u as any).passwordHash ?? '',
+    };
+  } catch { await clearSession(); return null; }
 }

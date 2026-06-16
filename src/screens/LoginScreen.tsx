@@ -6,17 +6,26 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../shared/theme';
 import { Button, Input } from '../shared/ui';
+import { useAuth } from '../features/auth';
 
-interface LoginScreenProps {
-  onLogin: () => void;
-}
-
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
+export const LoginScreen: React.FC = () => {
   const { theme } = useTheme();
   const { colors, spacing, radius, shadows } = theme;
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) return;
+    try {
+      await login(email.trim(), password);
+      // Navigation to Main is automatic because RootNavigator
+      // watches isAuthenticated and switches to 'Main' immediately
+    } catch {
+      // Error is already set in the store via useAuth().error
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -172,14 +181,38 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               </View>
             </View>
 
+            {/* Error Message */}
+            {error ? (
+              <View style={{
+                backgroundColor: colors.errorContainer || '#FFDAD6',
+                borderRadius: radius.lg,
+                padding: spacing.md,
+                marginBottom: spacing.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.sm,
+              }}>
+                <MaterialIcons name="error-outline" size={18} color={colors.error || '#BA1A1A'} />
+                <Text style={{
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: colors.onErrorContainer || '#410002',
+                  flex: 1,
+                }}>
+                  {error}
+                </Text>
+              </View>
+            ) : null}
+
             {/* Login Button */}
             <Button
-              title="Log In"
-              onPress={onLogin}
+              title={isLoading ? 'Signing in...' : 'Log In'}
+              onPress={handleLogin}
               variant="primary"
               size="lg"
               fullWidth
-              iconRight={<MaterialIcons name="arrow-forward" size={20} color={colors.white} />}
+              disabled={isLoading}
+              iconRight={isLoading ? undefined : <MaterialIcons name="arrow-forward" size={20} color={colors.white} />}
             />
 
             {/* Divider */}

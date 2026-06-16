@@ -45,7 +45,7 @@ export interface User {
   role: UserRole;
   local_id: string | null;
   photo_url: string | null;
-  push_token: string | null;
+  password_hash: string;
   created_at: string;
   updated_at: string;
 }

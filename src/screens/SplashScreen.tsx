@@ -1,22 +1,21 @@
 // SplashScreen — Onboarding/welcome screen matching the Stitch mockup
 import React from 'react';
-import { View, Text, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../shared/theme';
 import { Button } from '../shared/ui';
+import type { RootStackParamList } from '../app/navigation/types';
 
-const { width } = Dimensions.get('window');
+type Nav = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
-interface SplashScreenProps {
-  onGetStarted: () => void;
-  onLogin: () => void;
-}
-
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onGetStarted, onLogin }) => {
+export const SplashScreen: React.FC = () => {
   const { theme } = useTheme();
   const { colors, spacing, radius, shadows } = theme;
+  const navigation = useNavigation<Nav>();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -87,14 +86,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onGetStarted, onLogi
         <View style={{ width: '100%', gap: spacing.md }}>
           <Button
             title="Get Started"
-            onPress={onGetStarted}
+            onPress={() => navigation.replace('Main')}
             variant="primary"
             size="lg"
             fullWidth
           />
           <Button
             title="Log In"
-            onPress={onLogin}
+            onPress={() => navigation.navigate('Login')}
             variant="secondary"
             size="lg"
             fullWidth

@@ -31,7 +31,7 @@ export const schema = appSchema({
         { name: "full_name", type: "string", isOptional: true },
         { name: "role", type: "string" },
         { name: "local_id", type: "string", isOptional: true, isIndexed: true },
-        { name: "push_token", type: "string", isOptional: true },
+        { name: "password_hash", type: "string" },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
       ],
