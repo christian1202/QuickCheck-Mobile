@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Avatar, Input, Button, Card, FilterChips } from '../components/ui';
-import { MOCK_MEMBERS } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { Avatar, Input, Button, Card, FilterChips } from '../shared/ui';
+import { MOCK_MEMBERS } from '../shared/testing/mockData';
 
 export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = ({ navigation, route }) => {
   const { theme } = useTheme();

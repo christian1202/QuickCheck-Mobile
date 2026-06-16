@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Input, Button, Card, FilterChips } from '../components/ui';
+import { useTheme } from '../shared/theme';
+import { Input, Button, Card, FilterChips } from '../shared/ui';
 
 export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();

@@ -3,10 +3,10 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Avatar, SearchBar, Card, Button } from '../components/ui';
-import { MOCK_MEMBERS, MOCK_EVENTS } from '../data/mockData';
-import type { Member } from '../lib/types';
+import { useTheme } from '../shared/theme';
+import { Avatar, SearchBar, Card, Button } from '../shared/ui';
+import { MOCK_MEMBERS, MOCK_EVENTS } from '../shared/testing/mockData';
+import type { Member } from '../core/types/domain';
 
 type MarkStatus = 'present' | 'late' | 'absent' | null;
 

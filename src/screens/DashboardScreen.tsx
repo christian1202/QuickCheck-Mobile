@@ -4,9 +4,9 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../theme';
-import { Card, Avatar, ProgressBar, SectionHeader, Button } from '../components/ui';
-import { MOCK_DASHBOARD, MOCK_USER, MOCK_LOCAL, MOCK_EVENTS } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { Card, Avatar, ProgressBar, SectionHeader, Button } from '../shared/ui';
+import { MOCK_DASHBOARD, MOCK_USER, MOCK_LOCAL, MOCK_EVENTS } from '../shared/testing/mockData';
 
 export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();

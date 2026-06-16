@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Card, Avatar, StatusChip, Button } from '../components/ui';
-import { MOCK_EVENTS, MOCK_MEMBERS } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { Card, Avatar, StatusChip, Button } from '../shared/ui';
+import { MOCK_EVENTS, MOCK_MEMBERS } from '../shared/testing/mockData';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];

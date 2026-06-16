@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Card, Button, Input } from '../components/ui';
-import { MOCK_USER, MOCK_LOCAL } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { Card, Button, Input } from '../shared/ui';
+import { MOCK_USER, MOCK_LOCAL } from '../shared/testing/mockData';
 
 export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme, themeMode, setThemeMode, isDark } = useTheme();

@@ -3,9 +3,9 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card } from '../components/ui';
-import { MOCK_MEMBERS, MOCK_MINISTRY_GROUPS } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card } from '../shared/ui';
+import { MOCK_MEMBERS, MOCK_MINISTRY_GROUPS } from '../shared/testing/mockData';
 
 export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();

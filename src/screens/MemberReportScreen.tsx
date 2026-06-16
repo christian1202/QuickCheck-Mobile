@@ -3,9 +3,9 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
-import { Avatar, Card, StatusChip, ProgressBar, Button, SectionHeader } from '../components/ui';
-import { MOCK_MEMBERS } from '../data/mockData';
+import { useTheme } from '../shared/theme';
+import { Avatar, Card, StatusChip, ProgressBar, Button, SectionHeader } from '../shared/ui';
+import { MOCK_MEMBERS } from '../shared/testing/mockData';
 
 export const MemberReportScreen: React.FC<{ navigation?: any; route?: any }> = ({ navigation, route }) => {
   const { theme } = useTheme();
