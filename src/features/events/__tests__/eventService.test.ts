@@ -1,19 +1,6 @@
 // eventService recurrence helpers — unit tests
-// IMPORTANT: Does NOT import from eventService.ts directly
-// to avoid the WatermelonDB native module dependency.
-// Tests the pure helper functions in isolation.
-
-// ─── Helpers (assertions) ───────────────────────────────
-
-function assert(condition: boolean, msg: string): void {
-  if (!condition) throw new Error(`FAIL: ${msg}`);
-}
-
-function assertEq<T>(a: T, b: T, msg: string): void {
-  if (a !== b && JSON.stringify(a) !== JSON.stringify(b)) {
-    throw new Error(`FAIL: ${msg}\n  expected: ${JSON.stringify(b)}\n  got:      ${JSON.stringify(a)}`);
-  }
-}
+// Pure logic tests — no WatermelonDB dependency.
+import { describe, test, expect } from '@jest/globals';
 
 // ─── Inline Recurrence Helpers (copied from eventService.ts) ─
 
@@ -89,93 +76,80 @@ function expandRecurringDates(
   return dates;
 }
 
-// ─── Tests ───────────────────────────────────────────────
+// ─── generateRecurrenceRule ───────────────────────────────
 
-function test_generateRule_weekly(): void {
-  assertEq(generateRecurrenceRule({ frequency: 'weekly' }), 'FREQ=WEEKLY', 'weekly');
-}
+describe('generateRecurrenceRule', () => {
+  test('generates weekly rule', () => {
+    expect(generateRecurrenceRule({ frequency: 'weekly' })).toBe('FREQ=WEEKLY');
+  });
 
-function test_generateRule_daily_with_interval(): void {
-  assertEq(generateRecurrenceRule({ frequency: 'daily', interval: 3 }), 'FREQ=DAILY;INTERVAL=3', 'daily interval 3');
-}
+  test('generates daily rule with interval', () => {
+    expect(generateRecurrenceRule({ frequency: 'daily', interval: 3 }))
+      .toBe('FREQ=DAILY;INTERVAL=3');
+  });
 
-function test_generateRule_monthly_with_count(): void {
-  assertEq(generateRecurrenceRule({ frequency: 'monthly', count: 12 }), 'FREQ=MONTHLY;COUNT=12', 'monthly count 12');
-}
+  test('generates monthly rule with count', () => {
+    expect(generateRecurrenceRule({ frequency: 'monthly', count: 12 }))
+      .toBe('FREQ=MONTHLY;COUNT=12');
+  });
 
-function test_generateRule_with_until(): void {
-  assertEq(generateRecurrenceRule({ frequency: 'weekly', until: '2026-12-31' }), 'FREQ=WEEKLY;UNTIL=20261231T235959Z', 'until');
-}
+  test('generates rule with until date', () => {
+    expect(generateRecurrenceRule({ frequency: 'weekly', until: '2026-12-31' }))
+      .toBe('FREQ=WEEKLY;UNTIL=20261231T235959Z');
+  });
+});
 
-function test_parseRule_weekly(): void {
-  const c = parseRecurrenceRule('FREQ=WEEKLY');
-  assert(c !== null, 'not null');
-  assertEq(c!.frequency, 'weekly', 'frequency');
-}
+// ─── parseRecurrenceRule ──────────────────────────────────
 
-function test_parseRule_daily_interval(): void {
-  const c = parseRecurrenceRule('FREQ=DAILY;INTERVAL=3');
-  assert(c !== null, 'not null');
-  assertEq(c!.interval, 3, 'interval');
-}
+describe('parseRecurrenceRule', () => {
+  test('parses weekly rule', () => {
+    const c = parseRecurrenceRule('FREQ=WEEKLY');
+    expect(c).not.toBeNull();
+    expect(c!.frequency).toBe('weekly');
+  });
 
-function test_parseRule_invalid(): void {
-  assertEq(parseRecurrenceRule('INVALID'), null, 'invalid => null');
-  assertEq(parseRecurrenceRule(''), null, 'empty => null');
-}
+  test('parses daily rule with interval', () => {
+    const c = parseRecurrenceRule('FREQ=DAILY;INTERVAL=3');
+    expect(c).not.toBeNull();
+    expect(c!.interval).toBe(3);
+  });
 
-function test_expand_weekly(): void {
-  const dates = expandRecurringDates('2026-06-01', 'FREQ=WEEKLY', 4);
-  assertEq(dates.length, 3, '3 future dates');
-  assertEq(dates[0], '2026-06-08', 'next Mon');
-  assertEq(dates[1], '2026-06-15', 'Mon after');
-}
+  test('returns null for invalid rule', () => {
+    expect(parseRecurrenceRule('INVALID')).toBeNull();
+    expect(parseRecurrenceRule('')).toBeNull();
+  });
+});
 
-function test_expand_count(): void {
-  const dates = expandRecurringDates('2026-06-01', 'FREQ=WEEKLY;COUNT=3');
-  assertEq(dates.length, 2, 'COUNT=3 => 2 future');
-}
+// ─── expandRecurringDates ─────────────────────────────────
 
-function test_expand_until(): void {
-  const dates = expandRecurringDates('2026-06-15', 'FREQ=WEEKLY;UNTIL=20260630T235959Z');
-  assertEq(dates.length, 2, '2 dates within until');
-  assertEq(dates[0], '2026-06-22', 'first');
-  assertEq(dates[1], '2026-06-29', 'last within until');
-}
+describe('expandRecurringDates', () => {
+  test('expands weekly recurrence', () => {
+    const dates = expandRecurringDates('2026-06-01', 'FREQ=WEEKLY', 4);
+    expect(dates.length).toBe(3);
+    expect(dates[0]).toBe('2026-06-08');
+    expect(dates[1]).toBe('2026-06-15');
+  });
 
-function test_expand_invalid(): void {
-  assertEq(expandRecurringDates('2026-06-01', 'INVALID').length, 0, 'invalid => empty');
-}
+  test('respects COUNT limit', () => {
+    const dates = expandRecurringDates('2026-06-01', 'FREQ=WEEKLY;COUNT=3');
+    expect(dates.length).toBe(2);
+  });
 
-function test_expand_monthly(): void {
-  const dates = expandRecurringDates('2026-01-15', 'FREQ=MONTHLY', 4);
-  assertEq(dates.length, 3, '3 months');
-  assertEq(dates[0], '2026-02-15', 'next month');
-  assertEq(dates[1], '2026-03-15', 'month after');
-}
+  test('respects UNTIL limit', () => {
+    const dates = expandRecurringDates('2026-06-15', 'FREQ=WEEKLY;UNTIL=20260630T235959Z');
+    expect(dates.length).toBe(2);
+    expect(dates[0]).toBe('2026-06-22');
+    expect(dates[1]).toBe('2026-06-29');
+  });
 
-// ─── Run ─────────────────────────────────────────────────
+  test('returns empty for invalid rule', () => {
+    expect(expandRecurringDates('2026-06-01', 'INVALID').length).toBe(0);
+  });
 
-export function runEventServiceTests(): { passed: number; failed: number } {
-  const tests = [
-    test_generateRule_weekly,
-    test_generateRule_daily_with_interval,
-    test_generateRule_monthly_with_count,
-    test_generateRule_with_until,
-    test_parseRule_weekly,
-    test_parseRule_daily_interval,
-    test_parseRule_invalid,
-    test_expand_weekly,
-    test_expand_count,
-    test_expand_until,
-    test_expand_invalid,
-    test_expand_monthly,
-  ];
-
-  let passed = 0, failed = 0;
-  for (const test of tests) {
-    try { test(); passed++; }
-    catch (e) { console.error(e instanceof Error ? e.message : String(e)); failed++; }
-  }
-  return { passed, failed };
-}
+  test('expands monthly recurrence', () => {
+    const dates = expandRecurringDates('2026-01-15', 'FREQ=MONTHLY', 4);
+    expect(dates.length).toBe(3);
+    expect(dates[0]).toBe('2026-02-15');
+    expect(dates[1]).toBe('2026-03-15');
+  });
+});
