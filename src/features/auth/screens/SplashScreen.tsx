@@ -68,17 +68,7 @@ export const SplashScreen: React.FC = () => {
             lineHeight: 34,
             marginBottom: spacing.lg,
           }}>
-            Attendance, simplified for{'\n'}your congregation
-          </Text>
-          <Text style={{
-            fontFamily: 'Inter',
-            fontSize: 16,
-            color: colors.onSurfaceVariant,
-            textAlign: 'center',
-            lineHeight: 24,
-            maxWidth: 320,
-          }}>
-            Manage your community with precision and peace of mind through our tonal, data-first management sanctuary.
+            The fastest, offline-first way to manage your church attendance.
           </Text>
         </View>
 
@@ -86,15 +76,8 @@ export const SplashScreen: React.FC = () => {
         <View style={{ width: '100%', gap: spacing.md }}>
           <Button
             title="Get Started"
-            onPress={() => navigation.replace('Main')}
+            onPress={() => navigation.navigate('Tutorial' as any)}
             variant="primary"
-            size="lg"
-            fullWidth
-          />
-          <Button
-            title="Log In"
-            onPress={() => navigation.navigate('Login')}
-            variant="secondary"
             size="lg"
             fullWidth
           />

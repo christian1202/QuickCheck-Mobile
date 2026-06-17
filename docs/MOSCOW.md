@@ -8,15 +8,15 @@
 
 | # | Feature | Rationale | Status |
 |---|---|---|---|
-| M1 | **Google SSO Authentication** | Replace local email/pass with "Sign in with Google". This secures the app AND automatically connects Google Sheets for backup in one tap. | Planned |
-| M2 | **Profile Setup / Onboarding** | After Google Login, prompt user for their preferred display name and church role ("What should we call you?"). | Planned |
+| M1 | **Google SSO Authentication** | Real Google Sign-In via `@react-native-google-signin/google-signin` v16. Secure + connects Google identity. | ✅ |
+| M2 | **Profile Setup / Onboarding** | 3-slide tutorial → Google Sign-In → Profile setup ("What should we call you?"). | ✅ |
 | M3 | **Member CRUD** | Core entity. Secretary needs to manage church members (add, edit, delete, list). | ✅ |
 | M4 | **Event CRUD** | Core entity. Secretary creates events to track attendance against. | ✅ |
 | M5 | **Attendance Marking** | The entire point of the app. Quick Mark screen for per-event attendance. | ✅ |
 | M6 | **Attendance Submission** | Attendance must be saved to WatermelonDB for reports. | ✅ |
 | M7 | **Dashboard** | Secretary's home screen. Shows key metrics from real DB data. No MOCK. | ✅ |
 | M8 | **Offline-First** | Churches may have poor internet. All CRUD works without connection via WatermelonDB. | ✅ |
-| M9 | **Secretary Settings** | Configure church name, force sync to Sheets, export CSV, and logout. | Planned |
+| M9 | **Secretary Settings** | Configure church name, force sync to Sheets, export CSV, and logout. Accessible via gear icon in Dashboard header. | ✅ |
 
 ---
 
@@ -78,7 +78,7 @@
 ## MoSCoW Summary
 
 ```
-MUST (9)      ████████░░   66% done (M3-M8 ✅, M1, M2, M9 Planned)
+MUST (9)      ██████████  100% done (M1-M9 all ✅)
 SHOULD (12)   ██████████  100% done
 COULD (23)    █████░░░░░   48% done (C1-C12 ✅ except C7. C13-C23 Planned)
 WON'T (10)    ░░░░░░░░░░   0% (by design)
@@ -86,7 +86,7 @@ WON'T (10)    ░░░░░░░░░░   0% (by design)
 
 ### Release Criteria
 
-- [x] User can create admin account on first launch
+- [x] User can sign in with Google SSO
 - [x] User can log in and log out
 - [x] Session persists across app restarts
 - [x] Secretary can add, edit, delete, and list members

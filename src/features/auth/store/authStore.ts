@@ -29,7 +29,7 @@ export interface AuthState {
 
   // Actions
   initialize: (service: IAuthService) => Promise<void>;
-  login: (service: IAuthService, email: string, password: string) => Promise<void>;
+  loginWithGoogle: (service: IAuthService) => Promise<void>;
   logout: (service: IAuthService) => Promise<void>;
   setUser: (user: AuthUser | null) => void;
   reset: () => void;
@@ -75,18 +75,18 @@ export const useAuthStore = create<AuthState>()(
           }
         },
 
-        login: async (service: IAuthService, email: string, password: string) => {
+        loginWithGoogle: async (service: IAuthService) => {
           set({ isLoading: true, error: null });
 
           try {
-            await service.login(email, password);
-            const session = await service.getCurrentUser();
+            const session = await service.loginWithGoogle();
             set({
-              user: session ? {
+              user: {
                 id: session.id,
                 email: session.email,
                 role: session.role,
-              } : null,
+                fullName: session.fullName,
+              },
               isLoading: false,
             });
           } catch (error) {

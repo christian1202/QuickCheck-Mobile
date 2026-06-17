@@ -4,8 +4,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '../../../shared/theme';
-import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card } from '../../../shared/ui';
+import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card, EmptyState } from '../../../shared/ui';
 import { useMembers } from '..';
 import type { MemberStatus } from '../../../core/types/domain';
 
@@ -88,110 +89,119 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
         contentContainerStyle={{
           paddingHorizontal: spacing['2xl'],
           paddingBottom: 120,
-          gap: spacing.lg, // Anti-divider policy: spacing instead of lines
         }}
       >
-        {filteredMembers.map((member) => (
-          <TouchableOpacity
-            key={member.id}
-            activeOpacity={0.7}
-            onPress={() => handleMemberPress(member.id)}
-          >
-            <Card variant="default" style={{ alignItems: 'center', paddingVertical: spacing['2xl'] }}>
-              {/* Three-dot menu */}
-              <TouchableOpacity style={{
-                position: 'absolute',
-                top: spacing.md,
-                right: spacing.md,
-                padding: spacing.xs,
-              }}>
-                <MaterialIcons name="more-vert" size={20} color={colors.onSurfaceVariant} />
-              </TouchableOpacity>
+        {filteredMembers.length === 0 ? (
+          <EmptyState
+            iconName="group-off"
+            title="No members found"
+            message={search ? `No results for "${search}"` : "Get started by adding your first church member."}
+          />
+        ) : (
+          filteredMembers.map((member: any, index: number) => (
+            <Animated.View key={member.id} entering={FadeInDown.delay(index * 50).springify()}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleMemberPress(member.id)}
+                style={{ marginBottom: spacing.lg }}
+              >
+                <Card variant="default" style={{ alignItems: 'center', paddingVertical: spacing['2xl'] }}>
+                  {/* Three-dot menu */}
+                  <TouchableOpacity style={{
+                    position: 'absolute',
+                    top: spacing.md,
+                    right: spacing.md,
+                    padding: spacing.xs,
+                  }}>
+                    <MaterialIcons name="more-vert" size={20} color={colors.onSurfaceVariant} />
+                  </TouchableOpacity>
 
-              {/* Avatar */}
-              <Avatar
-                uri={member.photo_url}
-                name={member.full_name}
-                size={72}
-                showStatusRing
-                statusColor={
-                  member.status === 'active' ? colors.secondary :
-                  member.status === 'inactive' ? colors.outlineVariant :
-                  colors.onTertiaryContainer
-                }
-              />
+                  {/* Avatar */}
+                  <Avatar
+                    uri={member.photo_url}
+                    name={member.full_name}
+                    size={72}
+                    showStatusRing
+                    statusColor={
+                      member.status === 'active' ? colors.secondary :
+                      member.status === 'inactive' ? colors.outlineVariant :
+                      colors.onTertiaryContainer
+                    }
+                  />
 
-              {/* Name */}
-              <Text style={{
-                fontFamily: 'Inter-SemiBold',
-                fontSize: 16,
-                color: colors.onSurface,
-                marginTop: spacing.md,
-              }}>
-                {member.full_name}
-              </Text>
-
-              {/* Ministry Group Tag */}
-              <View style={{
-                backgroundColor: colors.surfaceContainerHigh,
-                paddingHorizontal: 10,
-                paddingVertical: 3,
-                borderRadius: 9999,
-                marginTop: spacing.xs,
-              }}>
-                <Text style={{
-                  fontFamily: 'Inter-SemiBold',
-                  fontSize: 10,
-                  letterSpacing: 1.2,
-                  textTransform: 'uppercase',
-                  color: colors.primary,
-                }}>
-                  {member.ministry_group}
-                </Text>
-              </View>
-
-              {/* Attendance bar + Status */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                marginTop: spacing.lg,
-              }}>
-                <View style={{ flex: 1, marginRight: spacing.lg }}>
+                  {/* Name */}
                   <Text style={{
                     fontFamily: 'Inter-SemiBold',
-                    fontSize: 10,
-                    letterSpacing: 1.6,
-                    textTransform: 'uppercase',
-                    color: colors.onSurfaceVariant,
-                    marginBottom: 4,
+                    fontSize: 16,
+                    color: colors.onSurface,
+                    marginTop: spacing.md,
                   }}>
-                    Attendance
+                    {member.full_name}
                   </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+
+                  {/* Ministry Group Tag */}
+                  <View style={{
+                    backgroundColor: colors.surfaceContainerHigh,
+                    paddingHorizontal: 10,
+                    paddingVertical: 3,
+                    borderRadius: 9999,
+                    marginTop: spacing.xs,
+                  }}>
                     <Text style={{
                       fontFamily: 'Inter-SemiBold',
-                      fontSize: 14,
-                      color: (member.attendance_rate ?? 0) < 70 ? colors.error : colors.secondary,
+                      fontSize: 10,
+                      letterSpacing: 1.2,
+                      textTransform: 'uppercase',
+                      color: colors.primary,
                     }}>
-                      {member.attendance_rate ?? 0}%
+                      {member.ministry_group}
                     </Text>
-                    <ProgressBar
-                      progress={member.attendance_rate ?? 0}
-                      color={(member.attendance_rate ?? 0) < 70 ? colors.error : colors.secondary}
-                      height={4}
-                      style={{ flex: 1 }}
-                    />
                   </View>
-                </View>
-                {member.latest_status && (
-                  <StatusChip status={member.latest_status} size="sm" />
-                )}
-              </View>
-            </Card>
-          </TouchableOpacity>
-        ))}
+
+                  {/* Attendance bar + Status */}
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    marginTop: spacing.lg,
+                  }}>
+                    <View style={{ flex: 1, marginRight: spacing.lg }}>
+                      <Text style={{
+                        fontFamily: 'Inter-SemiBold',
+                        fontSize: 10,
+                        letterSpacing: 1.6,
+                        textTransform: 'uppercase',
+                        color: colors.onSurfaceVariant,
+                        marginBottom: 4,
+                      }}>
+                        Attendance
+                      </Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Text style={{
+                          fontFamily: 'Inter-SemiBold',
+                          fontSize: 14,
+                          color: (member.attendance_rate ?? 0) < 70 ? colors.error : colors.secondary,
+                        }}>
+                          {member.attendance_rate ?? 0}%
+                        </Text>
+                        <ProgressBar
+                          progress={member.attendance_rate ?? 0}
+                          color={(member.attendance_rate ?? 0) < 70 ? colors.error : colors.secondary}
+                          height={4}
+                          style={{ flex: 1 }}
+                        />
+                      </View>
+                    </View>
+                    {member.latest_status && (
+                      <StatusChip status={member.latest_status} size="sm" />
+                    )}
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            </Animated.View>
+          ))
+        )}
       </ScrollView>
 
       {/* FAB */}

@@ -7,12 +7,12 @@
 
 | Feature | Description |
 |---|---|
-| Local Login | Email/password via bcryptjs, stored in WatermelonDB |
-| Password Hashing | bcryptjs salt rounds (10) |
+| Google Sign-In | Real Google SSO via `@react-native-google-signin/google-signin` v16 |
+| Onboarding Flow | 3-slide tutorial → Google Sign-In → Profile setup |
 | Session Persistence | expo-secure-store encrypted device keychain |
-| First-Run Setup | Admin account creation on first launch |
+| First-Run Detection | Automatic first-launch onboarding |
 | Role-Based Access | Admin, Secretary, Member, Viewer |
-| Logout | Session termination |
+| Logout | Google Sign-Out + session termination |
 
 ## 2. Dashboard
 
@@ -29,6 +29,7 @@
 | Today's/Next Event | useEvents() → first upcoming event |
 | Upcoming Schedule | useEvents() → next 3 events |
 | Pull-to-Refresh | Refresh dashboard + events from DB |
+| Settings Access | Gear icon in top-right header → navigates to Settings |
 
 ## 3. Member Management
 
@@ -95,6 +96,7 @@
 
 | Feature | Description |
 |---|---|
+| Profile Configuration | Editable User Name (WatermelonDB) and Church Name (AsyncStorage) |
 | Dark/Light Mode | Theme toggle via useTheme().setThemeMode() |
 | Google Sheets Setup | Connect, link, configure |
 | Auto-Save Toggle | Enable/disable with Sheets sync option |
@@ -111,7 +113,7 @@ Note: Settings state is managed locally in the screen via React `useState`. No Z
 | Language | TypeScript 5.x |
 | State | Zustand + AsyncStorage |
 | Local DB | WatermelonDB (SQLite) |
-| Auth | bcryptjs + expo-secure-store |
+| Auth | Google Sign-In (`@react-native-google-signin/google-signin` v16) + expo-secure-store |
 | Google Sheets | OAuth 2.0 + REST API v4 |
 | CSV | Custom parser/writer (no external deps) |
 | Auto-Save | Custom debounced engine |
@@ -140,7 +142,8 @@ All 13 screens co-located in features/*/screens/. Zero MOCK data.
 | Screen | Location | Hooks Used |
 |---|---|---|
 | SplashScreen | `features/auth/screens/` | Navigation only |
-| LoginScreen | `features/auth/screens/` | useAuth() |
+| TutorialScreen | `features/auth/screens/` | useAuth() |
+| ProfileSetupScreen | `features/auth/screens/` | useAuth() |
 | DashboardScreen | `features/dashboard/screens/` | useAuth() + useDashboard() + useEvents() |
 | ReportsScreen | `features/dashboard/screens/` | useDashboard() + useMembers() |
 | AbsenceReportScreen | `features/dashboard/screens/` | useMembers() |
@@ -177,7 +180,7 @@ npm run test:ci    # CI mode with coverage report
 | `src/features/settings/hooks/useSettings.ts` | Unused — SettingsScreen uses local useState |
 | `src/features/settings/store/settingsStore.ts` | Unused — no screen consumed Zustand settings store |
 | `supabase/` directory (~20 files) | Orphaned — project is local-first, no cloud dependency |
-| `bcryptjs` (restored) | Needed — authService uses dynamic `import('bcryptjs')` for password hashing |
+| `bcryptjs` (removed) | Replaced by Google Sign-In SSO — no more local password hashing |
 | `date-fns`, `expo-sharing`, `react-native-svg`, `react-native-web` | Never imported in source |
 
 ## 13. Planned Features (Roadmap)

@@ -91,9 +91,6 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
           </View>
         </View>
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
-          <TouchableOpacity style={{ padding: spacing.sm }}>
-            <MaterialIcons name="search" size={24} color={colors.onSurfaceVariant} />
-          </TouchableOpacity>
           <TouchableOpacity style={{ padding: spacing.sm, position: 'relative' }}>
             <MaterialIcons name="notifications-none" size={24} color={colors.onSurfaceVariant} />
             <View style={{
@@ -102,8 +99,11 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
               borderRadius: 4, borderWidth: 2, borderColor: colors.background,
             }} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: spacing.sm }}>
-            <MaterialIcons name="wifi-off" size={24} color={colors.primaryContainer} />
+          <TouchableOpacity
+            style={{ padding: spacing.sm }}
+            onPress={() => navigation?.navigate('Settings')}
+          >
+            <MaterialIcons name="settings" size={24} color={colors.onSurfaceVariant} />
           </TouchableOpacity>
         </View>
       </View>
@@ -133,25 +133,6 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
           }}>
             Your church attendance dashboard
           </Text>
-          <TouchableOpacity
-            onPress={() => navigation?.navigate('Settings')}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-              backgroundColor: colors.surfaceContainerHighest,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.md,
-              borderRadius: radius.xl,
-              alignSelf: 'flex-start',
-              marginTop: spacing.lg,
-            }}
-          >
-            <MaterialIcons name="file-download" size={18} color={colors.primary} />
-            <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 14, color: colors.primary }}>
-              Export Data
-            </Text>
-          </TouchableOpacity>
         </View>
 
         {/* Today's Event Card */}
@@ -388,43 +369,49 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
             }}>
               Status Distribution
             </Text>
-            <View style={{ alignItems: 'center' }}>
-              {/* Simple donut representation */}
-              <View style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-                borderWidth: 12,
-                borderColor: colors.secondary,
-                borderRightColor: colors.onTertiaryContainer,
-                borderBottomColor: colors.error,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: spacing.lg,
-              }}>
-                <Text style={{
-                  fontFamily: 'Inter-SemiBold',
-                  fontSize: 11,
-                  color: colors.onSurface,
-                }}>
-                  {new Date().toLocaleDateString('en', { month: 'short' }).toUpperCase()}
-                </Text>
-              </View>
-            </View>
-            <View style={{ gap: spacing.sm }}>
-              {[
-                { label: 'Present', color: colors.secondary },
-                { label: 'Late', color: colors.onTertiaryContainer },
-                { label: 'Absent', color: colors.error },
-              ].map(item => (
-                <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
-                  <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 12, color: colors.onSurface }}>
-                    {item.label}
-                  </Text>
+            {(() => {
+              const total = data.statusDistribution.present + data.statusDistribution.late + data.statusDistribution.absent;
+              const pPct = total ? (data.statusDistribution.present / total) * 100 : 0;
+              const lPct = total ? (data.statusDistribution.late / total) * 100 : 0;
+              const aPct = total ? (data.statusDistribution.absent / total) * 100 : 0;
+
+              return (
+                <View style={{ width: '100%' }}>
+                  <View style={{
+                    height: 12,
+                    flexDirection: 'row',
+                    borderRadius: radius.full,
+                    overflow: 'hidden',
+                    marginBottom: spacing.lg,
+                  }}>
+                    {pPct > 0 && <View style={{ width: `${pPct}%`, backgroundColor: colors.secondary }} />}
+                    {lPct > 0 && <View style={{ width: `${lPct}%`, backgroundColor: colors.onTertiaryContainer }} />}
+                    {aPct > 0 && <View style={{ width: `${aPct}%`, backgroundColor: colors.error }} />}
+                    {total === 0 && <View style={{ flex: 1, backgroundColor: colors.surfaceContainerHighest }} />}
+                  </View>
+
+                  <View style={{ gap: spacing.sm }}>
+                    {[
+                      { label: 'Present', color: colors.secondary, count: data.statusDistribution.present },
+                      { label: 'Late', color: colors.onTertiaryContainer, count: data.statusDistribution.late },
+                      { label: 'Absent', color: colors.error, count: data.statusDistribution.absent },
+                    ].map(item => (
+                      <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color }} />
+                          <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 12, color: colors.onSurface }}>
+                            {item.label}
+                          </Text>
+                        </View>
+                        <Text style={{ fontFamily: 'Inter', fontSize: 12, color: colors.onSurfaceVariant }}>
+                          {item.count}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
-              ))}
-            </View>
+              );
+            })()}
           </Card>
 
           {/* Ministry Groups */}

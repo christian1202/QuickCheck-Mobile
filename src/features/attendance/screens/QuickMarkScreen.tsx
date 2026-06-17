@@ -5,7 +5,7 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
-import { Avatar, SearchBar, Card, Button } from '../../../shared/ui';
+import { Avatar, SearchBar, Card, Button, ConfettiOverlay } from '../../../shared/ui';
 import type { Member } from '../../../core/types/domain';
 import { useAttendance } from '..';
 import { useMembers } from '../../members';
@@ -20,6 +20,7 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
   const [search, setSearch] = useState('');
   const [marks, setMarks] = useState<Record<string, MarkStatus>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => { fetchMembers(); }, []);
 
@@ -34,6 +35,7 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
     const allPresent: Record<string, MarkStatus> = {};
     members.forEach(m => { allPresent[m.id] = 'present'; });
     setMarks(allPresent);
+    if (members.length > 0) setShowConfetti(true);
   }, [members]);
 
   const counts = {
@@ -200,6 +202,11 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
           iconRight={<MaterialIcons name="arrow-forward" size={20} color={colors.white} />}
         />
       </View>
+
+      <ConfettiOverlay 
+        play={showConfetti} 
+        onAnimationEnd={() => setShowConfetti(false)} 
+      />
     </SafeAreaView>
   );
 };

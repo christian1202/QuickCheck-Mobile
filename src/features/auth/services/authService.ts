@@ -1,26 +1,20 @@
 // ============================================================
-// QuickCheck — Local Authentication Service
+// QuickCheck — Auth Service (Google SSO)
 // ============================================================
-// Pure local auth: email + password stored in WatermelonDB.
-// Passwords hashed with bcryptjs. Session persisted via
-// expo-secure-store (encrypted device keychain).
-// No cloud dependency. No network required.
+// Authenticates users via Google Single Sign-On (Mocked for now).
+// Sessions persisted via expo-secure-store.
 // ============================================================
 
 import type { IAuthService } from '../../../core/di/container';
 import { database, usersCollection } from '../../../core/database';
+import { Q } from '@nozbe/watermelondb';
 
-let bcrypt: typeof import('bcryptjs') | null = null;
 let SecureStore: typeof import('expo-secure-store') | null = null;
 const SESSION_KEY = 'quickcheck_session_user_id';
 const FIRST_RUN_KEY = 'quickcheck_first_run_done';
 
 // ─── Lazy Imports ───────────────────────────────
 
-async function getBcrypt() {
-  if (!bcrypt) bcrypt = await import('bcryptjs');
-  return bcrypt;
-}
 async function getSecureStore() {
   if (!SecureStore) SecureStore = await import('expo-secure-store');
   return SecureStore;
@@ -55,24 +49,20 @@ interface LocalUserRecord {
   email: string;
   fullName: string | null;
   role: string;
-  localId: string | null;
-  passwordHash: string;
 }
 
 // ─── User Lookup ────────────────────────────────
 
 async function findUserByEmail(email: string): Promise<LocalUserRecord | null> {
   const n = email.toLowerCase().trim();
-  const users = await usersCollection.query().fetch();
-  const m = users.find((u: any) => (u.email || '').toLowerCase() === n);
-  if (!m) return null;
+  const users = await usersCollection.query(Q.where('email', n)).fetch();
+  if (users.length === 0) return null;
+  const m = users[0];
   return {
     id: m.id,
-    email: m.email,
-    fullName: m.fullName ?? null,
-    role: m.role ?? 'member',
-    localId: m.localId ?? null,
-    passwordHash: (m._raw as any)?.password_hash ?? m.passwordHash ?? '',
+    email: (m as any).email,
+    fullName: (m as any).fullName ?? null,
+    role: (m as any).role ?? 'admin',
   };
 }
 
@@ -85,9 +75,7 @@ async function getSessionUser(): Promise<LocalUserRecord | null> {
       id: u.id,
       email: (u as any).email ?? '',
       fullName: (u as any).fullName ?? null,
-      role: (u as any).role ?? 'member',
-      localId: (u as any).localId ?? null,
-      passwordHash: ((u as any)._raw as any)?.password_hash ?? (u as any).passwordHash ?? '',
+      role: (u as any).role ?? 'admin',
     };
   } catch {
     await clearSession();
@@ -97,113 +85,126 @@ async function getSessionUser(): Promise<LocalUserRecord | null> {
 
 // ─── Public Auth API ────────────────────────────
 
-export async function createFirstAdmin(
-  email: string,
-  password: string,
-  fullName: string,
-): Promise<LocalUserRecord> {
-  if ((await usersCollection.query().fetchCount()) > 0) {
-    throw new Error('Admin account already exists. Please log in.');
-  }
-  if (password.length < 6) throw new Error('Password must be at least 6 characters.');
-  const bc = await getBcrypt();
-  const hash = bc.hashSync(password, bc.genSaltSync(10));
-  await database.write(async () => {
-    await usersCollection.create((u: any) => {
-      u.email = email.toLowerCase().trim();
-      u.fullName = fullName;
-      u.role = 'admin';
-      u._raw.password_hash = hash;
-      u.localId = null;
-      u.createdAt = Date.now();
-      u.updatedAt = Date.now();
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+try {
+  if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     });
-  });
-  await markFirstRunDone();
-  const created = await findUserByEmail(email);
-  if (!created) throw new Error('Failed to create admin account.');
-  await saveSession(created.id);
-  return created;
+  } else {
+    console.warn('Google Web Client ID is missing. Google Sign-In will not work.');
+  }
+} catch (e) {
+  console.warn('GoogleSignin configure failed. Are you running in Expo Go without a custom dev client?', e);
 }
 
-export async function loginUser(
-  email: string,
-  password: string,
-): Promise<LocalUserRecord> {
-  const user = await findUserByEmail(email);
-  if (!user) throw new Error('Invalid email or password.');
-  if (!(await getBcrypt()).compareSync(password, user.passwordHash)) {
-    throw new Error('Invalid email or password.');
+export async function loginWithGoogle(): Promise<LocalUserRecord> {
+  try {
+    if (!GoogleSignin || !GoogleSignin.hasPlayServices) {
+      throw new Error('Google Sign-In is not supported in this environment (Expo Go). Please rebuild with a Custom Dev Client.');
+    }
+    
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+    console.log('Google Signin Response:', JSON.stringify(userInfo));
+    
+    let email = '';
+    let name = 'Google User';
+
+    if (userInfo && typeof userInfo === 'object') {
+      if ('type' in userInfo) {
+        if (userInfo.type === 'cancelled') {
+          throw new Error('Google Sign-In was cancelled.');
+        }
+        if (userInfo.type === 'success' && userInfo.data) {
+          email = userInfo.data.user?.email || '';
+          name = userInfo.data.user?.name || 'Google User';
+        }
+      } else {
+        // Fallback for older versions
+        email = (userInfo as any).user?.email || (userInfo as any).email || '';
+        name = (userInfo as any).user?.name || (userInfo as any).name || 'Google User';
+      }
+    }
+
+    if (!email) {
+      throw new Error('Could not retrieve email from Google Sign-In.');
+    }
+
+    let user = await findUserByEmail(email);
+    
+    if (!user) {
+      let createdId = '';
+      await database.write(async () => {
+        const newUser = await usersCollection.create((u: any) => {
+          u.email = email;
+          u.fullName = name;
+          u.role = 'admin';
+          u._raw.password_hash = 'google_sso';
+          u._raw.local_id = null;
+        });
+        createdId = newUser.id;
+      });
+      const created = await usersCollection.find(createdId);
+      user = {
+        id: created.id,
+        email: (created as any).email,
+        fullName: (created as any).fullName,
+        role: (created as any).role,
+      };
+    }
+    
+    await saveSession(user.id);
+    await markFirstRunDone();
+    return user;
+  } catch (error: any) {
+    if (error.code === statusCodes?.SIGN_IN_CANCELLED) {
+      throw new Error('Google Sign-In was cancelled.');
+    } else if (error.code === statusCodes?.IN_PROGRESS) {
+      throw new Error('Google Sign-In is already in progress.');
+    } else if (error.code === statusCodes?.PLAY_SERVICES_NOT_AVAILABLE) {
+      throw new Error('Google Play Services are not available on this device.');
+    } else {
+      throw error;
+    }
   }
-  await saveSession(user.id);
-  return user;
 }
 
 export async function logoutUser(): Promise<void> {
+  try {
+    if (GoogleSignin && GoogleSignin.signOut) {
+      await GoogleSignin.signOut();
+    }
+  } catch (error) {
+    console.error('Google Sign-Out failed', error);
+  }
   await clearSession();
 }
 
 export async function getCurrentUser(): Promise<{
-  id: string; email: string; role: string; fullName: string | null; localId: string | null;
+  id: string; email: string; role: string; fullName: string | null;
 } | null> {
   const u = await getSessionUser();
-  return u ? { id: u.id, email: u.email, role: u.role, fullName: u.fullName, localId: u.localId } : null;
-}
-
-export async function changePassword(
-  oldPassword: string,
-  newPassword: string,
-): Promise<void> {
-  const u = await getSessionUser();
-  if (!u) throw new Error('Not authenticated.');
-  if (!(await getBcrypt()).compareSync(oldPassword, u.passwordHash)) {
-    throw new Error('Current password is incorrect.');
-  }
-  if (newPassword.length < 6) {
-    throw new Error('New password must be at least 6 characters.');
-  }
-  const bc = await getBcrypt();
-  const hash = bc.hashSync(newPassword, bc.genSaltSync(10));
-  const rec = await usersCollection.find(u.id);
-  await database.write(async () => {
-    await rec.update((r: any) => {
-      r._raw.password_hash = hash;
-      r.updatedAt = Date.now();
-    });
-  });
+  return u ? { id: u.id, email: u.email, role: u.role, fullName: u.fullName } : null;
 }
 
 // ─── DI Adapter ─────────────────────────────────
 
 export function createAuthService(): IAuthService {
   return {
-    login: async (email, password) => {
-      await loginUser(email, password);
+    loginWithGoogle: async () => {
+      const u = await loginWithGoogle();
+      return { id: u.id, email: u.email, role: u.role, fullName: u.fullName || '' };
     },
     logout: async () => {
       await logoutUser();
     },
     getCurrentUser: async () => {
       const u = await getCurrentUser();
-      return u ? { id: u.id, email: u.email, role: u.role } : null;
+      return u ? { id: u.id, email: u.email, role: u.role, fullName: u.fullName } : null;
     },
     isAuthenticated: async () => (await getSavedSession()) !== null,
-    createAccount: async (email, password, fullName, role) => {
-      if (password.length < 6) throw new Error('Password must be at least 6 characters.');
-      const bc = await getBcrypt();
-      const hash = bc.hashSync(password, bc.genSaltSync(10));
-      await database.write(async () => {
-        await usersCollection.create((u: any) => {
-          u.email = email.toLowerCase().trim();
-          u.fullName = fullName;
-          u.role = role;
-          u._raw.password_hash = hash;
-          u.localId = null;
-          u.createdAt = Date.now();
-          u.updatedAt = Date.now();
-        });
-      });
-    },
     isFirstRun: async () => isFirstRun(),
   };
 }

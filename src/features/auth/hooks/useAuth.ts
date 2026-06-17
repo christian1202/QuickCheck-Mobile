@@ -16,9 +16,9 @@ export function useAuth() {
     }
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    logger.info('useAuth', 'Logging in', { email });
-    return store.login(authService, email, password);
+  const loginWithGoogle = useCallback(async () => {
+    logger.info('useAuth', 'Logging in with Google');
+    return store.loginWithGoogle(authService);
   }, [authService]);
 
   const logout = useCallback(async () => {
@@ -32,7 +32,7 @@ export function useAuth() {
     isInitialized: store.isInitialized,
     isLoading: store.isLoading,
     error: store.error,
-    login,
+    loginWithGoogle,
     logout,
   };
 }

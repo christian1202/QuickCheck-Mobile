@@ -29,11 +29,10 @@ import type { GoogleSheetsServiceInterface } from '../../features/export/service
 // ─── Service Interfaces ─────────────────────────────────────
 
 export interface IAuthService {
-  login(email: string, password: string): Promise<void>;
+  loginWithGoogle(): Promise<{ id: string; email: string; role: string; fullName: string }>;
   logout(): Promise<void>;
-  getCurrentUser(): Promise<{ id: string; email: string; role: string } | null>;
+  getCurrentUser(): Promise<{ id: string; email: string; role: string; fullName: string | null } | null>;
   isAuthenticated(): Promise<boolean>;
-  createAccount(email: string, password: string, fullName: string, role: string): Promise<void>;
   isFirstRun(): Promise<boolean>;
 }
 
@@ -145,10 +144,10 @@ export function createMockContainer(overrides: Partial<Dependencies> = {}): Depe
     } as unknown as Logger,
 
     authService: {
-      login: noopAsync, logout: noopAsync,
+      loginWithGoogle: async () => ({id: '1', email: 'test@example.com', role: 'admin', fullName: 'Mock'}), 
+      logout: noopAsync,
       getCurrentUser: async () => null,
       isAuthenticated: async () => false,
-      createAccount: noopAsync,
       isFirstRun: async () => true,
     },
 

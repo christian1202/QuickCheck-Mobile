@@ -41,6 +41,15 @@ Orphaned code removed: syncEngine, unused settings store/hook, supabase/ directo
 
 ### Epic 10: CSV Export/Import (DONE) — 3 stories ✅
 
+### Epic 11: Google SSO & Onboarding (DONE) — 4 stories ✅
+
+| ID | Story | Pts | Status |
+|---|---|---|---|
+| SSO-01 | Replace local auth with real Google Sign-In (`@react-native-google-signin/google-signin` v16) | 8 | ✅ |
+| SSO-02 | 3-slide tutorial onboarding flow (TutorialScreen) | 5 | ✅ |
+| SSO-03 | Profile Setup screen (post-Google login) | 3 | ✅ |
+| SSO-04 | Settings accessible via gear icon in Dashboard header | 2 | ✅ |
+
 ---
 
 ## Sprint Board

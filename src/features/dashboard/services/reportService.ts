@@ -74,16 +74,41 @@ export function createReportService(): IReportService {
         ? { name: birthdaysThisWeek[0], when: 'This week' }
         : { name: 'None', when: '' };
 
-      // Attendance trend (last 6 months — simplified)
-      const trendMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-      const attendanceTrend = [75, 78, 82, 79, 85, monthlyAvg || 80];
+      // Compute membersTrend (active members created in the last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const membersTrend = (members as any[]).filter((m) => m.status === 'active' && m.createdAt >= thirtyDaysAgo).length;
+
+      // Attendance trend (last 6 months dynamically calculated)
+      const trendMonths: string[] = [];
+      const attendanceTrend: number[] = [];
+      
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        trendMonths.push(d.toLocaleDateString('en', { month: 'short' }));
+        
+        const eventsInMonth = (events as any[]).filter(e => {
+          if (!e.date) return false;
+          const ed = new Date(e.date);
+          return ed.getFullYear() === d.getFullYear() && ed.getMonth() === d.getMonth();
+        });
+        const eventIds = new Set(eventsInMonth.map(e => e.id));
+        
+        const recordsInMonth = (attendance as any[]).filter(a => eventIds.has(a.eventId || a.event_id));
+        if (recordsInMonth.length === 0) {
+          attendanceTrend.push(0); // 0% if no events
+        } else {
+          const pres = recordsInMonth.filter(a => a.status === 'present').length;
+          attendanceTrend.push(Math.round((pres / recordsInMonth.length) * 100));
+        }
+      }
 
       logger.info('ReportService', 'Dashboard computed', { activeMembers, monthlyAvg });
 
       return {
         activeMembers,
-        membersTrend: 4,
-        monthlyAvg: monthlyAvg || 85,
+        membersTrend,
+        monthlyAvg: monthlyAvg || 0,
         attendanceTrend,
         trendMonths,
         statusDistribution,

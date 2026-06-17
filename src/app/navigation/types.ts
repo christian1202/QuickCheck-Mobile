@@ -1,7 +1,8 @@
 // Navigation type definitions
 export type RootStackParamList = {
   Splash: undefined;
-  Login: undefined;
+  Tutorial: undefined;
+  ProfileSetup: undefined;
   Main: undefined;
   QuickMark: { eventId: string };
   AddEditMember: { memberId?: string } | undefined;

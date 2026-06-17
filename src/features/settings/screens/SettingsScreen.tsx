@@ -1,7 +1,7 @@
 // SettingsScreen — App settings matching the Stitch mockup
 // CSV Export/Import wired via csvUtils + Share API
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Share } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Share, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
@@ -13,6 +13,9 @@ import { useEvents } from '../../events';
 import { useAttendance } from '../../attendance';
 import { useDI } from '../../../core/di/container';
 import { membersToCSV, eventsToCSV, attendanceToCSV, parseCSVMembers } from '../../../shared/utils/csvUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { database, usersCollection } from '../../../core/database';
+import { useAuthStore } from '../../auth/store/authStore';
 
 // ── Helper Components ──
 
@@ -41,14 +44,17 @@ interface SettingRowProps {
   value?: string;
   rightElement?: React.ReactNode;
   onPress?: () => void;
+  editable?: boolean;
+  onChangeText?: (text: string) => void;
+  onBlur?: () => void;
   colors: { onSurface: string; onSurfaceVariant: string };
   spacing: Record<string, number>;
 }
 
-const SettingRow: React.FC<SettingRowProps> = ({ label, value, rightElement, onPress, colors, spacing }) => (
+const SettingRow: React.FC<SettingRowProps> = ({ label, value, rightElement, onPress, editable, onChangeText, onBlur, colors, spacing }) => (
   <TouchableOpacity
     onPress={onPress}
-    disabled={!onPress}
+    disabled={!onPress && !editable}
     style={{
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -64,7 +70,24 @@ const SettingRow: React.FC<SettingRowProps> = ({ label, value, rightElement, onP
     }}>
       {label}
     </Text>
-    {value ? (
+    {editable ? (
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        onBlur={onBlur}
+        placeholder={label}
+        placeholderTextColor={colors.onSurfaceVariant}
+        style={{
+          fontFamily: 'Inter',
+          fontSize: 14,
+          color: colors.onSurfaceVariant,
+          marginRight: spacing.sm,
+          textAlign: 'right',
+          flex: 2,
+          padding: 0,
+        }}
+      />
+    ) : value ? (
       <Text style={{
         fontFamily: 'Inter',
         fontSize: 14,
@@ -80,7 +103,7 @@ const SettingRow: React.FC<SettingRowProps> = ({ label, value, rightElement, onP
 
 // ── Main Screen ──
 
-export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
+export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme, setThemeMode, isDark } = useTheme();
   const { colors, spacing, radius } = theme;
   const { user, logout } = useAuth();
@@ -106,6 +129,38 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
   const [csvImportText, setCsvImportText] = useState('');
   const [showCsvImport, setShowCsvImport] = useState(false);
   const [csvImporting, setCsvImporting] = useState(false);
+
+  const [churchName, setChurchName] = useState('Grace Community Church');
+  const [userName, setUserName] = useState(user?.fullName || '');
+  const { setUser } = useAuthStore();
+
+  React.useEffect(() => {
+    AsyncStorage.getItem('quickcheck_church_name').then(val => {
+      if (val) setChurchName(val);
+    });
+    if (user?.fullName) {
+      setUserName(user.fullName);
+    }
+  }, [user?.fullName]);
+
+  const handleSaveChurchName = async () => {
+    await AsyncStorage.setItem('quickcheck_church_name', churchName);
+  };
+
+  const handleSaveUserName = async () => {
+    if (!user || !user.id) return;
+    try {
+      await database.write(async () => {
+        const u = await usersCollection.find(user.id);
+        await u.update((record: any) => {
+          record.fullName = userName;
+        });
+      });
+      setUser({ ...user, fullName: userName });
+    } catch (err) {
+      console.error('Failed to update user name', err);
+    }
+  };
 
   const toggleDarkMode = useCallback((val: boolean) => {
     setDarkMode(val);
@@ -252,7 +307,13 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
         }}
       >
         {/* Header */}
-        <View style={{ paddingTop: spacing.lg }}>
+        <View style={{ paddingTop: spacing.lg, flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => navigation?.goBack()}
+            style={{ marginRight: spacing.md, padding: spacing.xs, marginLeft: -spacing.xs }}
+          >
+            <MaterialIcons name="arrow-back" size={28} color={colors.onSurface} />
+          </TouchableOpacity>
           <Text style={{
             fontFamily: 'Manrope-ExtraBold',
             fontSize: 32,
@@ -263,12 +324,63 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
           </Text>
         </View>
 
-        {/* Secretary Profile */}
-        <SectionTitle title="SECRETARY PROFILE" colors={colors} spacing={spacing} />
+        {/* Profile Header */}
+        <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
+          <View style={{
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+            backgroundColor: colors.primaryContainer,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: spacing.md,
+          }}>
+            <Text style={{
+              fontFamily: 'Manrope-Bold',
+              fontSize: 32,
+              color: colors.primary,
+            }}>
+              {userName?.charAt(0) || 'U'}
+            </Text>
+          </View>
+          <Text style={{
+            fontFamily: 'Manrope-Bold',
+            fontSize: 24,
+            color: colors.onSurface,
+          }}>
+            {userName || 'User'}
+          </Text>
+          <Text style={{
+            fontFamily: 'Inter',
+            fontSize: 14,
+            color: colors.onSurfaceVariant,
+          }}>
+            {user?.email || ''}
+          </Text>
+        </View>
+
+        {/* Church Profile */}
+        <SectionTitle title="PROFILE" colors={colors} spacing={spacing} />
         <Card>
-          <SettingRow label="Full Name" value={user?.fullName ?? 'Not set'} colors={colors} spacing={spacing} />
-          <SettingRow label="Email Address" value={user?.email ?? ''} colors={colors} spacing={spacing} />
-          <SettingRow label="Role" value={user?.role ?? ''} colors={colors} spacing={spacing} />
+          <SettingRow 
+            label="Your Name" 
+            value={userName} 
+            editable 
+            onChangeText={setUserName} 
+            onBlur={handleSaveUserName}
+            colors={colors} 
+            spacing={spacing} 
+          />
+          <SettingRow 
+            label="Church Name" 
+            value={churchName} 
+            editable 
+            onChangeText={setChurchName} 
+            onBlur={handleSaveChurchName}
+            colors={colors} 
+            spacing={spacing} 
+          />
+          <SettingRow label="Role" value={user?.role || 'Administrator'} colors={colors} spacing={spacing} />
         </Card>
 
         {/* Appearance */}
@@ -731,10 +843,26 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
           </View>
         )}
 
+        {/* Support */}
+        <SectionTitle title="SUPPORT" colors={colors} spacing={spacing} />
+        <Card>
+          <SettingRow
+            label="Report an Issue"
+            colors={colors}
+            spacing={spacing}
+            onPress={() => {
+              Linking.openURL('mailto:support@quickcheck.com?subject=QuickCheck Issue Report&body=Please describe your issue here...');
+            }}
+            rightElement={
+              <MaterialIcons name="bug-report" size={18} color={colors.onSurfaceVariant} />
+            }
+          />
+        </Card>
+
         {/* Log Out */}
         <View style={{ marginTop: spacing['3xl'] }}>
           <Button
-            title="Log Out"
+            title="Log Out of Google & Clear Data"
             onPress={handleLogout}
             variant="destructive"
             fullWidth

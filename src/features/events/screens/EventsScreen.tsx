@@ -3,8 +3,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '../../../shared/theme';
-import { Card, FAB, Button } from '../../../shared/ui';
+import { Card, FAB, Button, EmptyState } from '../../../shared/ui';
 import { useEvents } from '..';
 import { EVENT_TYPE_LABELS } from '../../../shared/constants';
 import type { Event } from '../../../core/types/domain';
@@ -195,10 +196,19 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
         </Card>
 
         {/* Event List */}
-        {events.slice(0, 4).map((event: Event) => {
-          const typeColor = typeChipColors[event.event_type] ?? typeChipColors.other;
-          return (
-            <Card key={event.id} variant="default" style={{ marginBottom: spacing.lg }}>
+        {events.length === 0 ? (
+          <EmptyState
+            iconName="event-busy"
+            title="No events found"
+            message={tab === 'upcoming' ? "There are no upcoming events scheduled." : "There are no past events."}
+            style={{ marginTop: spacing['2xl'] }}
+          />
+        ) : (
+          events.slice(0, 4).map((event: Event, index: number) => {
+            const typeColor = typeChipColors[event.event_type] ?? typeChipColors.other;
+            return (
+              <Animated.View key={event.id} entering={FadeInDown.delay(index * 50).springify()}>
+                <Card variant="default" style={{ marginBottom: spacing.lg }}>
               <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md }}>
                 <View style={{
                   backgroundColor: typeColor.bg,
@@ -280,9 +290,11 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
                   </TouchableOpacity>
                 )}
               </View>
-            </Card>
+              </Card>
+            </Animated.View>
           );
-        })}
+        })
+        )}
 
         {/* Schedule New Event CTA */}
         <Card variant="filled" style={{

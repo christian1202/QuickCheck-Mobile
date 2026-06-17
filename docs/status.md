@@ -35,7 +35,7 @@
 | `node_modules` installed | ✅ |
 | TypeScript compile | ✅ 0 errors (`npx tsc --noEmit`) |
 | Unused deps | ✅ Cleaned — removed `date-fns`, `expo-sharing`, `react-native-svg`, `react-native-web` (never imported) |
-| `bcryptjs` | ✅ Kept — used by authService via dynamic `import('bcryptjs')` |
+| `@react-native-google-signin/google-signin` | ✅ v16.1.2 — Real Google SSO (replaced bcryptjs) |
 | Test deps | ✅ `jest`, `ts-jest`, `@types/jest` installed |
 
 ---
@@ -80,7 +80,8 @@ src/
 | # | Screen | Location | Hook Wiring | Status |
 |---|---|---|---|---|
 | 1 | SplashScreen | `features/auth/screens/` | Navigation only | ✅ |
-| 2 | LoginScreen | `features/auth/screens/` | useAuth() | ✅ |
+| 2 | TutorialScreen | `features/auth/screens/` | useAuth() | ✅ |
+| 2b | ProfileSetupScreen | `features/auth/screens/` | useAuth() | ✅ |
 | 3 | DashboardScreen | `features/dashboard/screens/` | useAuth() + useDashboard() + useEvents() | ✅ |
 | 4 | ReportsScreen | `features/dashboard/screens/` | useDashboard() + useMembers() | ✅ |
 | 5 | AbsenceReportScreen | `features/dashboard/screens/` | useMembers() | ✅ |
@@ -159,6 +160,7 @@ npm run test:ci    # CI mode with coverage
 | MOCK data | ✅ Deleted |
 | Recurring Events | ✅ RFC 5545 rules + auto-expand |
 | CSV Export/Import | ✅ Share API + paste import |
+| Google SSO | ✅ Real Google Sign-In via `@react-native-google-signin/google-signin` v16 |
 | Google Sheets | ✅ OAuth 2.0 + export |
 | Auto-Save | ✅ Debounced engine with Sheets sync |
 | TypeScript | ✅ 0 errors |
