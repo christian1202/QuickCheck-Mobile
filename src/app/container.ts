@@ -22,6 +22,7 @@ import { createMemberService } from '../features/members/services/memberService'
 import { createEventService } from '../features/events/services/eventService';
 import { createAttendanceService } from '../features/attendance/services/attendanceService';
 import { createReportService } from '../features/dashboard/services/reportService';
+import { createVisitationService } from '../features/visitation/services/visitationService';
 import { createGoogleSheetsService } from '../features/export/services/googleSheetsService';
 import { createAutoSaveService, setGlobalAutoSave } from '../core/services/autoSaveService';
 import type { Dependencies } from '../core/di/container';
@@ -33,6 +34,7 @@ const memberService = createMemberService();
 const eventService = createEventService();
 const attendanceService = createAttendanceService();
 const reportService = createReportService();
+const visitationService = createVisitationService();
 const googleSheetsService = createGoogleSheetsService();
 const autoSaveService = createAutoSaveService();
 
@@ -76,6 +78,7 @@ export function createProductionContainer(): Dependencies {
     eventService,
     attendanceService,
     reportService,
+    visitationService,
     googleSheetsService,
     autoSaveService,
     syncEngine,

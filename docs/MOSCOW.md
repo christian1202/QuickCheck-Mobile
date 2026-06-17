@@ -49,12 +49,12 @@
 | C15 | **One-Tap SMS Follow-ups** | Native integration to send pre-filled SMS to absentees. | Planned |
 | C16 | **Household Grouping** | Group family members to mark attendance with a single tap. | Planned |
 | C17 | **First-Time Visitor Mode** | Quick-add form (Name + Phone) that triggers follow-up reminders. | Planned |
-| C18 | **Visitation Dashboard** | Dedicated screen tracking who needs pastoral visits based on absence/status. | Planned |
+| C18 | **Visitation Dashboard** | Dedicated screen tracking who needs pastoral visits based on absence/status. | ✅ |
 | C19 | **In-App Tutorial & Onboarding** | Interactive walkthrough and onboarding flow for first-time users. | Planned |
-| C20 | **UX & Animation Polish** | Fluid screen transitions, beautiful empty states, and Lottie reward animations (Confetti). | Planned |
+| C20 | **UX & Animation Polish** | Fluid screen transitions, beautiful empty states, and Lottie reward animations (Confetti). | ✅ |
 | C21 | **App Store & Play Store Deployment** | Build production bundles via Expo EAS and publish to Apple App Store and Google Play Store. | Planned |
 | C22 | **In-App Bug Reporting** | A "Report an Issue" button in Settings that sends logs and user feedback directly to the developer. | Planned |
-| C23 | **Complete Mock Data Removal** | Perform a full UI audit to ensure absolutely no hardcoded mock data remains and everything is driven by WatermelonDB. | Planned |
+| C23 | **Complete Mock Data Removal** | Perform a full UI audit to ensure absolutely no hardcoded mock data remains and everything is driven by WatermelonDB. | ✅ |
 
 ---
 
@@ -80,7 +80,7 @@
 ```
 MUST (9)      ██████████  100% done (M1-M9 all ✅)
 SHOULD (12)   ██████████  100% done
-COULD (23)    █████░░░░░   48% done (C1-C12 ✅ except C7. C13-C23 Planned)
+COULD (23)    ██████░░░░   65% done (C1-C12 ✅ except C7. C18, C20, C23 ✅)
 WON'T (10)    ░░░░░░░░░░   0% (by design)
 ```
 

@@ -10,6 +10,7 @@ import { Card, Avatar, ProgressBar, SectionHeader, Button } from '../../../share
 import { useAuth } from '../../auth';
 import { useDashboard } from '..';
 import { useEvents } from '../../events';
+import { useVisitation } from '../../visitation/hooks/useVisitation';
 import type { Event } from '../../../core/types/domain';
 
 export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
@@ -18,6 +19,7 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
   const { user } = useAuth();
   const { data: rawData, isLoading, refresh } = useDashboard();
   const { events, fetchEvents } = useEvents();
+  const { visitationList, isLoading: isVisitationLoading, refresh: refreshVisitation } = useVisitation();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -26,9 +28,9 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refresh(), fetchEvents()]);
+    await Promise.all([refresh(), fetchEvents(), refreshVisitation()]);
     setRefreshing(false);
-  }, [refresh, fetchEvents]);
+  }, [refresh, fetchEvents, refreshVisitation]);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -218,19 +220,71 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
               </Text>
               <Text style={{
                 fontFamily: 'Inter',
-                fontSize: 13,
-                color: colors.onSurfaceVariant,
-                marginTop: 4,
+                fontSize: 14,
+                color: colors.primary,
+                marginLeft: spacing.xs,
               }}>
-                Create an event to start tracking attendance
+                Add event
               </Text>
             </Card>
           </View>
         )}
 
-        {/* Stats Row */}
+        {/* Visitation Alerts */}
+        <TouchableOpacity
+          onPress={() => navigation?.navigate('VisitationDashboard')}
+          style={{
+            marginHorizontal: spacing['2xl'],
+            marginBottom: spacing.lg,
+            backgroundColor: visitationList.length > 0 ? colors.errorContainer : colors.surface,
+            borderRadius: radius.xl,
+            padding: spacing.lg,
+            flexDirection: 'row',
+            alignItems: 'center',
+            elevation: 2,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+          }}
+        >
+          <View style={{
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: visitationList.length > 0 ? colors.error : colors.primaryContainer,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: spacing.md,
+          }}>
+            <MaterialIcons name="local-hospital" size={24} color={visitationList.length > 0 ? colors.onError : colors.onPrimaryContainer} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontFamily: 'Inter-SemiBold',
+              fontSize: 16,
+              color: visitationList.length > 0 ? colors.onErrorContainer : colors.onSurface,
+            }}>
+              Pastoral Visitation
+            </Text>
+            <Text style={{
+              fontFamily: 'Inter',
+              fontSize: 14,
+              color: visitationList.length > 0 ? colors.onErrorContainer : colors.onSurfaceVariant,
+              opacity: 0.8,
+            }}>
+              {isVisitationLoading ? 'Loading...' : visitationList.length > 0 
+                ? `${visitationList.length} members need visitation` 
+                : 'All clear! No visits needed.'}
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={24} color={visitationList.length > 0 ? colors.onErrorContainer : colors.onSurfaceVariant} />
+        </TouchableOpacity>
+
+        {/* Action Grid */}
         <View style={{
           flexDirection: 'row',
+          flexWrap: 'wrap',
           paddingHorizontal: spacing['2xl'],
           gap: spacing.lg,
           marginBottom: spacing['2xl'],

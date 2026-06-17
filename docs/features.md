@@ -97,13 +97,22 @@
 | Feature | Description |
 |---|---|
 | Profile Configuration | Editable User Name (WatermelonDB) and Church Name (AsyncStorage) |
+| Attendance Logic | Configurable At-risk threshold (%) and Consecutive absence alert limit |
 | Dark/Light Mode | Theme toggle via useTheme().setThemeMode() |
 | Google Sheets Setup | Connect, link, configure |
 | Auto-Save Toggle | Enable/disable with Sheets sync option |
 | CSV Export/Import | Members export/import directly in settings |
 | Logout | Session termination |
 
-Note: Settings state is managed locally in the screen via React `useState`. No Zustand store for settings (keeps it simple and avoids unread AsyncStorage writes).
+Note: Settings state is managed locally and globally via `useSettings()` hook using AsyncStorage, making thresholds available across the entire app.
+
+## Global UI Polish
+
+| Feature | Description |
+|---|---|
+| Animated Toast System | `ToastProvider` enables global drop-down animated toast notifications (`useToast()`). |
+| Animated Confirm Dialog | Reusable `ConfirmDialog` component with `react-native-reanimated` ZoomIn/FadeOut animations for dangerous actions. |
+| Empty States & Feedback | Fully implemented native reanimated `EmptyState` and `ConfettiOverlay` systems. |
 
 ## Technology Stack
 
@@ -153,8 +162,10 @@ All 13 screens co-located in features/*/screens/. Zero MOCK data.
 | EventsScreen | `features/events/screens/` | useEvents() |
 | CreateEventScreen | `features/events/screens/` | useEvents() + generateRecurrenceRule |
 | CalendarScreen | `features/events/screens/` | useEvents() + useMembers() |
-| QuickMarkScreen | `features/attendance/screens/` | useMembers() + useAttendance() |
-| SettingsScreen | `features/settings/screens/` | useAuth() + useExport() + useMembers() + useEvents() + csvUtils |
+| EventDetailsScreen | `features/events/screens/` | useEvents() + useAttendance() + useMembers() |
+| QuickMarkScreen | `features/attendance/screens/` | useAttendance() + useMembers() + useEvents() |
+| VisitationDashboardScreen | `features/visitation/screens/` | useVisitation() |
+| SettingsScreen | `features/settings/screens/` | useAuth() + useMembers() + useEvents() + useSettings() + useToast() |
 
 ## Testing
 

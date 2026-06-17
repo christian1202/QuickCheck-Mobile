@@ -20,6 +20,7 @@ import { CreateEventScreen } from '../../features/events/screens/CreateEventScre
 import { MemberReportScreen } from '../../features/members/screens/MemberReportScreen';
 import { AbsenceReportScreen } from '../../features/dashboard/screens/AbsenceReportScreen';
 import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
+import { VisitationDashboardScreen } from '../../features/visitation/screens/VisitationDashboardScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -63,6 +64,7 @@ export const RootNavigator: React.FC = () => {
           <Stack.Screen name="MemberReport" component={MemberReportScreen} />
           <Stack.Screen name="AbsenceReport" component={AbsenceReportScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="VisitationDashboard" component={VisitationDashboardScreen} />
         </>
       )}
     </Stack.Navigator>

@@ -23,6 +23,13 @@ import type {
   AttendanceRecord,
   DashboardData,
 } from '../types/domain';
+import { createMemberService } from '../../features/members/services/memberService';
+import { createEventService } from '../../features/events/services/eventService';
+import { createAttendanceService } from '../../features/attendance/services/attendanceService';
+import { createReportService } from '../../features/dashboard/services/reportService';
+import { createVisitationService } from '../../features/visitation/services/visitationService';
+import { createGoogleSheetsService } from '../../features/export/services/googleSheetsService';
+import { createAutoSaveService } from '../services/autoSaveService';
 import type { AutoSaveServiceInterface } from '../services/autoSaveService';
 import type { GoogleSheetsServiceInterface } from '../../features/export/services/googleSheetsService';
 
@@ -76,6 +83,10 @@ export interface ISyncEngine {
   isOnline(): boolean;
 }
 
+export interface IVisitationService {
+  getMembersNeedingVisitation(consecutiveAbsenceThreshold: number): Promise<Array<{ memberId: string; absences: number; member: Member }>>;
+}
+
 // Re-exported from source-of-truth service files
 export type IGoogleSheetsService = GoogleSheetsServiceInterface;
 export type IAutoSaveService = AutoSaveServiceInterface;
@@ -91,6 +102,7 @@ export interface Dependencies {
   eventService: IEventService;
   attendanceService: IAttendanceService;
   reportService: IReportService;
+  visitationService: IVisitationService;
 
   // Google Sheets & Auto-Save (nullable — only available when wired)
   googleSheetsService: IGoogleSheetsService | null;
@@ -179,6 +191,10 @@ export function createMockContainer(overrides: Partial<Dependencies> = {}): Depe
       getMemberReport: async () => ({}),
       getAbsenceReports: async () => [],
       exportReport: async () => '',
+    },
+
+    visitationService: {
+      getMembersNeedingVisitation: async () => [],
     },
 
     syncEngine: {

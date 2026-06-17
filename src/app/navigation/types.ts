@@ -10,6 +10,7 @@ export type RootStackParamList = {
   MemberReport: { memberId: string };
   AbsenceReport: { memberId: string; eventId: string } | undefined;
   Settings: undefined;
+  VisitationDashboard: undefined;
 };
 
 export type MainTabParamList = {

@@ -27,6 +27,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider, useTheme } from '../shared/theme/ThemeContext';
 import { ErrorBoundary } from '../core/errors/ErrorBoundary';
 import { DIProvider } from '../core/di/container';
+import { ToastProvider } from '../core/providers/ToastProvider';
 import { logger } from '../core/logging/logger';
 import { networkMonitor } from '../core/monitoring/networkMonitor';
 import { createProductionContainer } from './container';
@@ -116,9 +117,11 @@ export const AppProviders: React.FC = () => {
       <DIProvider value={container}>
         <SafeAreaProvider>
           <ThemeProvider>
-            <AppInitializer>
-              <AppContent />
-            </AppInitializer>
+            <ToastProvider>
+              <AppInitializer>
+                <AppContent />
+              </AppInitializer>
+            </ToastProvider>
           </ThemeProvider>
         </SafeAreaProvider>
       </DIProvider>

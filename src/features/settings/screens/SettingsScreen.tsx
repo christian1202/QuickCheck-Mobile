@@ -5,17 +5,19 @@ import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Sha
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
-import { Card, Button } from '../../../shared/ui';
+import { Card, Button, ConfirmDialog } from '../../../shared/ui';
 import { useAuth } from '../../auth';
 import { useExport } from '../../export';
 import { useMembers } from '../../members';
 import { useEvents } from '../../events';
 import { useAttendance } from '../../attendance';
+import { useSettings } from '../hooks/useSettings';
 import { useDI } from '../../../core/di/container';
 import { membersToCSV, eventsToCSV, attendanceToCSV, parseCSVMembers } from '../../../shared/utils/csvUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { database, usersCollection } from '../../../core/database';
 import { useAuthStore } from '../../auth/store/authStore';
+import { useToast } from '../../../core/providers/ToastProvider';
 
 // ── Helper Components ──
 
@@ -107,6 +109,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   const { theme, setThemeMode, isDark } = useTheme();
   const { colors, spacing, radius } = theme;
   const { user, logout } = useAuth();
+  const { showToast } = useToast();
   const { memberService } = useDI();
   const { members, fetchMembers } = useMembers();
   const { events, fetchEvents } = useEvents();
@@ -122,13 +125,18 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   const [preEventReminders, setPreEventReminders] = useState(true);
   const [absenceUpdates, setAbsenceUpdates] = useState(true);
   const [reminderTiming] = useState('30 min before');
-  const [atRiskThreshold, setAtRiskThreshold] = useState(70);
-  const [consecutiveAbsence, setConsecutiveAbsence] = useState(3);
+  
+  const { settings, setSettings } = useSettings();
+  const { atRiskThreshold, consecutiveAbsence } = settings;
+
   const [spreadsheetIdInput, setSpreadsheetIdInput] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [csvImportText, setCsvImportText] = useState('');
   const [showCsvImport, setShowCsvImport] = useState(false);
   const [csvImporting, setCsvImporting] = useState(false);
+  
+  // Confirmation state
+  const [confirmAction, setConfirmAction] = useState<{ type: 'preEvent' | 'absence'; val: boolean } | null>(null);
 
   const [churchName, setChurchName] = useState('Grace Community Church');
   const [userName, setUserName] = useState(user?.fullName || '');
@@ -165,7 +173,8 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   const toggleDarkMode = useCallback((val: boolean) => {
     setDarkMode(val);
     setThemeMode(val ? 'dark' : 'light');
-  }, [setThemeMode]);
+    showToast(`${val ? 'Dark' : 'Light'} Mode Enabled`, 'The system theme has been updated.', 'info');
+  }, [setThemeMode, showToast]);
 
   // ── Google Sheets handlers ──
 
@@ -411,7 +420,13 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             rightElement={
               <Switch
                 value={preEventReminders}
-                onValueChange={setPreEventReminders}
+                onValueChange={(val) => {
+                  if (!val) setConfirmAction({ type: 'preEvent', val });
+                  else {
+                    setPreEventReminders(true);
+                    showToast('Reminders Enabled', 'Pre-event reminders are now active.', 'success');
+                  }
+                }}
                 trackColor={{ false: colors.outlineVariant, true: colors.primaryContainer }}
                 thumbColor={preEventReminders ? colors.primary : colors.surfaceContainerHighest}
               />
@@ -435,7 +450,13 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             rightElement={
               <Switch
                 value={absenceUpdates}
-                onValueChange={setAbsenceUpdates}
+                onValueChange={(val) => {
+                  if (!val) setConfirmAction({ type: 'absence', val });
+                  else {
+                    setAbsenceUpdates(true);
+                    showToast('Updates Enabled', 'Absence report updates are now active.', 'success');
+                  }
+                }}
                 trackColor={{ false: colors.outlineVariant, true: colors.primaryContainer }}
                 thumbColor={absenceUpdates ? colors.primary : colors.surfaceContainerHighest}
               />
@@ -465,7 +486,11 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                 gap: spacing.md,
               }}>
                 <TouchableOpacity
-                  onPress={() => setAtRiskThreshold(Math.max(0, atRiskThreshold - 5))}
+                  onPress={() => {
+                    const newVal = Math.max(0, atRiskThreshold - 5);
+                    setSettings({ atRiskThreshold: newVal });
+                    showToast('Threshold Updated', `At-risk threshold set to ${newVal}%`, 'info');
+                  }}
                   style={{
                     width: 32,
                     height: 32,
@@ -487,7 +512,11 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                   {atRiskThreshold}%
                 </Text>
                 <TouchableOpacity
-                  onPress={() => setAtRiskThreshold(Math.min(100, atRiskThreshold + 5))}
+                  onPress={() => {
+                    const newVal = Math.min(100, atRiskThreshold + 5);
+                    setSettings({ atRiskThreshold: newVal });
+                    showToast('Threshold Updated', `At-risk threshold set to ${newVal}%`, 'info');
+                  }}
                   style={{
                     width: 32,
                     height: 32,
@@ -536,7 +565,11 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
               gap: spacing.md,
             }}>
               <TouchableOpacity
-                onPress={() => setConsecutiveAbsence(Math.max(1, consecutiveAbsence - 1))}
+                onPress={() => {
+                  const newVal = Math.max(1, consecutiveAbsence - 1);
+                  setSettings({ consecutiveAbsence: newVal });
+                  showToast('Alert Updated', `Consecutive absence alert set to ${newVal}`, 'info');
+                }}
                 style={{
                   width: 32,
                   height: 32,
@@ -558,7 +591,11 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                 {consecutiveAbsence}
               </Text>
               <TouchableOpacity
-                onPress={() => setConsecutiveAbsence(consecutiveAbsence + 1)}
+                onPress={() => {
+                  const newVal = consecutiveAbsence + 1;
+                  setSettings({ consecutiveAbsence: newVal });
+                  showToast('Alert Updated', `Consecutive absence alert set to ${newVal}`, 'info');
+                }}
                 style={{
                   width: 32,
                   height: 32,
@@ -915,6 +952,33 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
           QuickCheck v1.0.0 (Build 1) • Local-First
         </Text>
       </ScrollView>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        visible={confirmAction !== null}
+        title={confirmAction?.type === 'preEvent' ? 'Disable Reminders?' : 'Disable Updates?'}
+        message={
+          confirmAction?.type === 'preEvent' 
+            ? 'You will no longer receive automatic reminders before your scheduled events.'
+            : 'You will no longer receive the weekly absence report updates.'
+        }
+        confirmText="Disable"
+        cancelText="Keep Enabled"
+        danger
+        icon="notifications-off"
+        onConfirm={() => {
+          if (confirmAction?.type === 'preEvent') {
+            setPreEventReminders(false);
+            showToast('Reminders Disabled', 'Pre-event reminders turned off.', 'info');
+          } else {
+            setAbsenceUpdates(false);
+            showToast('Updates Disabled', 'Absence updates turned off.', 'info');
+          }
+          setConfirmAction(null);
+        }}
+        onCancel={() => setConfirmAction(null)}
+      />
+
     </SafeAreaView>
   );
 };
