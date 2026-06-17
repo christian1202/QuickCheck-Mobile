@@ -122,7 +122,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   const [preEventReminders, setPreEventReminders] = useState(true);
   const [absenceUpdates, setAbsenceUpdates] = useState(true);
   const [reminderTiming] = useState('30 min before');
-  const [atRiskThreshold] = useState(70);
+  const [atRiskThreshold, setAtRiskThreshold] = useState(70);
   const [consecutiveAbsence, setConsecutiveAbsence] = useState(3);
   const [spreadsheetIdInput, setSpreadsheetIdInput] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -459,13 +459,47 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
               }}>
                 At-risk threshold
               </Text>
-              <Text style={{
-                fontFamily: 'Manrope-Bold',
-                fontSize: 18,
-                color: colors.primary,
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.md,
               }}>
-                {atRiskThreshold}%
-              </Text>
+                <TouchableOpacity
+                  onPress={() => setAtRiskThreshold(Math.max(0, atRiskThreshold - 5))}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: colors.surfaceContainerHigh,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <MaterialIcons name="remove" size={18} color={colors.primary} />
+                </TouchableOpacity>
+                <Text style={{
+                  fontFamily: 'Manrope-Bold',
+                  fontSize: 18,
+                  color: colors.primary,
+                  minWidth: 48,
+                  textAlign: 'center',
+                }}>
+                  {atRiskThreshold}%
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setAtRiskThreshold(Math.min(100, atRiskThreshold + 5))}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: colors.surfaceContainerHigh,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <MaterialIcons name="add" size={18} color={colors.primary} />
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={{
               height: 6,
@@ -477,7 +511,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
               <View style={{
                 height: '100%',
                 width: `${atRiskThreshold}%`,
-                backgroundColor: colors.primary,
+                backgroundColor: colors.error,
                 borderRadius: 3,
               }} />
             </View>

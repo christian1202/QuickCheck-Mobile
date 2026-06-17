@@ -196,7 +196,7 @@ The following features have been planned for future sprints to enhance pastoral 
 | **First-Time Visitor Mode** | A quick-add form (Name + Phone only) that automatically triggers follow-up reminders. |
 | **Visitation Dashboard** | A dedicated dashboard tracking who needs pastoral visits based on consecutive absences and status. |
 | **In-App Tutorial & Onboarding** | Welcome carousel and interactive tooltips to guide new secretaries through the app's core features. |
-| **UX & Animation Polish** | Fluid screen transitions, beautiful illustrated empty states, and Lottie reward animations (e.g., Confetti) to make the app feel premium. |
+| **UX & Animation Polish** (Completed) | Fluid screen transitions, beautiful illustrated empty states, and Lottie reward animations (e.g., Confetti) to make the app feel premium. |
 | **Store Deployment (EAS)** | Production builds for iOS and Android, deployed directly to the Apple App Store and Google Play Store. |
 | **In-App Bug Reporting** | A dedicated support form in Settings allowing users to report bugs or send feedback directly to the developer (with automatically attached error logs). |
-| **Complete Mock Data Removal** | A comprehensive UI audit to purge any residual hardcoded placeholders so every screen reflects 100% real database records. |
+| **Complete Mock Data Removal** (Completed) | A comprehensive UI audit to purge any residual hardcoded placeholders so every screen reflects 100% real database records. |
