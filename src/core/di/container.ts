@@ -23,6 +23,8 @@ import type {
   AttendanceRecord,
   DashboardData,
 } from '../types/domain';
+import type { AutoSaveServiceInterface } from '../services/autoSaveService';
+import type { GoogleSheetsServiceInterface } from '../../features/export/services/googleSheetsService';
 
 // ─── Service Interfaces ─────────────────────────────────────
 
@@ -75,31 +77,9 @@ export interface ISyncEngine {
   isOnline(): boolean;
 }
 
-export interface IGoogleSheetsService {
-  connect(): Promise<boolean>;
-  disconnect(): Promise<void>;
-  isConnected(): Promise<boolean>;
-  exportMembersToSheet(spreadsheetId: string): Promise<void>;
-  exportAttendanceToSheet(spreadsheetId: string, eventId?: string): Promise<void>;
-  exportEventsToSheet(spreadsheetId: string): Promise<void>;
-  exportAllToSheet(spreadsheetId: string): Promise<void>;
-  createSpreadsheet(title: string): Promise<string>;
-  linkSpreadsheet(spreadsheetId: string): Promise<void>;
-  getLinkedSpreadsheetId(): Promise<string | null>;
-  getLinkedSpreadsheetName(): Promise<string | null>;
-}
-
-export interface IAutoSaveService {
-  enable(): void;
-  disable(): void;
-  isEnabled(): boolean;
-  getLastSaveTime(): Date | null;
-  triggerSave(): Promise<void>;
-  scheduleSave(): void;
-  onSave(callback: () => Promise<void>): () => void;
-  setDebounceMs(ms: number): void;
-  setMaxWaitMs(ms: number): void;
-}
+// Re-exported from source-of-truth service files
+export type IGoogleSheetsService = GoogleSheetsServiceInterface;
+export type IAutoSaveService = AutoSaveServiceInterface;
 
 // ─── Container Interface ───────────────────────────────────
 

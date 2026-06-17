@@ -1,3 +1,3 @@
 // QuickCheck — Settings Feature
-export { useSettingsStore } from './store/settingsStore';
-export { useSettings } from './hooks/useSettings';
+// Note: Settings state is managed locally in SettingsScreen via React state.
+// No Zustand store or hook is exported — settings are UI-local only.

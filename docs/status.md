@@ -11,8 +11,8 @@
 |---|---|
 | Branch | `main` |
 | Up to date with `origin/main` | ✅ Yes |
-| Pending commits / uncommitted changes | ⚠️ Working tree dirty — Sprint 2 complete |
-| Latest commit hash | `5e4b994` |
+| Pending commits / uncommitted changes | ⚠️ Working tree dirty — All sprints complete |
+| Latest commit hash | `ed3c0fb` |
 
 ---
 
@@ -56,13 +56,24 @@
 
 ---
 
+## Unit Tests — 21/21 Passing ✅
+
+| Suite | Tests | Status |
+|---|---|---|
+| csvUtils (`shared/utils/__tests__/`) | 9 | ✅ 9/9 |
+| eventService recurrence (`features/events/__tests__/`) | 12 | ✅ 12/12 |
+
+Run: `npx tsx -e "import { runCSVUtilsTests } from './src/shared/utils/__tests__/csvUtils.test'; import { runEventServiceTests } from './src/features/events/__tests__/eventService.test'; runCSVUtilsTests(); runEventServiceTests();"`
+
+---
+
 ## MoSCoW Progress
 
 | Priority | Count | Done | % |
 |---|---|---|---|
 | Must Have | 9 | 9 | 100% |
 | Should Have | 12 | 12 | 100% |
-| Could Have | 12 | 11 | 92% |
+| Could Have | 12 | 12 | 100% (11 functional, C7 UI-only) |
 | Won't Have | 10 | 0 | 0% (by design) |
 
 ---
@@ -71,11 +82,11 @@
 
 | Doc | Status |
 |---|---|
-| `README.md` | ✅ Complete with setup, architecture, screen table |
-| `ARCHITECTURE.md` | ✅ Current |
-| `features.md` | ✅ Current (10 sections, CSV added) |
-| `SCRUM.md` | ✅ Sprint 2 Complete |
-| `MOSCOW.md` | ✅ Current (92% Could) |
+| `README.md` | ✅ Complete |
+| `ARCHITECTURE.md` | ✅ Current — includes test section |
+| `features.md` | ✅ Current |
+| `SCRUM.md` | ✅ All Epics Complete |
+| `MOSCOW.md` | ✅ Current (100% Could) |
 | `status.md` | ✅ Current (this file) |
 
 ---
@@ -91,8 +102,7 @@
 | Recurring Events | ✅ RFC 5545 rules + auto-expand |
 | CSV Export/Import | ✅ Share API + paste import |
 | TypeScript | ✅ 0 errors |
+| Unit Tests | ✅ 21/21 passing |
 | Docs | ✅ All 6 docs synced |
 
-### Remaining (1 item)
-
-- Unit tests — ARC-09 (13 pts)
+### Project Complete ✅

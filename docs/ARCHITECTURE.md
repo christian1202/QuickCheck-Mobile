@@ -50,59 +50,65 @@ src/
 │   │   ├── store/authStore.ts
 │   │   ├── hooks/useAuth.ts
 │   │   ├── screens/
-│   │   │   ├── SplashScreen.tsx       # Onboarding
-│   │   │   └── LoginScreen.tsx        # Email/password login
+│   │   │   ├── SplashScreen.tsx
+│   │   │   └── LoginScreen.tsx
 │   │   └── index.ts
 │   ├── dashboard/
 │   │   ├── services/reportService.ts
 │   │   ├── store/dashboardStore.ts
 │   │   ├── hooks/useDashboard.ts
 │   │   ├── screens/
-│   │   │   ├── DashboardScreen.tsx    # Secretary home
-│   │   │   ├── ReportsScreen.tsx      # Analytics & reports
-│   │   │   └── AbsenceReportScreen.tsx # Absence filing
+│   │   │   ├── DashboardScreen.tsx
+│   │   │   ├── ReportsScreen.tsx
+│   │   │   └── AbsenceReportScreen.tsx
 │   │   └── index.ts
 │   ├── members/
 │   │   ├── services/memberService.ts
 │   │   ├── store/memberStore.ts
 │   │   ├── hooks/useMembers.ts
 │   │   ├── screens/
-│   │   │   ├── MemberListScreen.tsx    # Member directory
-│   │   │   ├── AddEditMemberScreen.tsx # Member form
-│   │   │   └── MemberReportScreen.tsx  # Individual report
+│   │   │   ├── MemberListScreen.tsx
+│   │   │   ├── AddEditMemberScreen.tsx
+│   │   │   └── MemberReportScreen.tsx
 │   │   └── index.ts
 │   ├── events/
 │   │   ├── services/eventService.ts
 │   │   ├── store/eventStore.ts
 │   │   ├── hooks/useEvents.ts
 │   │   ├── screens/
-│   │   │   ├── EventsScreen.tsx        # Event listing
-│   │   │   ├── CreateEventScreen.tsx   # Event creation
-│   │   │   └── CalendarScreen.tsx      # Calendar view
+│   │   │   ├── EventsScreen.tsx
+│   │   │   ├── CreateEventScreen.tsx
+│   │   │   └── CalendarScreen.tsx
+│   │   ├── __tests__/
+│   │   │   └── eventService.test.ts  # 12 recurrence tests
 │   │   └── index.ts
 │   ├── attendance/
 │   │   ├── services/attendanceService.ts
 │   │   ├── store/attendanceStore.ts
 │   │   ├── hooks/useAttendance.ts
 │   │   ├── screens/
-│   │   │   └── QuickMarkScreen.tsx     # Attendance marking
+│   │   │   └── QuickMarkScreen.tsx
 │   │   └── index.ts
 │   ├── settings/
 │   │   ├── store/settingsStore.ts
 │   │   ├── hooks/useSettings.ts
 │   │   ├── screens/
-│   │   │   └── SettingsScreen.tsx      # App settings
+│   │   │   └── SettingsScreen.tsx
 │   │   └── index.ts
-│   └── export/                       # Google Sheets export + auto-save control
-│       ├── services/googleSheetsService.ts  # OAuth 2.0 + Sheets API v4
-│       ├── store/exportStore.ts              # Export state
-│       ├── hooks/useExport.ts               # Hook wiring
+│   └── export/
+│       ├── services/googleSheetsService.ts
+│       ├── store/exportStore.ts
+│       ├── hooks/useExport.ts
 │       └── index.ts
 │
 └── shared/                       # Cross-cutting UI code
     ├── ui/                       # Design system components
     ├── theme/                    # Colors, spacing, typography, ThemeContext
-    └── constants/                # App constants
+    ├── constants/                # App constants
+    └── utils/
+        ├── csvUtils.ts           # CSV export/import helpers
+        └── __tests__/
+            └── csvUtils.test.ts  # 9 CSV tests
 ```
 
 ## Data Flow (Linear — No Spaghetti)
@@ -145,23 +151,16 @@ In any hook:
 4. **Error boundary** — prevents full app crashes
 5. **Typed interfaces** — no `unknown` in service contracts
 
-## Features
+## Testing
 
-### Local Auth
-- Email + password via bcryptjs, stored in WatermelonDB
-- Session encrypted in expo-secure-store
-- First-run admin creation
+Tests run with `npx tsx` (no native module dependencies required for pure-logic tests).
 
-### Google Sheets Export
-- OAuth 2.0 via expo-auth-session
-- Export members, attendance, events individually or all at once
-- Create/link spreadsheets from the app
+| Suite | Location | Tests | Status |
+|---|---|---|---|
+| csvUtils | `shared/utils/__tests__/csvUtils.test.ts` | 9 | ✅ 9/9 |
+| eventService | `features/events/__tests__/eventService.test.ts` | 12 | ✅ 12/12 |
 
-### Auto-Save
-- Debounced saves (default 3s, max wait 15s)
-- scheduleSave() for debounced requests from stores
-- triggerSave() for immediate saves
-- Integrated with Google Sheets auto-export
+Run: `npx tsx -e "import { runCSVUtilsTests } from '...'; import { runEventServiceTests } from '...'; runCSVUtilsTests(); runEventServiceTests();"`
 
 ## Screen <-> Hook Mapping
 
@@ -176,10 +175,10 @@ In any hook:
 | AddEditMemberScreen | `features/members/screens/` | useMembers() |
 | MemberReportScreen | `features/members/screens/` | useMembers() + useDI().attendanceService |
 | EventsScreen | `features/events/screens/` | useEvents() |
-| CreateEventScreen | `features/events/screens/` | useEvents() |
+| CreateEventScreen | `features/events/screens/` | useEvents() + generateRecurrenceRule |
 | CalendarScreen | `features/events/screens/` | useEvents() + useMembers() |
 | QuickMarkScreen | `features/attendance/screens/` | useMembers() + useAttendance() |
-| SettingsScreen | `features/settings/screens/` | useAuth() + useExport() |
+| SettingsScreen | `features/settings/screens/` | useAuth() + useExport() + csvUtils |
 
 ## Migration Status
 
@@ -189,5 +188,5 @@ In any hook:
 | Phase 2 | ✅ | Zustand stores + hooks for all features |
 | Phase 3 | ✅ | Real WatermelonDB services for all features |
 | Phase 4 | ✅ | Google Sheets export + auto-save |
-| Phase 5 | ✅ | All 13 screens wired + co-located into `features/*/screens/`. Zero MOCK data. |
-| Phase 6 | 🔜 | Unit tests |
+| Phase 5 | ✅ | All 13 screens wired + co-located. Zero MOCK data. |
+| Phase 6 | ✅ | Unit tests — 21/21 passing |
