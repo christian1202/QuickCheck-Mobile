@@ -35,7 +35,7 @@
 | C1 | **Calendar View** | Visual event browsing. | ✅ |
 | C2 | **Recurring Events** | RFC 5545 rules, auto-generate future instances. | ✅ |
 | C3 | **Absence Reports** | Members submit reasons for absence. | ✅ |
-| C4 | **CSV Export** | Share members as CSV via system share sheet. | ✅ |
+| C4 | **CSV Export** | Share members as CSV via system Share sheet. | ✅ |
 | C5 | **CSV Import** | Paste CSV to bulk import members. | ✅ |
 | C6 | **Member Report Detail Screen** | Individual attendance history. | ✅ |
 | C7 | **PIN / Biometric Login** | Quick login. Convenience, not critical. | Todo |
@@ -43,7 +43,7 @@
 | C9 | **At-Risk Member Detection** | Auto-flag members below threshold. | ✅ |
 | C10 | **Birthday Tracking** | Birthday display on dashboard. | ✅ |
 | C11 | **Co-located Screens** | Screens in `src/features/*/screens/`. | ✅ |
-| C12 | **Unit Tests** | csvUtils (9 tests) + eventService (12 tests). 21/21 passing. | ✅ |
+| C12 | **Unit Tests** | Jest + ts-jest. csvUtils (9) + eventService (12). 21/21 passing. `npm test`. | ✅ |
 
 ---
 
@@ -58,7 +58,7 @@
 | W5 | Advanced Analytics | PDF reports with graphs. |
 | W6 | Member Photo Upload | Camera/gallery integration. |
 | W7 | QR Code Check-In | QR generation + scanning. |
-| W8 | Supabase Integration | Replaced by local-first. |
+| W8 | Supabase Integration | Removed — project is local-first. |
 | W9 | Internationalization (i18n) | English-only MVP. |
 | W10 | E2E Tests | High effort. Unit tests first. |
 
@@ -86,7 +86,8 @@ WON'T (10)    ░░░░░░░░░░   0% (by design)
 - [x] All 13 screens wired to real services — zero MOCK data
 - [x] Screens co-located into `features/*/screens/`
 - [x] Google Sheets export working
-- [x] CSV export/import working
+- [x] CSV export/import working (Share API)
 - [x] Auto-save prevents data loss
 - [x] TypeScript compiles clean — 0 errors
-- [x] Unit tests — 21 passing (csvUtils 9 + eventService 12)
+- [x] Unit tests — 21 passing with Jest (csvUtils 9 + eventService 12)
+- [x] Orphaned code removed — syncEngine, unused settings store/hook, supabase/, 5 npm deps

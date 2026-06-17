@@ -89,17 +89,20 @@
 
 | Feature | Description |
 |---|---|
-| Export CSV | Share members as CSV via system share sheet (csvUtils.membersToCSV) |
+| Export CSV | Share members as CSV via React Native `Share` API (csvUtils.membersToCSV) |
 | Import CSV | Paste CSV content to bulk import members (csvUtils.parseCSVMembers) |
 
 ## 10. Settings
 
 | Feature | Description |
 |---|---|
-| Dark/Light Mode | Theme toggle |
+| Dark/Light Mode | Theme toggle via useTheme().setThemeMode() |
 | Google Sheets Setup | Connect, link, configure |
 | Auto-Save Toggle | Enable/disable with Sheets sync option |
+| CSV Export/Import | Members export/import directly in settings |
 | Logout | Session termination |
+
+Note: Settings state is managed locally in the screen via React `useState`. No Zustand store for settings (keeps it simple and avoids unread AsyncStorage writes).
 
 ## Technology Stack
 
@@ -116,6 +119,7 @@
 | Navigation | React Navigation 7 |
 | DI | Custom React Context DI |
 | Logging | Structured logger with transports |
+| Testing | Jest + ts-jest |
 
 ## Architecture Pattern
 
@@ -149,3 +153,30 @@ All 13 screens co-located in features/*/screens/. Zero MOCK data.
 | CalendarScreen | `features/events/screens/` | useEvents() + useMembers() |
 | QuickMarkScreen | `features/attendance/screens/` | useMembers() + useAttendance() |
 | SettingsScreen | `features/settings/screens/` | useAuth() + useExport() + useMembers() + useEvents() + csvUtils |
+
+## Testing
+
+Tests use **Jest** with **ts-jest** for TypeScript integration.
+
+| Suite | Tests | Status |
+|---|---|---|
+| csvUtils (`shared/utils/__tests__/`) | 9 | ✅ 9/9 |
+| eventService recurrence (`features/events/__tests__/`) | 12 | ✅ 12/12 |
+
+Run:
+```bash
+npm test           # Run all tests
+npm run test:watch # Watch mode
+npm run test:ci    # CI mode with coverage report
+```
+
+## Recent Cleanup (June 2026)
+
+| Removed | Reason |
+|---|---|
+| `src/core/api/syncEngine.ts` (276 lines) | Unused — container.ts creates noop inline |
+| `src/features/settings/hooks/useSettings.ts` | Unused — SettingsScreen uses local useState |
+| `src/features/settings/store/settingsStore.ts` | Unused — no screen consumed Zustand settings store |
+| `supabase/` directory (~20 files) | Orphaned — project is local-first, no cloud dependency |
+| `bcryptjs` (restored) | Needed — authService uses dynamic `import('bcryptjs')` for password hashing |
+| `date-fns`, `expo-sharing`, `react-native-svg`, `react-native-web` | Never imported in source |

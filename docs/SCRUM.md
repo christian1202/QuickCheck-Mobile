@@ -4,11 +4,12 @@
 
 ---
 
-## Current Sprint: Sprint 3 — Complete
+## Current Sprint: Sprint 3 — Complete ✅
 
-**Goal:** Unit tests.
+**Goal:** Unit tests + code cleanup.
 
-**Result:** ARC-09 done. 21 unit tests passing (9 csvUtils + 12 eventService recurrence).
+**Result:** ARC-09 done. 21 unit tests passing (9 csvUtils + 12 eventService recurrence) via Jest + ts-jest.
+Orphaned code removed: syncEngine, unused settings store/hook, supabase/ directory (~20 files), 5 unused npm deps.
 
 ---
 
@@ -35,7 +36,8 @@
 | ARC-06 | Co-locate screens into features | 8 | ✅ |
 | ARC-07 | Standardize exports | 3 | ✅ |
 | ARC-08 | Loading/error/empty states | 5 | ✅ |
-| ARC-09 | Unit tests | 13 | ✅ 21/21 passing (csvUtils 9 + eventService 12) |
+| ARC-09 | Unit tests (Jest + ts-jest) | 13 | ✅ 21/21 passing |
+| ARC-10 | Code cleanup | 5 | ✅ Removed: syncEngine, unused settings store/hook, supabase/, 5 npm deps |
 
 ### Epic 10: CSV Export/Import (DONE) — 3 stories ✅
 
@@ -50,10 +52,11 @@ All 9 Must-Haves (100%)
 All 12 Should-Haves (100%)
 11 of 12 Could-Haves (100% practical — C7 is design-only)
 All 13 screens co-located in features/*/screens/
-Zero MOCK data — mockData.ts deleted
+Zero MOCK data — deleted
 TypeScript 0 errors
-README + 6 docs synced
-21 unit tests passing
+README + 5 docs synced
+21 unit tests passing (Jest + ts-jest)
+Cleanup: removed syncEngine, supabase/, unused settings code, 5 npm deps
 ```
 
 ---
@@ -66,7 +69,9 @@ README + 6 docs synced
 - [x] Logger used in every service method
 - [x] Error, loading, and empty states handled
 - [x] Works offline (WatermelonDB reads)
-- [x] Zero MOCK data — `mockData.ts` deleted
+- [x] Zero MOCK data — deleted
 - [x] Screens co-located in `features/*/screens/`
 - [x] No TypeScript errors — `npx tsc --noEmit` passes with 0 errors
-- [x] Unit tests — 21/21 passing
+- [x] Unit tests — 21/21 passing via `npm test`
+- [x] No orphaned code — syncEngine, supabase/, empty hooks/store removed
+- [x] No duplicate interfaces — DI container imports from canonical source files

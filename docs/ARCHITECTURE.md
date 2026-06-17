@@ -35,8 +35,6 @@ src/
 │   │   └── container.ts          # DI container, typed service interfaces, hooks
 │   ├── monitoring/
 │   │   └── networkMonitor.ts     # Online/offline tracking
-│   ├── api/
-│   │   └── syncEngine.ts         # Debounced sync with retry logic
 │   ├── database/                 # WatermelonDB setup
 │   │   ├── index.ts              # Database instance, collection accessors
 │   │   ├── models.ts             # ORM model classes
@@ -90,11 +88,9 @@ src/
 │   │   │   └── QuickMarkScreen.tsx
 │   │   └── index.ts
 │   ├── settings/
-│   │   ├── store/settingsStore.ts
-│   │   ├── hooks/useSettings.ts
 │   │   ├── screens/
 │   │   │   └── SettingsScreen.tsx
-│   │   └── index.ts
+│   │   └── index.ts              # Settings state is UI-local
 │   └── export/
 │       ├── services/googleSheetsService.ts
 │       ├── store/exportStore.ts
@@ -150,17 +146,23 @@ In any hook:
 3. **Structured logging** — `logger.info('Module', 'Message', { data })` everywhere
 4. **Error boundary** — prevents full app crashes
 5. **Typed interfaces** — no `unknown` in service contracts
+6. **Duplicate-free interfaces** — DI container re-exports from canonical source files (e.g., `IGoogleSheetsService = GoogleSheetsServiceInterface`)
 
 ## Testing
 
-Tests run with `npx tsx` (no native module dependencies required for pure-logic tests).
+Tests use **Jest** with **ts-jest**. Pure-logic utilities (CSV, recurrence helpers) are fully covered. Services requiring WatermelonDB native modules need mock setup via `jest.mock()`.
 
 | Suite | Location | Tests | Status |
 |---|---|---|---|
 | csvUtils | `shared/utils/__tests__/csvUtils.test.ts` | 9 | ✅ 9/9 |
 | eventService | `features/events/__tests__/eventService.test.ts` | 12 | ✅ 12/12 |
 
-Run: `npx tsx -e "import { runCSVUtilsTests } from '...'; import { runEventServiceTests } from '...'; runCSVUtilsTests(); runEventServiceTests();"`
+Run:
+```bash
+npm test           # Run all tests
+npm run test:watch # Watch mode
+npm run test:ci    # CI mode with coverage
+```
 
 ## Screen <-> Hook Mapping
 
@@ -189,4 +191,5 @@ Run: `npx tsx -e "import { runCSVUtilsTests } from '...'; import { runEventServi
 | Phase 3 | ✅ | Real WatermelonDB services for all features |
 | Phase 4 | ✅ | Google Sheets export + auto-save |
 | Phase 5 | ✅ | All 13 screens wired + co-located. Zero MOCK data. |
-| Phase 6 | ✅ | Unit tests — 21/21 passing |
+| Phase 6 | ✅ | Unit tests — 21/21 passing with Jest + ts-jest |
+| Phase 7 | ✅ | Cleanup — removed syncEngine (276 lines), unused settings store/hook, supabase/, 5 npm deps |
