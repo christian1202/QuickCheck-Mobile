@@ -5,7 +5,7 @@
 // Keep types in `@/lib/types` — this file is display-only.
 // ============================================================
 
-import type { Event, AbsenceReport } from '../core/types/domain';
+import type { Event, AbsenceReport } from '../../core/types/domain';
 
 // ─── Event Type Labels ───────────────────────────────────
 

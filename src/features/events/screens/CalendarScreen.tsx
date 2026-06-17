@@ -1,37 +1,89 @@
 // CalendarScreen — Advanced calendar matching the Stitch mockup
-import React, { useState } from 'react';
+// Uses useEvents() + useMembers() hooks — real data from WatermelonDB
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Card, Avatar, StatusChip, Button } from '../shared/ui';
-import { MOCK_EVENTS, MOCK_MEMBERS } from '../shared/testing/mockData';
+import { useTheme } from '../../../shared/theme';
+import { Card, Avatar, StatusChip } from '../../../shared/ui';
+import { useEvents } from '..';
+import { useMembers } from '../../members';
+import type { Event } from '../../../core/types/domain';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
-  const { colors, spacing, radius, shadows } = theme;
-  const [selectedDate, setSelectedDate] = useState(24); // October 24
-  const [currentMonth] = useState(9); // October (0-indexed)
-  const [currentYear] = useState(2024);
+  const { colors, spacing, radius } = theme;
+  const { events, fetchEvents } = useEvents();
+  const { members, fetchMembers } = useMembers();
 
-  // Generate calendar grid for October 2024
+  const now = new Date();
+  const [currentMonth, setCurrentMonth] = useState(now.getMonth());
+  const [currentYear, setCurrentYear] = useState(now.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(now.getDate());
+  const [selectedDayEvents, setSelectedDayEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    fetchEvents();
+    fetchMembers();
+  }, [fetchEvents, fetchMembers]);
+
+  // Calendar grid computation
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  // Simulated event indicators
-  const eventDays: Record<number, 'full' | 'partial' | 'none'> = {
-    6: 'full', 7: 'full', 12: 'partial', 13: 'full', 14: 'full',
-    20: 'full', 21: 'full', 24: 'partial', 26: 'full', 27: 'full', 28: 'partial',
-  };
+  const todayStr = now.toISOString().split('T')[0];
 
   const calendarCells: (number | null)[] = [];
   for (let i = 0; i < firstDayOfWeek; i++) calendarCells.push(null);
   for (let d = 1; d <= daysInMonth; d++) calendarCells.push(d);
 
-  const selectedEvent = MOCK_EVENTS[1]; // For demo
+  // Map days that have events
+  const eventDays = useMemo(() => {
+    const map: Record<number, 'full' | 'partial'> = {};
+    events.forEach(e => {
+      try {
+        const ed = new Date(e.date);
+        if (ed.getMonth() === currentMonth && ed.getFullYear() === currentYear) {
+          map[ed.getDate()] = map[ed.getDate()] ? 'full' : 'partial';
+        }
+      } catch { /* skip invalid dates */ }
+    });
+    return map;
+  }, [events, currentMonth, currentYear]);
+
+  // Navigate months
+  const goToPrevMonth = () => {
+    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
+    else setCurrentMonth(m => m - 1);
+    setSelectedDate(1);
+  };
+  const goToNextMonth = () => {
+    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
+    else setCurrentMonth(m => m + 1);
+    setSelectedDate(1);
+  };
+  const goToToday = () => {
+    setCurrentMonth(now.getMonth());
+    setCurrentYear(now.getFullYear());
+    setSelectedDate(now.getDate());
+  };
+
+  // When selected date changes, find events for that day
+  useEffect(() => {
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
+    const dayEvents = events.filter(e => e.date === dateStr);
+    setSelectedDayEvents(dayEvents);
+  }, [selectedDate, currentMonth, currentYear, events]);
+
+  // Monthly attendance rate (computed from member data)
+  const monthlyRate = members.length > 0
+    ? Math.round(members.reduce((sum, m) => sum + (m.attendance_rate ?? 0), 0) / members.length)
+    : 0;
+
+  // Event for detail display
+  const selectedEvent = selectedDayEvents[0] ?? events[0];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -67,20 +119,26 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             marginTop: spacing.lg,
           }}>
             <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-              <TouchableOpacity style={{
-                padding: spacing.sm,
-                backgroundColor: colors.surfaceContainerLow,
-                borderRadius: radius.lg,
-              }}>
+              <TouchableOpacity
+                onPress={goToPrevMonth}
+                style={{
+                  padding: spacing.sm,
+                  backgroundColor: colors.surfaceContainerLow,
+                  borderRadius: radius.lg,
+                }}
+              >
                 <MaterialIcons name="chevron-left" size={24} color={colors.primary} />
               </TouchableOpacity>
-              <TouchableOpacity style={{
-                paddingHorizontal: spacing.lg,
-                paddingVertical: spacing.sm,
-                backgroundColor: colors.surfaceContainerLow,
-                borderRadius: radius.lg,
-                justifyContent: 'center',
-              }}>
+              <TouchableOpacity
+                onPress={goToToday}
+                style={{
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.sm,
+                  backgroundColor: colors.surfaceContainerLow,
+                  borderRadius: radius.lg,
+                  justifyContent: 'center',
+                }}
+              >
                 <Text style={{
                   fontFamily: 'Inter-SemiBold',
                   fontSize: 13,
@@ -89,11 +147,14 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                   Today
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{
-                padding: spacing.sm,
-                backgroundColor: colors.surfaceContainerLow,
-                borderRadius: radius.lg,
-              }}>
+              <TouchableOpacity
+                onPress={goToNextMonth}
+                style={{
+                  padding: spacing.sm,
+                  backgroundColor: colors.surfaceContainerLow,
+                  borderRadius: radius.lg,
+                }}
+              >
                 <MaterialIcons name="chevron-right" size={24} color={colors.primary} />
               </TouchableOpacity>
             </View>
@@ -138,7 +199,8 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             {calendarCells.map((day, i) => {
               const isSelected = day === selectedDate;
               const eventType = day ? eventDays[day] : undefined;
-              const isToday = day === 24;
+              const dateStr = day ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` : '';
+              const isToday = dateStr === todayStr;
 
               return (
                 <TouchableOpacity
@@ -160,6 +222,8 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                       alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: isSelected ? colors.primary : 'transparent',
+                      borderWidth: isToday && !isSelected ? 1 : 0,
+                      borderColor: colors.primary,
                     }}>
                       <Text style={{
                         fontFamily: 'Inter-SemiBold',
@@ -196,8 +260,8 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             paddingTop: spacing.lg,
           }}>
             {[
-              { label: 'Fully Marked', color: colors.secondary },
-              { label: 'Incomplete', color: colors.onTertiaryContainer },
+              { label: 'Has Events', color: colors.secondary },
+              { label: 'More Events', color: colors.onTertiaryContainer },
               { label: 'No Event', color: colors.outlineVariant },
             ].map(item => (
               <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -232,7 +296,7 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             textTransform: 'uppercase',
             color: 'rgba(255,255,255,0.6)',
           }}>
-            MONTHLY GOAL
+            MONTHLY ATTENDANCE
           </Text>
           <Text style={{
             fontFamily: 'Manrope-ExtraBold',
@@ -240,7 +304,7 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             color: colors.white,
             marginVertical: spacing.sm,
           }}>
-            87%
+            {monthlyRate}%
           </Text>
           <View style={{
             height: 6,
@@ -250,7 +314,7 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
           }}>
             <View style={{
               height: '100%',
-              width: '87%',
+              width: `${monthlyRate}%`,
               backgroundColor: colors.secondaryContainer,
               borderRadius: 3,
             }} />
@@ -261,7 +325,7 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             color: 'rgba(255,255,255,0.6)',
             marginTop: spacing.sm,
           }}>
-            Overall attendance target reached
+            Average member attendance this month
           </Text>
         </View>
 
@@ -273,128 +337,108 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
             color: colors.primary,
             marginBottom: spacing.lg,
           }}>
-            Thursday, October {selectedDate}
+            {new Date(currentYear, currentMonth, selectedDate).toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' })}
           </Text>
 
-          <Card>
-            <Text style={{
-              fontFamily: 'Manrope-Bold',
-              fontSize: 17,
-              color: colors.primary,
-              marginBottom: 4,
-            }}>
-              {selectedEvent.name}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <MaterialIcons name="place" size={14} color={colors.onSurfaceVariant} />
-              <Text style={{ fontFamily: 'Inter', fontSize: 12, color: colors.onSurfaceVariant }}>
-                {selectedEvent.location}
+          {selectedEvent ? (
+            <Card>
+              <Text style={{
+                fontFamily: 'Manrope-Bold',
+                fontSize: 17,
+                color: colors.primary,
+                marginBottom: 4,
+              }}>
+                {selectedEvent.name}
               </Text>
-            </View>
-
-            {/* Action buttons */}
-            <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg }}>
-              <TouchableOpacity style={{
-                flex: 1,
-                backgroundColor: colors.surfaceContainerHigh,
-                borderRadius: radius.lg,
-                paddingVertical: spacing.md,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-              }}>
-                <MaterialIcons name="edit" size={18} color={colors.primary} />
-                <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 13, color: colors.primary }}>
-                  Edit Event
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <MaterialIcons name="place" size={14} color={colors.onSurfaceVariant} />
+                <Text style={{ fontFamily: 'Inter', fontSize: 12, color: colors.onSurfaceVariant }}>
+                  {selectedEvent.location}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{
-                flex: 1,
-                backgroundColor: colors.surfaceContainerHigh,
-                borderRadius: radius.lg,
-                paddingVertical: spacing.md,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-              }}>
-                <MaterialIcons name="assignment-late" size={18} color={colors.primary} />
-                <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 13, color: colors.primary }}>
-                  Absence Report
-                </Text>
-              </TouchableOpacity>
-            </View>
+              </View>
 
-            {/* Stats */}
-            <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg }}>
-              {[
-                { label: 'PRESENT', value: '72', color: colors.secondary },
-                { label: 'LATE', value: '08', color: colors.onTertiaryContainer },
-                { label: 'ABSENT', value: '10', color: colors.error },
-                { label: 'EXCUSED', value: '05', color: colors.primary },
-              ].map(stat => (
-                <View key={stat.label} style={{
+              {/* Action buttons */}
+              <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg }}>
+                <TouchableOpacity style={{
                   flex: 1,
-                  backgroundColor: colors.surfaceContainerLow,
+                  backgroundColor: colors.surfaceContainerHigh,
                   borderRadius: radius.lg,
-                  padding: spacing.md,
-                  alignItems: 'center',
-                }}>
-                  <Text style={{
-                    fontFamily: 'Manrope-Bold',
-                    fontSize: 22,
-                    color: stat.color,
-                  }}>
-                    {stat.value}
-                  </Text>
-                  <Text style={{
-                    fontFamily: 'Inter-SemiBold',
-                    fontSize: 8,
-                    letterSpacing: 1,
-                    textTransform: 'uppercase',
-                    color: colors.onSurfaceVariant,
-                    marginTop: 2,
-                  }}>
-                    {stat.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Attendee list */}
-            <View style={{ marginTop: spacing.lg, gap: spacing.md }}>
-              {MOCK_MEMBERS.slice(0, 4).map(m => (
-                <View key={m.id} style={{
+                  paddingVertical: spacing.md,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  justifyContent: 'center',
+                  gap: 6,
                 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-                    <Avatar name={m.full_name} size={32} />
-                    <Text style={{
-                      fontFamily: 'Inter-SemiBold',
-                      fontSize: 14,
-                      color: colors.onSurface,
-                    }}>
-                      {m.full_name}
-                    </Text>
-                  </View>
-                  <StatusChip status={m.latest_status ?? 'absent'} size="sm" />
-                </View>
-              ))}
-            </View>
+                  <MaterialIcons name="edit" size={18} color={colors.primary} />
+                  <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 13, color: colors.primary }}>
+                    Edit Event
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{
+                  flex: 1,
+                  backgroundColor: colors.surfaceContainerHigh,
+                  borderRadius: radius.lg,
+                  paddingVertical: spacing.md,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}>
+                  <MaterialIcons name="assignment-late" size={18} color={colors.primary} />
+                  <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 13, color: colors.primary }}>
+                    Absence Report
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <TouchableOpacity style={{ marginTop: spacing.lg, alignItems: 'center' }}>
+              {/* Attendee list */}
+              <View style={{ marginTop: spacing.lg, gap: spacing.md }}>
+                {members.slice(0, 4).map(m => (
+                  <View key={m.id} style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+                      <Avatar name={m.full_name} size={32} />
+                      <Text style={{
+                        fontFamily: 'Inter-SemiBold',
+                        fontSize: 14,
+                        color: colors.onSurface,
+                      }}>
+                        {m.full_name}
+                      </Text>
+                    </View>
+                    <StatusChip status={m.latest_status ?? 'absent'} size="sm" />
+                  </View>
+                ))}
+              </View>
+
+              {members.length > 4 && (
+                <TouchableOpacity style={{ marginTop: spacing.lg, alignItems: 'center' }}>
+                  <Text style={{
+                    fontFamily: 'Inter-SemiBold',
+                    fontSize: 13,
+                    color: colors.primary,
+                  }}>
+                    View All {members.length} Members →
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </Card>
+          ) : (
+            <Card>
               <Text style={{
-                fontFamily: 'Inter-SemiBold',
-                fontSize: 13,
-                color: colors.primary,
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: colors.onSurfaceVariant,
+                textAlign: 'center',
+                paddingVertical: spacing.lg,
               }}>
-                View Full Attendee List →
+                No events on this date.
               </Text>
-            </TouchableOpacity>
-          </Card>
+            </Card>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

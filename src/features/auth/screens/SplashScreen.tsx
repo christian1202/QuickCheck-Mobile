@@ -6,9 +6,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../shared/theme';
-import { Button } from '../shared/ui';
-import type { RootStackParamList } from '../app/navigation/types';
+import { useTheme } from '../../../shared/theme';
+import { Button } from '../../../shared/ui';
+import type { RootStackParamList } from '../../../app/navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 

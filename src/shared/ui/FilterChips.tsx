@@ -1,7 +1,7 @@
 // FilterChips — Horizontal scrollable chip row for status filtering
 import React from 'react';
 import { ScrollView, TouchableOpacity, Text, ViewStyle } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface FilterChipsProps {
   options: string[];

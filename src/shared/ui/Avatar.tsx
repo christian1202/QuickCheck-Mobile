@@ -1,7 +1,7 @@
 // Avatar — Circular member photo with optional status ring
 import React from 'react';
 import { View, Image, Text, ViewStyle } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface AvatarProps {
   uri?: string | null;

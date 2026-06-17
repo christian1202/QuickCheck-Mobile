@@ -1,7 +1,7 @@
 // SectionHeader — Uppercase label-md tracking-widest section titles
 import React from 'react';
 import { Text, View, ViewStyle } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface SectionHeaderProps {
   title: string;

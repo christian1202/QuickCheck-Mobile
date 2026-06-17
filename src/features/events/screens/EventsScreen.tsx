@@ -1,17 +1,21 @@
 // EventsScreen — Event listing matching the Stitch mockup
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Card, FAB, Avatar, StatusChip, Button } from '../shared/ui';
-import { MOCK_EVENTS, MOCK_MEMBERS } from '../shared/testing/mockData';
-import { EVENT_TYPE_LABELS } from '../shared/constants';
+import { useTheme } from '../../../shared/theme';
+import { Card, FAB, Button } from '../../../shared/ui';
+import { useEvents } from '..';
+import { EVENT_TYPE_LABELS } from '../../../shared/constants';
+import type { Event } from '../../../core/types/domain';
 
 export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
-  const { colors, spacing, radius, shadows } = theme;
+  const { colors, spacing, radius } = theme;
+  const { events, fetchEvents } = useEvents();
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+
+  useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   const typeChipColors: Record<string, { bg: string; text: string }> = {
     sunday_service: { bg: colors.primaryFixed, text: colors.primary },
@@ -20,6 +24,14 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
     general_assembly: { bg: colors.surfaceContainerHighest, text: colors.onSurface },
     other: { bg: colors.surfaceContainerHigh, text: colors.onSurfaceVariant },
   };
+
+  const featuredEvent = events[0];
+
+  const handleManageRoster = useCallback(() => {
+    if (featuredEvent) {
+      navigation?.navigate('QuickMark', { eventId: featuredEvent.id });
+    }
+  }, [featuredEvent, navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -143,26 +155,28 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
               color: colors.primary,
               letterSpacing: -0.5,
             }}>
-              {MOCK_EVENTS[2].name}
+              {featuredEvent?.name ?? 'No events'}
             </Text>
 
             <View style={{ gap: 6, marginTop: spacing.md }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <MaterialIcons name="place" size={16} color={colors.onSurfaceVariant} />
                 <Text style={{ fontFamily: 'Inter', fontSize: 13, color: colors.onSurfaceVariant }}>
-                  {MOCK_EVENTS[2].location}
+                  {featuredEvent?.location ?? ''}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <MaterialIcons name="schedule" size={16} color={colors.onSurfaceVariant} />
                 <Text style={{ fontFamily: 'Inter', fontSize: 13, color: colors.onSurfaceVariant }}>
-                  Thursday, Oct 24 • 09:00 AM
+                  {featuredEvent
+                    ? `${featuredEvent.time ?? ''} • ${new Date(featuredEvent.date).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' })}`
+                    : ''}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <MaterialIcons name="group" size={16} color={colors.onSurfaceVariant} />
                 <Text style={{ fontFamily: 'Inter', fontSize: 13, color: colors.onSurfaceVariant }}>
-                  {MOCK_EVENTS[2].expected_count?.toLocaleString()} expected attendees
+                  {featuredEvent?.expected_count?.toLocaleString() ?? '0'} expected attendees
                 </Text>
               </View>
             </View>
@@ -170,7 +184,7 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
             {/* Manage Roster */}
             <Button
               title="Manage Roster"
-              onPress={() => navigation?.navigate('QuickMark', { eventId: MOCK_EVENTS[2].id })}
+              onPress={handleManageRoster}
               variant="primary"
               size="md"
               fullWidth
@@ -181,7 +195,7 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
         </Card>
 
         {/* Event List */}
-        {MOCK_EVENTS.slice(1, 5).map(event => {
+        {events.slice(0, 4).map((event: Event) => {
           const typeColor = typeChipColors[event.event_type] ?? typeChipColors.other;
           return (
             <Card key={event.id} variant="default" style={{ marginBottom: spacing.lg }}>
@@ -253,13 +267,7 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
                 marginTop: spacing.lg,
                 justifyContent: 'space-between',
               }}>
-                <View style={{ flexDirection: 'row' }}>
-                  {MOCK_MEMBERS.slice(0, 3).map((m, i) => (
-                    <View key={m.id} style={{ marginLeft: i > 0 ? -8 : 0, zIndex: 3 - i }}>
-                      <Avatar name={m.full_name} size={28} />
-                    </View>
-                  ))}
-                </View>
+                <View style={{ flexDirection: 'row' }} />
                 {event.is_recurring && (
                   <TouchableOpacity>
                     <Text style={{

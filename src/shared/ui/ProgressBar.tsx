@@ -1,7 +1,7 @@
 // ProgressBar — Thin progress bar for attendance rates
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface ProgressBarProps {
   progress: number; // 0 to 100

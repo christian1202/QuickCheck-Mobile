@@ -5,6 +5,10 @@
 // all data lives in WatermelonDB on device.
 // No cloud dependency. No Supabase.
 //
+// All services are created here via factory functions and
+// passed through the DI container. Screens never import
+// services directly — they use hooks which call useDI().
+//
 // For testing, use createMockContainer() from core/di/container.ts
 // ============================================================
 
@@ -14,48 +18,48 @@ declare var __DEV__: boolean;
 import { logger } from '../core/logging/logger';
 import { networkMonitor } from '../core/monitoring/networkMonitor';
 import { createAuthService } from '../features/auth/services/authService';
+import { createMemberService } from '../features/members/services/memberService';
+import { createEventService } from '../features/events/services/eventService';
+import { createAttendanceService } from '../features/attendance/services/attendanceService';
+import { createReportService } from '../features/dashboard/services/reportService';
+import { createGoogleSheetsService } from '../features/export/services/googleSheetsService';
+import { createAutoSaveService, setGlobalAutoSave } from '../core/services/autoSaveService';
 import type { Dependencies } from '../core/di/container';
 
-// ─── Services ───────────────────────────────────────────────
+// ─── Create Services (each called ONCE) ─────────────────────
 
 const authService = createAuthService();
+const memberService = createMemberService();
+const eventService = createEventService();
+const attendanceService = createAttendanceService();
+const reportService = createReportService();
+const googleSheetsService = createGoogleSheetsService();
+const autoSaveService = createAutoSaveService();
 
-// Stubs for features not yet migrated to WatermelonDB services.
-// Each will be replaced with a real implementation importing
-// from its feature folder (memberService.ts, eventService.ts, etc.)
+// ─── Global auto-save integration ───────────────────────────
 
-const memberService: Dependencies['memberService'] = {
-  getMembers: async (_filters) => [],
-  getMemberById: async (_id) => null,
-  createMember: async (_data) => ({}),
-  updateMember: async (_id, _data) => ({}),
-  deleteMember: async (_id) => {},
-  searchMembers: async (_query) => [],
-};
+// Register global instance so stores can call requestSave()
+setGlobalAutoSave(autoSaveService);
 
-const eventService: Dependencies['eventService'] = {
-  getEvents: async (_filters) => [],
-  getEventById: async (_id) => null,
-  createEvent: async (_data) => ({}),
-  updateEvent: async (_id, _data) => ({}),
-  deleteEvent: async (_id) => {},
-};
+// Wire auto-save → Google Sheets: when save triggers, push data if connected
+autoSaveService.onSave(async () => {
+  const linkedId = await googleSheetsService.getLinkedSpreadsheetId();
+  const isConnected = await googleSheetsService.isConnected();
+  if (linkedId && isConnected) {
+    try {
+      await googleSheetsService.exportMembersToSheet(linkedId);
+      await googleSheetsService.exportAttendanceToSheet(linkedId);
+      logger.info('Container', 'Auto-save: Google Sheets sync completed');
+    } catch (error) {
+      logger.error('Container', 'Auto-save: Google Sheets sync failed',
+        error instanceof Error ? error : undefined);
+    }
+  }
+});
 
-const attendanceService: Dependencies['attendanceService'] = {
-  markAttendance: async (_eventId, _marks) => [],
-  getAttendanceForEvent: async (_eventId) => [],
-  getAttendanceForMember: async (_memberId) => [],
-};
+// ─── Sync Engine (local-only, no remote sync) ───────────────
 
-const reportService: Dependencies['reportService'] = {
-  getDashboardData: async () => ({}),
-  getMemberReport: async (_memberId) => ({}),
-  getAbsenceReports: async (_filters) => [],
-  exportReport: async (_type, _filters) => '',
-};
-
-// Sync engine stub (no remote sync in local-first mode)
-const syncEngineStub: Dependencies['syncEngine'] = {
+const syncEngine: Dependencies['syncEngine'] = {
   sync: async () => {},
   requestSync: () => {},
   getLastSyncTime: () => null,
@@ -72,7 +76,9 @@ export function createProductionContainer(): Dependencies {
     eventService,
     attendanceService,
     reportService,
-    syncEngine: syncEngineStub,
+    googleSheetsService,
+    autoSaveService,
+    syncEngine,
     isDev: __DEV__,
     appVersion: '1.0.0',
   };

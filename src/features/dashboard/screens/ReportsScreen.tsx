@@ -1,17 +1,39 @@
 // ReportsScreen — Analytics dashboard matching the Stitch mockup
-import React, { useState } from 'react';
+// Uses useDashboard() + useMembers() hooks — real data from WatermelonDB
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Card, FilterChips, ProgressBar, Avatar, Button } from '../shared/ui';
-import { MOCK_MEMBERS, MOCK_DASHBOARD } from '../shared/testing/mockData';
+import { useTheme } from '../../../shared/theme';
+import { Card, FilterChips, ProgressBar, Avatar, Button } from '../../../shared/ui';
+import { useDashboard } from '..';
+import { useMembers } from '../../members';
+import type { Member } from '../../../core/types/domain';
 
 export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
-  const { colors, spacing, radius, shadows } = theme;
+  const { colors, spacing, radius } = theme;
+  const { data: dashboardData, refresh } = useDashboard();
+  const { members, fetchMembers } = useMembers();
   const [timeRange, setTimeRange] = useState('This Month');
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    fetchMembers();
+    refresh();
+  }, [fetchMembers, refresh]);
+
+  const data = dashboardData ?? {
+    activeMembers: 0, membersTrend: 0, monthlyAvg: 0,
+    attendanceTrend: [], trendMonths: [],
+    statusDistribution: { present: 0, late: 0, absent: 0 },
+    ministryGroups: [], atRiskMembers: [],
+    birthdaysThisWeek: [], nextBirthday: { name: '', when: '' },
+  };
+
+  const membersPerPage = 10;
+  const totalPages = Math.ceil(members.length / membersPerPage);
+  const pagedMembers = members.slice((page - 1) * membersPerPage, page * membersPerPage);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -122,7 +144,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
           gap: spacing.lg,
           marginTop: spacing['2xl'],
         }}>
-          {/* Total Events */}
+          {/* Total Members */}
           <Card style={{ flex: 1 }}>
             <Text style={{
               fontFamily: 'Inter-SemiBold',
@@ -131,7 +153,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
               textTransform: 'uppercase',
               color: colors.onSurfaceVariant,
             }}>
-              Total Events
+              Total Members
             </Text>
             <Text style={{
               fontFamily: 'Manrope-ExtraBold',
@@ -139,7 +161,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
               color: colors.primary,
               marginTop: spacing.xs,
             }}>
-              47
+              {members.length}
             </Text>
             <View style={{
               flexDirection: 'row',
@@ -153,7 +175,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
                 fontSize: 12,
                 color: colors.secondary,
               }}>
-                +5 from last month
+                +{data.membersTrend} this month
               </Text>
             </View>
           </Card>
@@ -175,10 +197,10 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
               color: colors.primary,
               marginTop: spacing.xs,
             }}>
-              86%
+              {data.monthlyAvg}%
             </Text>
             <View style={{
-              backgroundColor: colors.secondaryContainer,
+              backgroundColor: data.monthlyAvg >= 80 ? colors.secondaryContainer : colors.errorContainer,
               paddingHorizontal: 8,
               paddingVertical: 3,
               borderRadius: 9999,
@@ -190,55 +212,57 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
                 fontSize: 10,
                 letterSpacing: 1,
                 textTransform: 'uppercase',
-                color: colors.onSecondaryContainer,
+                color: data.monthlyAvg >= 80 ? colors.onSecondaryContainer : colors.onErrorContainer,
               }}>
-                Stable
+                {data.monthlyAvg >= 80 ? 'Stable' : 'Needs Attention'}
               </Text>
             </View>
           </Card>
         </View>
 
         {/* At-Risk Alert */}
-        <View style={{ paddingHorizontal: spacing['2xl'], marginTop: spacing.lg }}>
-          <View style={{
-            backgroundColor: colors.errorContainer,
-            borderRadius: radius.xl,
-            padding: spacing['2xl'],
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: spacing.lg,
-          }}>
-            <View style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: 'rgba(186,26,26,0.15)',
+        {data.atRiskMembers.length > 0 && (
+          <View style={{ paddingHorizontal: spacing['2xl'], marginTop: spacing.lg }}>
+            <TouchableOpacity style={{
+              backgroundColor: colors.errorContainer,
+              borderRadius: radius.xl,
+              padding: spacing['2xl'],
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: spacing.lg,
             }}>
-              <MaterialIcons name="warning" size={24} color={colors.error} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{
-                fontFamily: 'Inter-SemiBold',
-                fontSize: 15,
-                color: colors.onErrorContainer,
+              <View style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: 'rgba(186,26,26,0.15)',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}>
-                At-Risk Members Detected
-              </Text>
-              <Text style={{
-                fontFamily: 'Inter',
-                fontSize: 12,
-                color: colors.onErrorContainer,
-                opacity: 0.8,
-                marginTop: 2,
-              }}>
-                8 members below 70% threshold
-              </Text>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={colors.onErrorContainer} />
+                <MaterialIcons name="warning" size={24} color={colors.error} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  fontFamily: 'Inter-SemiBold',
+                  fontSize: 15,
+                  color: colors.onErrorContainer,
+                }}>
+                  At-Risk Members Detected
+                </Text>
+                <Text style={{
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: colors.onErrorContainer,
+                  opacity: 0.8,
+                  marginTop: 2,
+                }}>
+                  {data.atRiskMembers.length} member{data.atRiskMembers.length !== 1 ? 's' : ''} below 70% threshold
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color={colors.onErrorContainer} />
+            </TouchableOpacity>
           </View>
-        </View>
+        )}
 
         {/* Member Performance Table */}
         <View style={{ paddingHorizontal: spacing['2xl'], marginTop: spacing['2xl'] }}>
@@ -277,7 +301,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
                 color: colors.onSurfaceVariant,
                 textAlign: 'center',
               }}>
-                Present
+                Rate
               </Text>
               <Text style={{
                 flex: 1,
@@ -288,103 +312,119 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
                 color: colors.onSurfaceVariant,
                 textAlign: 'center',
               }}>
-                Late
+                Status
               </Text>
             </View>
 
             {/* Table rows */}
-            {MOCK_MEMBERS.slice(0, 10).map((member, i) => (
-              <TouchableOpacity
-                key={member.id}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: spacing.md,
-                  backgroundColor: i % 2 === 0 ? 'transparent' : colors.surfaceContainerLow,
-                  borderRadius: radius.lg,
-                  paddingHorizontal: spacing.sm,
-                }}
-                onPress={() => navigation?.navigate('MemberReport', { memberId: member.id })}
-              >
-                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                  <Avatar name={member.full_name} size={28} />
-                  <View>
-                    <Text style={{
-                      fontFamily: 'Inter-SemiBold',
-                      fontSize: 13,
-                      color: colors.onSurface,
-                    }} numberOfLines={1}>
-                      {member.full_name}
-                    </Text>
-                    <Text style={{
-                      fontFamily: 'Inter',
-                      fontSize: 10,
-                      color: colors.onSurfaceVariant,
-                    }}>
-                      {member.role_in_church}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={{
-                  flex: 1,
-                  fontFamily: 'Inter-SemiBold',
-                  fontSize: 14,
-                  color: colors.secondary,
-                  textAlign: 'center',
-                }}>
-                  {Math.round((member.attendance_rate ?? 80) * 0.47)}
-                </Text>
-                <Text style={{
-                  flex: 1,
-                  fontFamily: 'Inter-SemiBold',
-                  fontSize: 14,
-                  color: colors.onTertiaryContainer,
-                  textAlign: 'center',
-                }}>
-                  {Math.round((100 - (member.attendance_rate ?? 80)) * 0.2)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-
-            {/* Pagination */}
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: spacing.lg,
-            }}>
+            {pagedMembers.length === 0 ? (
               <Text style={{
                 fontFamily: 'Inter',
-                fontSize: 12,
+                fontSize: 13,
                 color: colors.onSurfaceVariant,
+                textAlign: 'center',
+                paddingVertical: spacing.lg,
               }}>
-                Showing 1 to 10 of 142 members
+                No members found.
               </Text>
-              <View style={{ flexDirection: 'row', gap: 4 }}>
-                {[1, 2, 3].map(p => (
-                  <TouchableOpacity
-                    key={p}
-                    onPress={() => setPage(p)}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 14,
-                      backgroundColor: page === p ? colors.primary : colors.surfaceContainerHigh,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Text style={{
-                      fontFamily: 'Inter-SemiBold',
-                      fontSize: 12,
-                      color: page === p ? colors.white : colors.onSurfaceVariant,
-                    }}>
-                      {p}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+            ) : (
+              pagedMembers.map((member: Member, i: number) => (
+                <TouchableOpacity
+                  key={member.id}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: spacing.md,
+                    backgroundColor: i % 2 === 0 ? 'transparent' : colors.surfaceContainerLow,
+                    borderRadius: radius.lg,
+                    paddingHorizontal: spacing.sm,
+                  }}
+                  onPress={() => navigation?.navigate('MemberReport', { memberId: member.id })}
+                >
+                  <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                    <Avatar name={member.full_name} size={28} />
+                    <View>
+                      <Text style={{
+                        fontFamily: 'Inter-SemiBold',
+                        fontSize: 13,
+                        color: colors.onSurface,
+                      }} numberOfLines={1}>
+                        {member.full_name}
+                      </Text>
+                      <Text style={{
+                        fontFamily: 'Inter',
+                        fontSize: 10,
+                        color: colors.onSurfaceVariant,
+                      }}>
+                        {member.role_in_church || ''}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{
+                    flex: 1,
+                    fontFamily: 'Inter-SemiBold',
+                    fontSize: 14,
+                    color: (member.attendance_rate ?? 0) >= 70 ? colors.secondary : colors.error,
+                    textAlign: 'center',
+                  }}>
+                    {member.attendance_rate ?? 0}%
+                  </Text>
+                  <Text style={{
+                    flex: 1,
+                    fontFamily: 'Inter-SemiBold',
+                    fontSize: 10,
+                    letterSpacing: 1,
+                    textTransform: 'uppercase',
+                    color: (member.attendance_rate ?? 0) >= 70 ? colors.secondary : colors.error,
+                    textAlign: 'center',
+                  }}>
+                    {(member.attendance_rate ?? 0) >= 70 ? 'Good' : 'At Risk'}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: spacing.lg,
+              }}>
+                <Text style={{
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: colors.onSurfaceVariant,
+                }}>
+                  Showing {(page - 1) * membersPerPage + 1} to {Math.min(page * membersPerPage, members.length)} of {members.length} members
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 4 }}>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                    <TouchableOpacity
+                      key={p}
+                      onPress={() => setPage(p)}
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: page === p ? colors.primary : colors.surfaceContainerHigh,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text style={{
+                        fontFamily: 'Inter-SemiBold',
+                        fontSize: 12,
+                        color: page === p ? colors.white : colors.onSurfaceVariant,
+                      }}>
+                        {p}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
+            )}
           </Card>
         </View>
       </ScrollView>

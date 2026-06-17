@@ -1,27 +1,84 @@
 // AddEditMemberScreen — Member form matching the Stitch mockup
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Avatar, Input, Button, Card, FilterChips } from '../shared/ui';
-import { MOCK_MEMBERS } from '../shared/testing/mockData';
+import { useTheme } from '../../../shared/theme';
+import { Avatar, Input, Button, Card, FilterChips } from '../../../shared/ui';
+import { useMembers } from '..';
+import type { MemberStatus } from '../../../core/types/domain';
+
+const STATUS_DISPLAY_MAP: Record<string, string> = {
+  active: 'Active',
+  inactive: 'Inactive',
+  on_leave: 'On Leave',
+  transferred: 'Transferred',
+};
+
+const STATUS_VALUE_MAP: Record<string, MemberStatus> = {
+  'Active': 'active',
+  'Inactive': 'inactive',
+  'On Leave': 'on_leave',
+  'Transferred': 'transferred',
+};
 
 export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const { colors, spacing, radius, shadows } = theme;
+  const { selectedMember, createMember, updateMember } = useMembers();
   const memberId = route?.params?.memberId;
-  const existingMember = memberId ? MOCK_MEMBERS.find(m => m.id === memberId) : null;
-  const isEditing = !!existingMember;
+  const isEditing = !!memberId;
 
-  const [fullName, setFullName] = useState(existingMember?.full_name ?? '');
-  const [contactNumber, setContactNumber] = useState(existingMember?.contact_number ?? '');
-  const [birthday, setBirthday] = useState(existingMember?.birthday ?? '');
-  const [memberSince, setMemberSince] = useState(existingMember?.member_since ?? '');
-  const [role, setRole] = useState(existingMember?.role_in_church ?? '');
-  const [ministryGroup, setMinistryGroup] = useState(existingMember?.ministry_group ?? '');
-  const [emergencyContact, setEmergencyContact] = useState(existingMember?.emergency_contact ?? '');
-  const [status, setStatus] = useState(existingMember?.status ?? 'active');
+  const [fullName, setFullName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [memberSince, setMemberSince] = useState('');
+  const [role, setRole] = useState('');
+  const [ministryGroup, setMinistryGroup] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState('');
+  const [status, setStatus] = useState<MemberStatus>('active');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (memberId && selectedMember) {
+      setFullName(selectedMember.full_name ?? '');
+      setContactNumber(selectedMember.contact_number ?? '');
+      setBirthday(selectedMember.birthday ?? '');
+      setMemberSince(selectedMember.member_since ?? '');
+      setRole(selectedMember.role_in_church ?? '');
+      setMinistryGroup(selectedMember.ministry_group ?? '');
+      setEmergencyContact(selectedMember.emergency_contact ?? '');
+      setStatus(selectedMember.status ?? 'active');
+    }
+  }, [memberId, selectedMember]);
+
+  const handleSave = useCallback(async () => {
+    if (!fullName.trim()) return;
+    setSaving(true);
+    try {
+      const memberData = {
+        full_name: fullName,
+        contact_number: contactNumber,
+        birthday,
+        member_since: memberSince,
+        role_in_church: role,
+        ministry_group: ministryGroup,
+        emergency_contact: emergencyContact,
+        status,
+      };
+
+      if (isEditing && memberId) {
+        await updateMember(memberId, memberData);
+      } else {
+        await createMember(memberData as Parameters<typeof createMember>[0]);
+      }
+      navigation?.goBack();
+    } catch (_error: unknown) {
+      // Save failed — error is handled by the store's error state
+    } finally {
+      setSaving(false);
+    }
+  }, [fullName, contactNumber, birthday, memberSince, role, ministryGroup, emergencyContact, status, isEditing, memberId, updateMember, createMember, navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -69,7 +126,7 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
           <View style={{ alignItems: 'center', marginVertical: spacing['2xl'] }}>
             <TouchableOpacity>
               <Avatar
-                uri={existingMember?.photo_url}
+                uri={selectedMember?.photo_url}
                 name={fullName || 'New Member'}
                 size={96}
               />
@@ -152,10 +209,12 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
             </Text>
             <FilterChips
               options={['Active', 'Inactive', 'On Leave', 'Transferred']}
-              selected={status === 'active' ? 'Active' : status === 'inactive' ? 'Inactive' : status === 'on_leave' ? 'On Leave' : 'Transferred'}
+              selected={STATUS_DISPLAY_MAP[status] ?? 'Active'}
               onSelect={(opt) => {
-                const map: Record<string, string> = { 'Active': 'active', 'Inactive': 'inactive', 'On Leave': 'on_leave', 'Transferred': 'transferred' };
-                setStatus(map[opt] as any);
+                const mapped = STATUS_VALUE_MAP[opt];
+                if (mapped) {
+                  setStatus(mapped);
+                }
               }}
             />
           </Card>
@@ -198,9 +257,10 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
           style={{ flex: 1 }}
         />
         <Button
-          title={isEditing ? 'Save Member Profile' : 'Add Member'}
-          onPress={() => navigation?.goBack()}
+          title={saving ? 'Saving...' : isEditing ? 'Save Member Profile' : 'Add Member'}
+          onPress={handleSave}
           variant="primary"
+          disabled={saving}
           style={{ flex: 2 }}
         />
       </View>

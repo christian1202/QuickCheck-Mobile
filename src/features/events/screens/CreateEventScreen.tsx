@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Input, Button, Card, FilterChips } from '../shared/ui';
+import { useTheme } from '../../../shared/theme';
+import { Input, Button, Card, FilterChips } from '../../../shared/ui';
+import { useEvents } from '..';
 
 export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
   const { colors, spacing, radius, shadows } = theme;
+  const { createEvent } = useEvents();
 
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('Sunday Service');
@@ -18,6 +20,24 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
   const [audience, setAudience] = useState<'whole' | 'specific'>('whole');
   const [recurrence, setRecurrence] = useState('None');
   const [saveTemplate, setSaveTemplate] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleCreate = async () => {
+    if (!eventName.trim()) return;
+    setSaving(true);
+    try {
+      await createEvent({
+        name: eventName, event_type: eventType.toLowerCase().replace(' ', '_') as any,
+        location, date, time, is_recurring: recurrence !== 'None',
+        local_id: 'local_001',
+      } as any);
+      navigation?.goBack();
+    } catch (error: unknown) {
+      console.warn('Failed to create event:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -153,7 +173,7 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
           }}>
             EVENT BANNER
           </Text>
-          <TouchableOpacity style={{
+          <View style={{
             backgroundColor: colors.surfaceContainerLow,
             borderRadius: radius.xl,
             borderWidth: 2,
@@ -180,7 +200,7 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
             }}>
               Recommended: 1200 × 400px
             </Text>
-          </TouchableOpacity>
+          </View>
 
           {/* Target Audience */}
           <Text style={{
@@ -275,8 +295,9 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
         ...shadows.lg,
       }}>
         <Button
-          title="Create Event"
-          onPress={() => navigation?.goBack()}
+          title={saving ? 'Creating...' : 'Create Event'}
+          onPress={handleCreate}
+          disabled={saving}
           variant="primary"
           size="lg"
           fullWidth

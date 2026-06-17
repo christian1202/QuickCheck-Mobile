@@ -2,7 +2,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';

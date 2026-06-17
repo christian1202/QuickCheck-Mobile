@@ -4,9 +4,9 @@ import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platfor
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../shared/theme';
-import { Button, Input } from '../shared/ui';
-import { useAuth } from '../features/auth';
+import { useTheme } from '../../../shared/theme';
+import { Button, Input } from '../../../shared/ui';
+import { useAuth } from '..';
 
 export const LoginScreen: React.FC = () => {
   const { theme } = useTheme();

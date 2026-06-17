@@ -1,7 +1,7 @@
 // StatusChip — pill-shaped semantic status indicators
 import React from 'react';
 import { View, Text, ViewStyle } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused';
 export type MemberStatus = 'active' | 'inactive' | 'on_leave' | 'transferred';

@@ -1,7 +1,7 @@
 // Card — Tonal surface layering with ambient shadows (no borders per design system)
 import React from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 type CardVariant = 'default' | 'elevated' | 'filled' | 'gradient';
 

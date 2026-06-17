@@ -1,18 +1,22 @@
 // AbsenceReportScreen — Absence filing form matching the Stitch mockup
+// Uses useMembers() hook — real data from WatermelonDB
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { Avatar, Card, StatusChip, Button } from '../shared/ui';
-import { MOCK_MEMBERS } from '../shared/testing/mockData';
+import { useTheme } from '../../../shared/theme';
+import { Avatar, Card, StatusChip, Button } from '../../../shared/ui';
+import { useMembers } from '../../members';
 
 type ReasonCategory = 'health' | 'work' | 'family' | 'travel' | 'no_response' | 'other';
 
 export const AbsenceReportScreen: React.FC<{ navigation?: any; route?: any }> = ({ navigation, route }) => {
   const { theme } = useTheme();
-  const { colors, spacing, radius, shadows } = theme;
-  const member = MOCK_MEMBERS[1]; // Sarah Jenkins (absent member)
+  const { colors, spacing, radius } = theme;
+  const { members } = useMembers();
+  const memberId = route?.params?.memberId;
+  const member = members.find(m => m.id === memberId) ?? members[0];
+
   const [selectedReason, setSelectedReason] = useState<ReasonCategory | null>(null);
   const [explanation, setExplanation] = useState('');
   const [statusOverride, setStatusOverride] = useState<'excused' | 'unexcused' | 'under_review'>('under_review');
@@ -75,32 +79,48 @@ export const AbsenceReportScreen: React.FC<{ navigation?: any; route?: any }> = 
         }}
       >
         {/* Member Info */}
-        <Card style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: spacing.lg,
-          marginBottom: spacing['2xl'],
-        }}>
-          <Avatar uri={member.photo_url} name={member.full_name} size={56} />
-          <View style={{ flex: 1 }}>
-            <Text style={{
-              fontFamily: 'Inter-SemiBold',
-              fontSize: 16,
-              color: colors.onSurface,
-            }}>
-              {member.full_name}
-            </Text>
+        {member ? (
+          <Card style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.lg,
+            marginBottom: spacing['2xl'],
+          }}>
+            <Avatar uri={member.photo_url} name={member.full_name} size={56} />
+            <View style={{ flex: 1 }}>
+              <Text style={{
+                fontFamily: 'Inter-SemiBold',
+                fontSize: 16,
+                color: colors.onSurface,
+              }}>
+                {member.full_name}
+              </Text>
+              <Text style={{
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: colors.onSurfaceVariant,
+                marginTop: 2,
+              }}>
+                {member.role_in_church || 'Member'} • {member.ministry_group || 'N/A'}
+              </Text>
+            </View>
+            <StatusChip status="absent" />
+          </Card>
+        ) : (
+          <Card style={{
+            alignItems: 'center',
+            paddingVertical: spacing['2xl'],
+            marginBottom: spacing['2xl'],
+          }}>
             <Text style={{
               fontFamily: 'Inter',
-              fontSize: 12,
+              fontSize: 14,
               color: colors.onSurfaceVariant,
-              marginTop: 2,
             }}>
-              Weekly Youth Seminar • Oct 24, 2024
+              No member selected.
             </Text>
-          </View>
-          <StatusChip status="absent" />
-        </Card>
+          </Card>
+        )}
 
         {/* Reason Category Grid */}
         <Text style={{

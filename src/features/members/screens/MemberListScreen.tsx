@@ -1,33 +1,37 @@
-// MemberListScreen — Member directory matching the Stitch mockup
-import React, { useState, useMemo } from 'react';
+// MemberListScreen — Member directory
+// Uses useMembers() hook — reads from WatermelonDB via DI
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../shared/theme';
-import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card } from '../shared/ui';
-import { MOCK_MEMBERS, MOCK_MINISTRY_GROUPS } from '../shared/testing/mockData';
+import { useTheme } from '../../../shared/theme';
+import { SearchBar, FilterChips, Avatar, StatusChip, ProgressBar, FAB, Card } from '../../../shared/ui';
+import { useMembers } from '..';
+import type { MemberStatus } from '../../../core/types/domain';
 
 export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
-  const { colors, spacing, radius, shadows } = theme;
+  const { colors, spacing } = theme;
+  const { members, fetchMembers, setFilters } = useMembers();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [groupFilter, setGroupFilter] = useState('All Ministry Groups');
 
-  const filteredMembers = useMemo(() => {
-    let members = MOCK_MEMBERS;
-    if (search) {
-      const q = search.toLowerCase();
-      members = members.filter(m =>
-        m.full_name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q)
-      );
-    }
-    if (statusFilter !== 'All') {
-      const status = statusFilter.toLowerCase().replace(' ', '_');
-      members = members.filter(m => m.status === status);
-    }
-    return members;
-  }, [search, statusFilter]);
+  useEffect(() => { fetchMembers(); }, [fetchMembers]);
+
+  useEffect(() => {
+    const status: MemberStatus | undefined = statusFilter !== 'All'
+      ? statusFilter.toLowerCase().replace(' ', '_') as MemberStatus
+      : undefined;
+    setFilters({ status, search: search || undefined });
+  }, [statusFilter, search, setFilters]);
+
+  const filteredMembers = members.filter(m =>
+    !search || m.full_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleMemberPress = useCallback((memberId: string) => {
+    navigation?.navigate('MemberReport', { memberId });
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -51,12 +55,12 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
           </Text>
         </View>
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
-          <TouchableOpacity style={{ padding: spacing.sm }}>
+          <View style={{ padding: spacing.sm }}>
             <MaterialIcons name="wifi-off" size={22} color={colors.primaryContainer} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ padding: spacing.sm }}>
+          </View>
+          <View style={{ padding: spacing.sm }}>
             <MaterialIcons name="notifications-none" size={22} color={colors.onSurfaceVariant} />
-          </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -67,31 +71,6 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
           onChangeText={setSearch}
           placeholder="Search members by name or ID..."
         />
-      </View>
-
-      {/* Group Filter */}
-      <View style={{
-        paddingHorizontal: spacing['2xl'],
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: spacing.sm,
-        marginBottom: spacing.md,
-      }}>
-        <MaterialIcons name="tune" size={20} color={colors.onSurfaceVariant} />
-        <TouchableOpacity style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 4,
-        }}>
-          <Text style={{
-            fontFamily: 'Inter-SemiBold',
-            fontSize: 13,
-            color: colors.onSurface,
-          }}>
-            {groupFilter}
-          </Text>
-          <MaterialIcons name="expand-more" size={18} color={colors.onSurfaceVariant} />
-        </TouchableOpacity>
       </View>
 
       {/* Status Filters */}
@@ -116,7 +95,7 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
           <TouchableOpacity
             key={member.id}
             activeOpacity={0.7}
-            onPress={() => navigation?.navigate('MemberReport', { memberId: member.id })}
+            onPress={() => handleMemberPress(member.id)}
           >
             <Card variant="default" style={{ alignItems: 'center', paddingVertical: spacing['2xl'] }}>
               {/* Three-dot menu */}

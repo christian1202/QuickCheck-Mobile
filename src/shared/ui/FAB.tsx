@@ -3,7 +3,7 @@ import React from 'react';
 import { TouchableOpacity, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface FABProps {
   onPress: () => void;

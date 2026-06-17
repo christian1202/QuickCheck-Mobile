@@ -4,11 +4,11 @@ import { View, Text, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../shared/theme';
-import { DashboardScreen } from '../../screens/DashboardScreen';
-import { MemberListScreen } from '../../screens/MemberListScreen';
-import { EventsScreen } from '../../screens/EventsScreen';
-import { CalendarScreen } from '../../screens/CalendarScreen';
-import { ReportsScreen } from '../../screens/ReportsScreen';
+import { DashboardScreen } from '../../features/dashboard/screens/DashboardScreen';
+import { MemberListScreen } from '../../features/members/screens/MemberListScreen';
+import { EventsScreen } from '../../features/events/screens/EventsScreen';
+import { CalendarScreen } from '../../features/events/screens/CalendarScreen';
+import { ReportsScreen } from '../../features/dashboard/screens/ReportsScreen';
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();

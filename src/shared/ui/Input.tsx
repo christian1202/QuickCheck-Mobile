@@ -1,7 +1,7 @@
 // Input — Ghost-style inputs with floating label per design system
 import React, { useState } from 'react';
 import { View, TextInput, Text, ViewStyle, TextInputProps } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme } from '../theme';
 
 interface InputProps extends TextInputProps {
   label: string;
