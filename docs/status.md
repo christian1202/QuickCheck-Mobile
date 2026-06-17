@@ -11,8 +11,8 @@
 |---|---|
 | Branch | `main` |
 | Up to date with `origin/main` | ✅ Yes |
-| Pending commits / uncommitted changes | ⚠️ Working tree dirty — 13 screens moved, navigation updated, mock deleted, imports fixed, deps installed, 5 docs updated |
-| Latest commit hash | `18a1f76` |
+| Pending commits / uncommitted changes | ⚠️ Working tree dirty — Sprint 2 complete |
+| Latest commit hash | `5e4b994` |
 
 ---
 
@@ -31,23 +31,8 @@
 | Check | Status |
 |---|---|
 | `package.json` present | ✅ |
-| `node_modules` installed | ✅ Restored via `npm install` |
-| `package-lock.json` present | ✅ |
-| TypeScript compile (`npx tsc --noEmit`) | ✅ 0 errors |
-
-### Key Dependencies
-
-| Library | Purpose |
-|---|---|
-| `expo` ^55.0.8 | Framework |
-| `react` 19.2.0 / `react-native` 0.83.2 | Core |
-| `@nozbe/watermelondb` ^0.28.0 | Local database (SQLite) |
-| `zustand` | State management |
-| `@react-navigation/*` ^7.0.0 | Navigation |
-| `bcryptjs` | Local password hashing |
-| `expo-auth-session` | Google OAuth for Sheets export |
-| `expo-secure-store` | Encrypted session/credential storage |
-| `typescript` ^5.3.0 | Type checking |
+| `node_modules` installed | ✅ |
+| TypeScript compile | ✅ 0 errors |
 
 ---
 
@@ -62,12 +47,12 @@
 | 5 | AbsenceReportScreen | `features/dashboard/screens/` | useMembers() | ✅ |
 | 6 | MemberListScreen | `features/members/screens/` | useMembers() | ✅ |
 | 7 | AddEditMemberScreen | `features/members/screens/` | useMembers() | ✅ |
-| 8 | MemberReportScreen | `features/members/screens/` | useMembers() + useDI().attendanceService | ✅ |
+| 8 | MemberReportScreen | `features/members/screens/` | useMembers() + attendanceService | ✅ |
 | 9 | EventsScreen | `features/events/screens/` | useEvents() | ✅ |
-| 10 | CreateEventScreen | `features/events/screens/` | useEvents() | ✅ |
+| 10 | CreateEventScreen | `features/events/screens/` | useEvents() + generateRecurrenceRule | ✅ |
 | 11 | CalendarScreen | `features/events/screens/` | useEvents() + useMembers() | ✅ |
 | 12 | QuickMarkScreen | `features/attendance/screens/` | useMembers() + useAttendance() | ✅ |
-| 13 | SettingsScreen | `features/settings/screens/` | useAuth() + useExport() | ✅ |
+| 13 | SettingsScreen | `features/settings/screens/` | useAuth() + useExport() + csvUtils | ✅ |
 
 ---
 
@@ -77,20 +62,21 @@
 |---|---|---|---|
 | Must Have | 9 | 9 | 100% |
 | Should Have | 12 | 12 | 100% |
-| Could Have | 12 | 8 | 67% |
+| Could Have | 12 | 11 | 92% |
 | Won't Have | 10 | 0 | 0% (by design) |
 
 ---
 
 ## Documentation Status
 
-| Doc | Status | Last Updated |
-|---|---|---|
-| `ARCHITECTURE.md` | ✅ Current | June 17, 2026 |
-| `features.md` | ✅ Current | June 17, 2026 |
-| `SCRUM.md` | ✅ Sprint 1 Complete, DoD all checked | June 17, 2026 |
-| `MOSCOW.md` | ✅ Current (67% Could), all Release Criteria checked | June 17, 2026 |
-| `status.md` | ✅ Current (this file) | June 17, 2026 |
+| Doc | Status |
+|---|---|
+| `README.md` | ✅ Complete with setup, architecture, screen table |
+| `ARCHITECTURE.md` | ✅ Current |
+| `features.md` | ✅ Current (10 sections, CSV added) |
+| `SCRUM.md` | ✅ Sprint 2 Complete |
+| `MOSCOW.md` | ✅ Current (92% Could) |
+| `status.md` | ✅ Current (this file) |
 
 ---
 
@@ -98,18 +84,15 @@
 
 | Area | Status |
 |---|---|
-| Git repository | ⚠️ Uncommitted changes (all Sprint 1 work) |
 | Architecture | ✅ Feature-Based Clean Architecture, local-first |
-| DI container | ✅ All 7 services wired in `app/container.ts` |
+| DI container | ✅ All 7 services wired |
 | Screen co-location | ✅ All 13 screens in `features/*/screens/` |
-| MOCK data | ✅ Deleted — `mockData.ts` removed, `src/screens/` removed |
-| TypeScript | ✅ `npx tsc --noEmit` — 0 errors |
-| Dependencies | ✅ All installed via `npm install` |
-| Docs | ✅ All 5 docs current and synced |
+| MOCK data | ✅ Deleted |
+| Recurring Events | ✅ RFC 5545 rules + auto-expand |
+| CSV Export/Import | ✅ Share API + paste import |
+| TypeScript | ✅ 0 errors |
+| Docs | ✅ All 6 docs synced |
 
-### Remaining Tasks (Sprint 2)
+### Remaining (1 item)
 
-1. Implement recurring events — EVT-06
-2. Implement CSV export/import
-3. Add unit tests — ARC-09
-4. Populate `README.md` with setup instructions.
+- Unit tests — ARC-09 (13 pts)

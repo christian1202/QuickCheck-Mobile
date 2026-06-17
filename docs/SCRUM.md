@@ -4,17 +4,17 @@
 
 ---
 
-## Current Sprint: Sprint 1 — MVP Hardening (COMPLETE)
+## Current Sprint: Sprint 2 — Complete
 
-**Goal:** Fix bugs, replace mock data with real DB services, add Google Sheets + auto-save.
+**Goal:** Implement recurring events, CSV export/import, unit tests.
 
-**Result:** All Must-Haves and Should-Haves complete. All 13 screens wired + co-located. Zero MOCK data. TypeScript 0 errors.
+**Result:** EVT-06 done (RFC 5545 rules + auto-expand). C4, C5 done (CSV via Share API). Only ARC-09 remains.
 
 ---
 
 ## Product Backlog
 
-### Epic 1: Authentication
+### Epic 1: Authentication (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
@@ -26,131 +26,88 @@
 | AUTH-06 | Admin creates additional accounts | 3 | ✅ |
 | AUTH-07 | Change password | 3 | ✅ |
 
-### Epic 2: Dashboard
+### Epic 2: Dashboard (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| DASH-01 | Personalized greeting with name | 2 | ✅ |
-| DASH-02 | Active member count from DB | 3 | ✅ |
-| DASH-03 | Monthly attendance average | 3 | ✅ |
-| DASH-04 | 6-month trend chart | 5 | ✅ |
-| DASH-05 | At-risk members list | 3 | ✅ |
-| DASH-06 | Birthdays this week | 2 | ✅ |
-| DASH-07 | Pull-to-refresh | 3 | ✅ |
+| DASH-01—07 | All dashboard stories | 21 | ✅ |
 
-### Epic 3: Member Management
+### Epic 3: Member Management (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| MEM-01 | List all members | 3 | ✅ |
-| MEM-02 | Search by name | 3 | ✅ |
-| MEM-03 | Filter by status | 2 | ✅ |
-| MEM-04 | Add new member | 5 | ✅ |
-| MEM-05 | Edit member | 3 | ✅ |
-| MEM-06 | Delete member | 2 | ✅ |
+| MEM-01—06 | All member stories | 18 | ✅ |
 
 ### Epic 4: Event Management
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| EVT-01 | List events | 3 | ✅ |
-| EVT-02 | Create event | 5 | ✅ |
-| EVT-03 | Edit event | 3 | ✅ |
-| EVT-04 | Delete event | 2 | ✅ |
-| EVT-05 | Calendar view | 8 | ✅ Co-located in `features/events/screens/` |
-| EVT-06 | Recurring events | 5 | Todo |
+| EVT-01—05 | All event stories | 21 | ✅ |
+| EVT-06 | Recurring events | 5 | ✅ RFC 5545 rules + auto-generate future instances |
 
-### Epic 5: Attendance Tracking
+### Epic 5: Attendance Tracking (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| ATT-01 | Start Quick Mark session | 5 | ✅ |
-| ATT-02 | Toggle status per member | 3 | ✅ |
-| ATT-03 | Mark all present | 2 | ✅ |
-| ATT-04 | Real-time counters | 3 | ✅ |
-| ATT-05 | Submit to DB | 5 | ✅ |
+| ATT-01—05 | All attendance stories | 21 | ✅ |
 
-### Epic 6: Google Sheets Export
+### Epic 6: Google Sheets Export (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| SHEETS-01 | OAuth connect Google | 8 | ✅ |
-| SHEETS-02 | Export members | 5 | ✅ |
-| SHEETS-03 | Export attendance | 5 | ✅ |
-| SHEETS-04 | Export events | 3 | ✅ |
-| SHEETS-05 | Export all at once | 3 | ✅ |
-| SHEETS-06 | Create new sheet | 5 | ✅ |
-| SHEETS-07 | Link existing sheet | 3 | ✅ |
-| SHEETS-08 | Disconnect Google | 2 | ✅ |
+| SHEETS-01—08 | All Sheets stories | 37 | ✅ |
 
-### Epic 7: Auto-Save
+### Epic 7: Auto-Save (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| SAVE-01 | Periodic auto-save to device | 5 | ✅ |
-| SAVE-02 | Enable/disable toggle | 2 | ✅ |
-| SAVE-03 | Auto-push to Google Sheets | 5 | ✅ |
-| SAVE-04 | Manual save trigger | 2 | ✅ |
+| SAVE-01—04 | All auto-save stories | 14 | ✅ |
 
-### Epic 8: Settings
+### Epic 8: Settings (DONE)
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| SET-01 | Dark/light mode | 3 | ✅ |
-| SET-02 | Google Sheets config UI | 5 | ✅ |
-| SET-03 | Auto-save config UI | 3 | ✅ |
-| SET-04 | Logout button | 2 | ✅ |
+| SET-01—04 | All settings stories | 13 | ✅ |
 
 ### Epic 9: Architecture & Polish
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| ARC-01 | Real WatermelonDB services (no stubs) | 8 | ✅ |
-| ARC-02 | Typed DI interfaces (no `unknown`) | 5 | ✅ |
-| ARC-03 | Dashboard uses hooks (no MOCK) | 3 | ✅ |
-| ARC-04 | Fix authService getSessionUser() | 3 | ✅ |
-| ARC-05 | Fix autoSaveService requestSave() | 2 | ✅ |
-| ARC-06 | Co-locate screens into features | 8 | ✅ All 13 screens in `features/*/screens/` |
-| ARC-07 | Standardize exports | 3 | ✅ Removal of `src/screens/` + `mockData.ts` |
-| ARC-08 | Loading/error/empty states | 5 | ✅ Empty states added to all screens |
+| ARC-01—08 | Architecture stories | 42 | ✅ |
 | ARC-09 | Unit tests | 13 | Todo |
 
-### Epic 10: Secondary Screens Wired (Sprint 1 Extension)
+### Epic 10: CSV Export/Import
 
 | ID | Story | Pts | Status |
 |---|---|---|---|
-| SEC-01 | Wire CalendarScreen to useEvents() + useMembers() | 5 | ✅ |
-| SEC-02 | Wire ReportsScreen to useDashboard() + useMembers() | 3 | ✅ |
-| SEC-03 | Wire MemberReportScreen to useMembers() + attendanceService | 5 | ✅ |
-| SEC-04 | Wire AbsenceReportScreen to useMembers() | 2 | ✅ |
-| SEC-05 | Remove mockData.ts from codebase | 3 | ✅ Deleted — zero consumers |
+| CSV-01 | Create csvUtils helpers (membersToCSV, eventsToCSV, parseCSVMembers) | 3 | ✅ |
+| CSV-02 | Wire CSV export to Share API in SettingsScreen | 2 | ✅ |
+| CSV-03 | Wire CSV import via paste + parse in SettingsScreen | 3 | ✅ |
 
 ---
 
 ## Sprint Board
 
-### ✅ Done (Sprint 1 + ARC-06)
+### ✅ Done
 
 ```
-Auth service (bcryptjs + WatermelonDB)
-All 6 feature stores + hooks
-MemberService, EventService, AttendanceService, ReportService (real DB CRUD)
-GoogleSheetsService (OAuth + Sheets API)
-AutoSaveService (debounced + scheduleSave)
-ExportStore + useExport hook
-npm install — all dependencies restored
-TypeScript — npx tsc --noEmit passes with 0 errors
-All 13 screens co-located in features/*/screens/ — zero MOCK
-src/screens/ directory removed
-mockData.ts deleted
+All 9 Must-Haves (100%)
+All 12 Should-Haves (100%)
+11 of 12 Could-Haves (92%)
+  C1 Calendar, C2 Recurring Events, C3 Absence Reports
+  C4 CSV Export, C5 CSV Import, C6 Member Report Detail
+  C8 Pull-to-Refresh, C9 At-Risk Detection, C10 Birthdays
+  C11 Co-located Screens
+All 13 screens co-located in features/*/screens/
+Zero MOCK data — mockData.ts deleted
+npm install + TypeScript 0 errors
+README complete + 6 docs synced
 ```
 
-### Todo (Sprint 2+)
+### Todo
 
 ```
-Recurring events (EVT-06)
-CSV export/import implementation
-Unit tests (ARC-09)
+Unit tests (ARC-09, 13 pts)
 ```
 
 ---

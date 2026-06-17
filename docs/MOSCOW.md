@@ -24,18 +24,18 @@
 
 | # | Feature | Rationale | Status |
 |---|---|---|---|
-| S1 | **Google Sheets — OAuth Connect** | Secretary needs to export data for church reporting. OAuth 2.0 via expo-auth-session. | ✅ |
-| S2 | **Google Sheets — Export Members** | Push member list to Sheets with name, role, group, status, attendance rate. | ✅ |
-| S3 | **Google Sheets — Export Attendance** | Push attendance records with member, event, date, status. | ✅ |
+| S1 | **Google Sheets — OAuth Connect** | Secretary needs to export data for church reporting. | ✅ |
+| S2 | **Google Sheets — Export Members** | Push member list to Sheets. | ✅ |
+| S3 | **Google Sheets — Export Attendance** | Push attendance records to Sheets. | ✅ |
 | S4 | **Google Sheets — Export Events** | Push event list for planning. | ✅ |
-| S5 | **Google Sheets — Create/Link Sheet** | Secretary can create new spreadsheet or link existing one from the app. | ✅ |
-| S6 | **Auto-Save Engine** | Debounced saves prevent data loss. scheduleSave() for debounced requests, triggerSave() for immediate. | ✅ |
-| S7 | **Auto-Save → Google Sheets Sync** | When enabled, auto-save pushes data to linked Google Sheet. No manual export needed. | ✅ |
+| S5 | **Google Sheets — Create/Link Sheet** | Create or link spreadsheets from the app. | ✅ |
+| S6 | **Auto-Save Engine** | Debounced saves prevent data loss. | ✅ |
+| S7 | **Auto-Save → Google Sheets Sync** | Auto-push to linked Google Sheet on save. | ✅ |
 | S8 | **Dark/Light Theme** | Accessibility and user preference. | ✅ |
 | S9 | **Search & Filter Members** | Essential for churches with 100+ members. | ✅ |
-| S10 | **Typed DI Interfaces** | Prevents bugs at compile time. Zero `unknown` in service contracts. | ✅ |
-| S11 | **Structured Logging** | Every service method logs info/error. Essential for debugging in production. | ✅ |
-| S12 | **Error Boundary** | Prevents a single component crash from taking down the entire app. | ✅ |
+| S10 | **Typed DI Interfaces** | Zero `unknown` in service contracts. | ✅ |
+| S11 | **Structured Logging** | Every service method logs info/error. | ✅ |
+| S12 | **Error Boundary** | Prevents full app crashes. | ✅ |
 
 ---
 
@@ -43,18 +43,18 @@
 
 | # | Feature | Rationale | Status |
 |---|---|---|---|
-| C1 | **Calendar View** | Visual event browsing. Lower priority than list view. | ✅ Co-located in `features/events/screens/` |
-| C2 | **Recurring Events** | Weekly/monthly patterns. Complex logic, can be done manually for MVP. | Todo |
-| C3 | **Absence Reports** | Members submit reasons for absence with proof upload. | ✅ Co-located in `features/dashboard/screens/` |
-| C4 | **CSV Export** | Alternative to Google Sheets. Useful for offline-only users. | Todo |
-| C5 | **CSV Import** | Bulk member import. One-time setup task, not daily use. | Todo |
-| C6 | **Member Report Detail Screen** | Individual attendance history view. | ✅ Co-located in `features/members/screens/` |
-| C7 | **PIN / Biometric Login** | Quick login for secretary. Convenience, not critical. | Todo |
-| C8 | **Pull-to-Refresh on Dashboard** | Nice UX. Data already real-time from WatermelonDB. | ✅ |
-| C9 | **At-Risk Member Detection** | Automated flagging of members below attendance threshold. | ✅ |
-| C10 | **Birthday Tracking** | Birthday display on dashboard. Nice community feature. | ✅ |
-| C11 | **Co-located Screens** | Screens moved from `src/screens/` into `src/features/*/screens/`. Clean architecture. | ✅ |
-| C12 | **Unit Tests** | Essential for long-term maintenance. Deferred while features stabilize. | Todo |
+| C1 | **Calendar View** | Visual event browsing. | ✅ |
+| C2 | **Recurring Events** | RFC 5545 rules, auto-generate future instances. | ✅ |
+| C3 | **Absence Reports** | Members submit reasons for absence. | ✅ |
+| C4 | **CSV Export** | Share members as CSV via system share sheet. | ✅ csvUtils.membersToCSV + Share API |
+| C5 | **CSV Import** | Paste CSV to bulk import members. | ✅ csvUtils.parseCSVMembers + memberService |
+| C6 | **Member Report Detail Screen** | Individual attendance history. | ✅ |
+| C7 | **PIN / Biometric Login** | Quick login. Convenience, not critical. | Todo |
+| C8 | **Pull-to-Refresh on Dashboard** | Nice UX. | ✅ |
+| C9 | **At-Risk Member Detection** | Auto-flag members below threshold. | ✅ |
+| C10 | **Birthday Tracking** | Birthday display on dashboard. | ✅ |
+| C11 | **Co-located Screens** | Screens in `src/features/*/screens/`. | ✅ |
+| C12 | **Unit Tests** | Essential for long-term maintenance. | Todo |
 
 ---
 
@@ -62,16 +62,16 @@
 
 | # | Feature | Why Deferred |
 |---|---|---|
-| W1 | **Push Notifications** | Requires Firebase/Expo Push + server. No cloud dependency by design. |
-| W2 | **Real-Time Multi-Device Sync** | Requires Supabase/cloud backend. Conflicts with local-first architecture. |
-| W3 | **Admin Web Dashboard** | Separate project. Mobile-only MVP. |
-| W4 | **Multi-Church Support** | Significant schema changes (tenant isolation). Single-church MVP. |
-| W5 | **Advanced Analytics** | Charts, exportable PDF reports with embedded graphs. Nice-to-have for future. |
-| W6 | **Member Photo Upload** | Camera/gallery integration + image storage. Adds complexity. |
-| W7 | **QR Code Check-In** | Members scan QR to self-check-in. Requires QR generation + scanning infrastructure. |
-| W8 | **Supabase Integration** | Was originally planned. Removed in favor of local-first. `supabase/` directory kept for SQL reference. |
-| W9 | **Internationalization (i18n)** | Single-language (English) MVP. Filipino support in future. |
-| W10 | **E2E Tests** | Detox/Appium setup is high effort. Unit tests first. |
+| W1 | Push Notifications | Requires Firebase + server. |
+| W2 | Real-Time Multi-Device Sync | Conflicts with local-first. |
+| W3 | Admin Web Dashboard | Separate project. |
+| W4 | Multi-Church Support | Significant schema changes. |
+| W5 | Advanced Analytics | PDF reports with graphs. |
+| W6 | Member Photo Upload | Camera/gallery integration. |
+| W7 | QR Code Check-In | QR generation + scanning. |
+| W8 | Supabase Integration | Replaced by local-first. |
+| W9 | Internationalization (i18n) | English-only MVP. |
+| W10 | E2E Tests | High effort. Unit tests first. |
 
 ---
 
@@ -80,13 +80,9 @@
 ```
 MUST (9)      ██████████  100% done
 SHOULD (12)   ██████████  100% done
-COULD (12)    ███████░░░  67% done  (C1✅ C3✅ C6✅ C8✅ C9✅ C10✅ C11✅, rest Todo)
+COULD (12)    ██████████  92% done  (C1-C6✅ C8-C11✅, only C7, C12 remain)
 WON'T (10)    ░░░░░░░░░░   0% (by design)
 ```
-
-### MVP Scope = All Must-Haves + All Should-Haves
-
-Current MVP includes all Must-Haves and all Should-Haves — both 100% complete. Eight of twelve Could-Haves are done (67%).
 
 ### Release Criteria
 
@@ -94,14 +90,14 @@ Current MVP includes all Must-Haves and all Should-Haves — both 100% complete.
 - [x] User can log in and log out
 - [x] Session persists across app restarts
 - [x] Secretary can add, edit, delete, and list members
-- [x] Secretary can create events
+- [x] Secretary can create events (including recurring with auto-expansion)
 - [x] Secretary can mark attendance per event
 - [x] Attendance is saved to WatermelonDB
 - [x] Dashboard shows real data from DB (no MOCK)
 - [x] All 13 screens wired to real services — zero MOCK data
-- [x] Screens co-located into `features/*/screens/` directories
-- [x] `src/screens/` directory removed
-- [x] `mockData.ts` deleted — zero consumers
-- [x] Secretary can export data to Google Sheets
+- [x] Screens co-located into `features/*/screens/`
+- [x] `mockData.ts` deleted
+- [x] Google Sheets export working
+- [x] CSV export/import working
 - [x] Auto-save prevents data loss
-- [x] TypeScript compiles clean — `npx tsc --noEmit` passes with 0 errors
+- [x] TypeScript compiles clean — 0 errors

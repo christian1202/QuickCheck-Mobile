@@ -1,14 +1,20 @@
 // SettingsScreen — App settings matching the Stitch mockup
+// CSV Export/Import wired via csvUtils + Share API
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
 import { Card, Button } from '../../../shared/ui';
 import { useAuth } from '../../auth';
 import { useExport } from '../../export';
+import { useMembers } from '../../members';
+import { useEvents } from '../../events';
+import { useAttendance } from '../../attendance';
+import { useDI } from '../../../core/di/container';
+import { membersToCSV, eventsToCSV, attendanceToCSV, parseCSVMembers } from '../../../shared/utils/csvUtils';
 
-// ── Helper Components (defined outside to prevent re-creation on render) ──
+// ── Helper Components ──
 
 interface SectionTitleProps {
   title: string;
@@ -72,12 +78,16 @@ const SettingRow: React.FC<SettingRowProps> = ({ label, value, rightElement, onP
   </TouchableOpacity>
 );
 
-// ── Main Screen ──────────────────────────────────────────
+// ── Main Screen ──
 
 export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
   const { theme, setThemeMode, isDark } = useTheme();
   const { colors, spacing, radius } = theme;
   const { user, logout } = useAuth();
+  const { memberService } = useDI();
+  const { members, fetchMembers } = useMembers();
+  const { events, fetchEvents } = useEvents();
+  const { initSession } = useAttendance();
   const {
     isGoogleConnected, isConnecting, connectGoogle, disconnectGoogle,
     linkedSpreadsheetId, linkedSpreadsheetName, linkSpreadsheet, createAndLinkSpreadsheet,
@@ -93,11 +103,16 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
   const [consecutiveAbsence, setConsecutiveAbsence] = useState(3);
   const [spreadsheetIdInput, setSpreadsheetIdInput] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [csvImportText, setCsvImportText] = useState('');
+  const [showCsvImport, setShowCsvImport] = useState(false);
+  const [csvImporting, setCsvImporting] = useState(false);
 
   const toggleDarkMode = useCallback((val: boolean) => {
     setDarkMode(val);
     setThemeMode(val ? 'dark' : 'light');
   }, [setThemeMode]);
+
+  // ── Google Sheets handlers ──
 
   const handleConnectGoogle = useCallback(async () => {
     try {
@@ -116,7 +131,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
   const handleDisconnectGoogle = useCallback(() => {
     Alert.alert('Disconnect', 'Are you sure you want to disconnect your Google account?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Disconnect', style: 'destructive', onPress: () => disconnectGoogle().catch(() => { /* silently handle */ }) },
+      { text: 'Disconnect', style: 'destructive', onPress: () => disconnectGoogle().catch(() => {}) },
     ]);
   }, [disconnectGoogle]);
 
@@ -165,10 +180,65 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
     }
   }, [linkedSpreadsheetId, exportMembers, exportAttendance, exportEvents, exportAll]);
 
+  // ── CSV Export ──
+
+  const handleCsvExport = useCallback(async () => {
+    try {
+      await fetchMembers();
+      await fetchEvents();
+      const csv = membersToCSV(members);
+      await Share.share({ message: csv, title: 'QuickCheck Members Export.csv' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to export';
+      Alert.alert('Export Failed', message);
+    }
+  }, [members, events, fetchMembers, fetchEvents]);
+
+  // ── CSV Import ──
+
+  const handleCsvImport = useCallback(async () => {
+    if (!csvImportText.trim()) {
+      Alert.alert('Error', 'Paste CSV content in the text field first.');
+      return;
+    }
+    setCsvImporting(true);
+    try {
+      const parsed = parseCSVMembers(csvImportText);
+      if (parsed.length === 0) {
+        Alert.alert('No Data', 'No valid member rows found in CSV.');
+        return;
+      }
+      let imported = 0;
+      for (const m of parsed) {
+        try {
+          await memberService.createMember({
+            ...m,
+            local_id: 'local_001',
+            full_name: m.full_name,
+          } as any);
+          imported++;
+        } catch {
+          // skip duplicates
+        }
+      }
+      setCsvImportText('');
+      setShowCsvImport(false);
+      await fetchMembers();
+      Alert.alert('Imported', `${imported} of ${parsed.length} members imported.`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Import failed';
+      Alert.alert('Import Failed', message);
+    } finally {
+      setCsvImporting(false);
+    }
+  }, [csvImportText, memberService, fetchMembers]);
+
+  // ── Logout ──
+
   const handleLogout = useCallback(() => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', style: 'destructive', onPress: () => logout().catch(() => { /* silently handle */ }) },
+      { text: 'Logout', style: 'destructive', onPress: () => logout().catch(() => {}) },
     ]);
   }, [logout]);
 
@@ -604,23 +674,62 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = () => {
           </Text>
         )}
 
-        {/* Legacy CSV Export */}
+        {/* CSV Export / Import */}
         <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.md }}>
           <Button
             title="Export CSV"
-            onPress={() => { /* TODO: implement CSV export */ }}
+            onPress={handleCsvExport}
             variant="secondary"
             icon={<MaterialIcons name="file-download" size={18} color={colors.primary} />}
             style={{ flex: 1 }}
           />
           <Button
             title="Import CSV"
-            onPress={() => { /* TODO: implement CSV import */ }}
+            onPress={() => setShowCsvImport(!showCsvImport)}
             variant="secondary"
             icon={<MaterialIcons name="file-upload" size={18} color={colors.primary} />}
             style={{ flex: 1 }}
           />
         </View>
+
+        {showCsvImport && (
+          <View style={{ marginTop: spacing.md }}>
+            <TextInput
+              style={{
+                backgroundColor: colors.surfaceContainerHighest,
+                borderRadius: radius.lg,
+                padding: spacing.md,
+                fontSize: 12,
+                fontFamily: 'monospace',
+                color: colors.onSurface,
+                marginBottom: spacing.sm,
+                minHeight: 100,
+                textAlignVertical: 'top',
+              }}
+              placeholder="Paste CSV content here...\n\nExpected format:\nfull_name,contact_number,...\nJohn Doe,555-1234,..."
+              placeholderTextColor={colors.outlineVariant}
+              value={csvImportText}
+              onChangeText={setCsvImportText}
+              multiline
+              numberOfLines={4}
+            />
+            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+              <Button
+                title={csvImporting ? 'Importing...' : 'Import Members'}
+                onPress={handleCsvImport}
+                disabled={csvImporting}
+                variant="primary"
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Cancel"
+                onPress={() => { setShowCsvImport(false); setCsvImportText(''); }}
+                variant="secondary"
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        )}
 
         {/* Log Out */}
         <View style={{ marginTop: spacing['3xl'] }}>

@@ -1,4 +1,5 @@
 // CreateEventScreen — Event creation form matching the Stitch mockup
+// Recurrence: generates RFC 5545 rules for recurring events
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,6 +7,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
 import { Input, Button, Card, FilterChips } from '../../../shared/ui';
 import { useEvents } from '..';
+import { generateRecurrenceRule } from '../services/eventService';
+import type { RecurrenceFrequency } from '../services/eventService';
+
+const RECURRENCE_FREQ_MAP: Record<string, RecurrenceFrequency> = {
+  Daily: 'daily',
+  Weekly: 'weekly',
+  Monthly: 'monthly',
+};
 
 export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const { theme } = useTheme();
@@ -26,9 +35,19 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
     if (!eventName.trim()) return;
     setSaving(true);
     try {
+      const isRecurring = recurrence !== 'None';
+      const recurrenceRule = isRecurring
+        ? generateRecurrenceRule({ frequency: RECURRENCE_FREQ_MAP[recurrence] ?? 'weekly' })
+        : null;
+
       await createEvent({
-        name: eventName, event_type: eventType.toLowerCase().replace(' ', '_') as any,
-        location, date, time, is_recurring: recurrence !== 'None',
+        name: eventName,
+        event_type: eventType.toLowerCase().replace(' ', '_') as any,
+        location,
+        date,
+        time,
+        is_recurring: isRecurring,
+        recurrence_rule: recurrenceRule,
         local_id: 'local_001',
       } as any);
       navigation?.goBack();

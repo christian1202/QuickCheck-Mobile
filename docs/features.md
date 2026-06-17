@@ -46,7 +46,7 @@
 | CRUD Operations | eventService → WatermelonDB |
 | Event Types | Sunday Service, Prayer Meeting, etc. |
 | Calendar View | Visual event browsing (useEvents + useMembers) |
-| Recurring Events | Recurrence rules |
+| Recurring Events | RFC 5545 rules, auto-generate future instances |
 
 ## 5. Attendance Tracking
 
@@ -84,16 +84,21 @@
 | Manual Save | triggerSave() for immediate save |
 | scheduleSave() | Multiple calls collapse into one save |
 | Google Sheets Sync | Auto-push to linked sheet on save |
-| requestSave() | Global helper for stores to request saves |
 
-## 9. Settings
+## 9. CSV Export / Import
+
+| Feature | Description |
+|---|---|
+| Export CSV | Share members as CSV via system share sheet (csvUtils.membersToCSV) |
+| Import CSV | Paste CSV content to bulk import members (csvUtils.parseCSVMembers) |
+
+## 10. Settings
 
 | Feature | Description |
 |---|---|
 | Dark/Light Mode | Theme toggle |
 | Google Sheets Setup | Connect, link, configure |
 | Auto-Save Toggle | Enable/disable with Sheets sync option |
-| CSV Export/Import | Legacy export options (UI only, not yet implemented) |
 | Logout | Session termination |
 
 ## Technology Stack
@@ -106,6 +111,7 @@
 | Local DB | WatermelonDB (SQLite) |
 | Auth | bcryptjs + expo-secure-store |
 | Google Sheets | OAuth 2.0 + REST API v4 |
+| CSV | Custom parser/writer (no external deps) |
 | Auto-Save | Custom debounced engine |
 | Navigation | React Navigation 7 |
 | DI | Custom React Context DI |
@@ -124,7 +130,6 @@ Services created ONCE in container.ts via factory functions.
 Consumed everywhere via useDI(). No duplication. No spaghetti.
 
 All 13 screens co-located in features/*/screens/. Zero MOCK data.
-mockData.ts deleted. src/screens/ directory removed.
 ```
 
 ## Screen → Hook Mapping
@@ -140,7 +145,7 @@ mockData.ts deleted. src/screens/ directory removed.
 | AddEditMemberScreen | `features/members/screens/` | useMembers() |
 | MemberReportScreen | `features/members/screens/` | useMembers() + useDI().attendanceService |
 | EventsScreen | `features/events/screens/` | useEvents() |
-| CreateEventScreen | `features/events/screens/` | useEvents() |
+| CreateEventScreen | `features/events/screens/` | useEvents() + generateRecurrenceRule |
 | CalendarScreen | `features/events/screens/` | useEvents() + useMembers() |
 | QuickMarkScreen | `features/attendance/screens/` | useMembers() + useAttendance() |
-| SettingsScreen | `features/settings/screens/` | useAuth() + useExport() |
+| SettingsScreen | `features/settings/screens/` | useAuth() + useExport() + useMembers() + useEvents() + csvUtils |
