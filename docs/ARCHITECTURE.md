@@ -1,4 +1,5 @@
 # QuickCheck Mobile — Architecture Documentation
+> Developed by: Christian Jay Basinillo
 
 ## Overview
 

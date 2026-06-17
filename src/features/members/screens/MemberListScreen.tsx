@@ -34,7 +34,7 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
   }, [navigation]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={{
         flexDirection: 'row',

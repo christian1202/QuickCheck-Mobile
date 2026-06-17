@@ -1,6 +1,5 @@
 # QuickCheck Mobile — Feature List
-
-> Local-first architecture. All data in WatermelonDB. No cloud dependency.
+> Developed by: Christian Jay Basinillo | Local-first architecture. All data in WatermelonDB. No cloud dependency.
 
 ---
 
@@ -180,3 +179,21 @@ npm run test:ci    # CI mode with coverage report
 | `supabase/` directory (~20 files) | Orphaned — project is local-first, no cloud dependency |
 | `bcryptjs` (restored) | Needed — authService uses dynamic `import('bcryptjs')` for password hashing |
 | `date-fns`, `expo-sharing`, `react-native-svg`, `react-native-web` | Never imported in source |
+
+## 13. Planned Features (Roadmap)
+
+The following features have been planned for future sprints to enhance pastoral care and administration:
+
+| Feature | Description |
+|---|---|
+| **Local Notifications** | Reminders for upcoming events or missing members, scheduled locally on the device. |
+| **Extended Member Profile** | Adding 'Address' and 'Google Maps link' fields alongside the existing Contact Number. |
+| **One-Tap SMS Follow-ups** | Native integration to send pre-filled SMS/WhatsApp messages to absentees directly from the app. |
+| **Household Grouping** | Grouping family members together to mark their attendance with a single tap. |
+| **First-Time Visitor Mode** | A quick-add form (Name + Phone only) that automatically triggers follow-up reminders. |
+| **Visitation Dashboard** | A dedicated dashboard tracking who needs pastoral visits based on consecutive absences and status. |
+| **In-App Tutorial & Onboarding** | Welcome carousel and interactive tooltips to guide new secretaries through the app's core features. |
+| **UX & Animation Polish** | Fluid screen transitions, beautiful illustrated empty states, and Lottie reward animations (e.g., Confetti) to make the app feel premium. |
+| **Store Deployment (EAS)** | Production builds for iOS and Android, deployed directly to the Apple App Store and Google Play Store. |
+| **In-App Bug Reporting** | A dedicated support form in Settings allowing users to report bugs or send feedback directly to the developer (with automatically attached error logs). |
+| **Complete Mock Data Removal** | A comprehensive UI audit to purge any residual hardcoded placeholders so every screen reflects 100% real database records. |

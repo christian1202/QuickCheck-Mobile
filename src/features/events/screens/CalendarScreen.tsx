@@ -86,7 +86,7 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   const selectedEvent = selectedDayEvents[0] ?? events[0];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 120 }}

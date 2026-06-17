@@ -57,7 +57,7 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
   const userName = user?.fullName ?? user?.email?.split('@')[0] ?? 'Secretary';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={{
         flexDirection: 'row',

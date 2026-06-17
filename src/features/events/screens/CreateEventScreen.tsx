@@ -59,7 +59,7 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={{
         flexDirection: 'row',
@@ -299,30 +299,27 @@ export const CreateEventScreen: React.FC<{ navigation?: any }> = ({ navigation }
             </View>
           </Card>
         </ScrollView>
-      </KeyboardAvoidingView>
 
-      {/* Bottom CTA */}
-      <View style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colors.background,
-        paddingHorizontal: spacing['2xl'],
-        paddingVertical: spacing.lg,
-        paddingBottom: spacing['3xl'],
-        ...shadows.lg,
-      }}>
-        <Button
-          title={saving ? 'Creating...' : 'Create Event'}
-          onPress={handleCreate}
-          disabled={saving}
-          variant="primary"
-          size="lg"
-          fullWidth
-          icon={<MaterialIcons name="add" size={20} color={colors.white} />}
-        />
-      </View>
+        {/* Bottom CTA */}
+        <View style={{
+          backgroundColor: colors.background,
+          paddingHorizontal: spacing['2xl'],
+          paddingTop: spacing.lg,
+          paddingBottom: spacing['xl'],
+          borderTopWidth: 1,
+          borderTopColor: colors.outlineVariant + '30',
+        }}>
+          <Button
+            title={saving ? 'Creating...' : 'Create Event'}
+            onPress={handleCreate}
+            disabled={saving}
+            variant="primary"
+            size="lg"
+            fullWidth
+            icon={<MaterialIcons name="add" size={20} color={colors.white} />}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

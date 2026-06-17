@@ -1,6 +1,6 @@
 # QuickCheck Mobile — MoSCoW Prioritization
 
-> June 17, 2026 | Local-first church attendance tracker
+> Developed by: Christian Jay Basinillo | Local-first church attendance tracker
 
 ---
 
@@ -8,15 +8,15 @@
 
 | # | Feature | Rationale | Status |
 |---|---|---|---|
-| M1 | **Local Login / Logout** | Users must authenticate to use the app. Email + password via bcryptjs, stored in WatermelonDB. No cloud dependency. | ✅ |
-| M2 | **Session Persistence** | Users shouldn't re-login every time they open the app. Session stored in expo-secure-store. | ✅ |
+| M1 | **Google SSO Authentication** | Replace local email/pass with "Sign in with Google". This secures the app AND automatically connects Google Sheets for backup in one tap. | Planned |
+| M2 | **Profile Setup / Onboarding** | After Google Login, prompt user for their preferred display name and church role ("What should we call you?"). | Planned |
 | M3 | **Member CRUD** | Core entity. Secretary needs to manage church members (add, edit, delete, list). | ✅ |
 | M4 | **Event CRUD** | Core entity. Secretary creates events to track attendance against. | ✅ |
 | M5 | **Attendance Marking** | The entire point of the app. Quick Mark screen for per-event attendance. | ✅ |
 | M6 | **Attendance Submission** | Attendance must be saved to WatermelonDB for reports. | ✅ |
 | M7 | **Dashboard** | Secretary's home screen. Shows key metrics from real DB data. No MOCK. | ✅ |
 | M8 | **Offline-First** | Churches may have poor internet. All CRUD works without connection via WatermelonDB. | ✅ |
-| M9 | **Settings / Logout** | Users need a way to log out and configure basic preferences. | ✅ |
+| M9 | **Secretary Settings** | Configure church name, force sync to Sheets, export CSV, and logout. | Planned |
 
 ---
 
@@ -44,6 +44,17 @@
 | C10 | **Birthday Tracking** | Birthday display on dashboard. | ✅ |
 | C11 | **Co-located Screens** | Screens in `src/features/*/screens/`. | ✅ |
 | C12 | **Unit Tests** | Jest + ts-jest. csvUtils (9) + eventService (12). 21/21 passing. `npm test`. | ✅ |
+| C13 | **Local Notifications** | Reminders for upcoming events or missing members. | Planned |
+| C14 | **Extended Member Profile** | Add Address and Google Maps link (Phone Number already exists). | Planned |
+| C15 | **One-Tap SMS Follow-ups** | Native integration to send pre-filled SMS to absentees. | Planned |
+| C16 | **Household Grouping** | Group family members to mark attendance with a single tap. | Planned |
+| C17 | **First-Time Visitor Mode** | Quick-add form (Name + Phone) that triggers follow-up reminders. | Planned |
+| C18 | **Visitation Dashboard** | Dedicated screen tracking who needs pastoral visits based on absence/status. | Planned |
+| C19 | **In-App Tutorial & Onboarding** | Interactive walkthrough and onboarding flow for first-time users. | Planned |
+| C20 | **UX & Animation Polish** | Fluid screen transitions, beautiful empty states, and Lottie reward animations (Confetti). | Planned |
+| C21 | **App Store & Play Store Deployment** | Build production bundles via Expo EAS and publish to Apple App Store and Google Play Store. | Planned |
+| C22 | **In-App Bug Reporting** | A "Report an Issue" button in Settings that sends logs and user feedback directly to the developer. | Planned |
+| C23 | **Complete Mock Data Removal** | Perform a full UI audit to ensure absolutely no hardcoded mock data remains and everything is driven by WatermelonDB. | Planned |
 
 ---
 
@@ -67,9 +78,9 @@
 ## MoSCoW Summary
 
 ```
-MUST (9)      ██████████  100% done
+MUST (9)      ████████░░   66% done (M3-M8 ✅, M1, M2, M9 Planned)
 SHOULD (12)   ██████████  100% done
-COULD (12)    ██████████  100% done  (C1-C12✅, only C7 Todo)
+COULD (23)    █████░░░░░   48% done (C1-C12 ✅ except C7. C13-C23 Planned)
 WON'T (10)    ░░░░░░░░░░   0% (by design)
 ```
 

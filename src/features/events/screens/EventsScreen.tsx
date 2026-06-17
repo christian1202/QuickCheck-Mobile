@@ -34,7 +34,7 @@ export const EventsScreen: React.FC<{ navigation?: any }> = ({ navigation }) => 
   }, [featuredEvent, navigation]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={{ paddingHorizontal: spacing['2xl'], paddingTop: spacing.lg, paddingBottom: spacing.md }}>
         <Text style={{

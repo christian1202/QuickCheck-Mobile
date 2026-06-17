@@ -126,7 +126,7 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       <View style={{ paddingHorizontal: spacing['2xl'], paddingTop: spacing.lg }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>

@@ -81,7 +81,7 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
   }, [fullName, contactNumber, birthday, memberSince, role, ministryGroup, emergencyContact, status, isEditing, memberId, updateMember, createMember, navigation]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={{
         flexDirection: 'row',
@@ -234,36 +234,33 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
             <Input label="EMERGENCY CONTACT" value={emergencyContact} onChangeText={setEmergencyContact} placeholder="Name - Phone Number" />
           </Card>
         </ScrollView>
-      </KeyboardAvoidingView>
 
-      {/* Bottom Actions */}
-      <View style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colors.background,
-        paddingHorizontal: spacing['2xl'],
-        paddingVertical: spacing.lg,
-        paddingBottom: spacing['3xl'],
-        flexDirection: 'row',
-        gap: spacing.md,
-        ...shadows.lg,
-      }}>
-        <Button
-          title="Discard"
-          onPress={() => navigation?.goBack()}
-          variant="ghost"
-          style={{ flex: 1 }}
-        />
-        <Button
-          title={saving ? 'Saving...' : isEditing ? 'Save Member Profile' : 'Add Member'}
-          onPress={handleSave}
-          variant="primary"
-          disabled={saving}
-          style={{ flex: 2 }}
-        />
-      </View>
+        {/* Bottom Actions */}
+        <View style={{
+          backgroundColor: colors.background,
+          paddingHorizontal: spacing['2xl'],
+          paddingTop: spacing.lg,
+          paddingBottom: spacing['xl'],
+          flexDirection: 'row',
+          gap: spacing.md,
+          borderTopWidth: 1,
+          borderTopColor: colors.outlineVariant + '30',
+        }}>
+          <Button
+            title="Discard"
+            onPress={() => navigation?.goBack()}
+            variant="ghost"
+            style={{ flex: 1 }}
+          />
+          <Button
+            title={saving ? 'Saving...' : isEditing ? 'Save Member Profile' : 'Add Member'}
+            onPress={handleSave}
+            variant="primary"
+            disabled={saving}
+            style={{ flex: 2 }}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

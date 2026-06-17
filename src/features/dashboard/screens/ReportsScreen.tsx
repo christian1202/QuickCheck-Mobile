@@ -36,7 +36,7 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
   const pagedMembers = members.slice((page - 1) * membersPerPage, page * membersPerPage);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 120 }}

@@ -7,7 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "backgroundColor": "#f8f9ff"
+      "backgroundColor": "#f8f9ff",
+      "image": "./assets/icon.png",
+      "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": false,
@@ -24,6 +26,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a9c9e171-ed6f-423c-aed3-3a3c9e972881"
+      }
+    }
   }
 }

@@ -8,7 +8,8 @@
 // ============================================================
 
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools, persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { IAuthService } from '../../../core/di/container';
 
 export interface AuthUser {
@@ -117,6 +118,7 @@ export const useAuthStore = create<AuthState>()(
       }),
       {
         name: 'auth-store',
+        storage: createJSONStorage(() => AsyncStorage),
         partialize: (state) => ({
           user: state.user,
           isInitialized: state.isInitialized,
