@@ -53,7 +53,7 @@ export function createReportService(): IReportService {
         .filter((m) => (m.attendance_rate || 100) < 70)
         .slice(0, 5)
         .map((m) => ({
-          name: m.full_name,
+          name: `${m.first_name} ${m.last_name}`,
           reason: (m.attendance_rate || 0) < 50 ? 'Very low attendance' : 'Below threshold',
           rate: m.attendance_rate || 0,
         }));
@@ -68,7 +68,7 @@ export function createReportService(): IReportService {
           const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
           return thisYear >= today && thisYear <= weekFromNow;
         })
-        .map((m) => m.full_name);
+        .map((m: any) => `${m.first_name} ${m.last_name}`);
 
       const nextBirthday = birthdaysThisWeek.length > 0
         ? { name: birthdaysThisWeek[0], when: 'This week' }

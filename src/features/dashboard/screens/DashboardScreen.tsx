@@ -265,7 +265,7 @@ export const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
               fontSize: 16,
               color: visitationList.length > 0 ? colors.onErrorContainer : colors.onSurface,
             }}>
-              Pastoral Visitation
+              Member Care Visitation
             </Text>
             <Text style={{
               fontFamily: 'Inter',

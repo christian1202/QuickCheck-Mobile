@@ -1,11 +1,12 @@
 // Input — Ghost-style inputs with floating label per design system
 import React, { useState } from 'react';
-import { View, TextInput, Text, ViewStyle, TextInputProps } from 'react-native';
+import { View, TextInput, Text, ViewStyle, TextInputProps, TouchableOpacity } from 'react-native';
 import { useTheme } from '../theme';
 
 interface InputProps extends TextInputProps {
   label: string;
   icon?: React.ReactNode;
+  onIconPress?: () => void;
   error?: string;
   containerStyle?: ViewStyle;
 }
@@ -13,6 +14,7 @@ interface InputProps extends TextInputProps {
 export const Input: React.FC<InputProps> = ({
   label,
   icon,
+  onIconPress,
   error,
   containerStyle,
   ...textInputProps
@@ -39,8 +41,8 @@ export const Input: React.FC<InputProps> = ({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: spacing.lg,
-        borderBottomWidth: focused ? 2 : 0,
-        borderBottomColor: error ? colors.error : colors.primary,
+        borderBottomWidth: focused ? 2 : 1,
+        borderBottomColor: error ? colors.error : focused ? colors.primary : colors.outline,
       }}>
         <TextInput
           {...textInputProps}
@@ -52,7 +54,7 @@ export const Input: React.FC<InputProps> = ({
             setFocused(false);
             textInputProps.onBlur?.(e);
           }}
-          placeholderTextColor={colors.outlineVariant}
+          placeholderTextColor={colors.onSurfaceVariant}
           style={[{
             flex: 1,
             fontFamily: 'Inter',
@@ -61,7 +63,15 @@ export const Input: React.FC<InputProps> = ({
             paddingVertical: 16,
           }, textInputProps.style]}
         />
-        {icon && <View style={{ marginLeft: spacing.sm }}>{icon}</View>}
+        {icon && (
+          onIconPress ? (
+            <TouchableOpacity onPress={onIconPress} style={{ paddingLeft: spacing.sm, paddingVertical: spacing.sm }}>
+              {icon}
+            </TouchableOpacity>
+          ) : (
+            <View style={{ paddingLeft: spacing.sm }}>{icon}</View>
+          )
+        )}
       </View>
       {error && (
         <Text style={{

@@ -342,14 +342,14 @@ export const ReportsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =>
                   onPress={() => navigation?.navigate('MemberReport', { memberId: member.id })}
                 >
                   <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                    <Avatar name={member.full_name} size={28} />
+                    <Avatar name={`${member.first_name} ${member.last_name}`} size={28} />
                     <View>
                       <Text style={{
                         fontFamily: 'Inter-SemiBold',
                         fontSize: 13,
                         color: colors.onSurface,
                       }} numberOfLines={1}>
-                        {member.full_name}
+                        {member.first_name} {member.last_name}
                       </Text>
                       <Text style={{
                         fontFamily: 'Inter',

@@ -14,6 +14,7 @@ export interface ConfirmDialogProps {
   cancelText?: string;
   icon?: keyof typeof MaterialIcons.glyphMap;
   danger?: boolean;
+  hideCancel?: boolean;
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -26,6 +27,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText = 'Cancel',
   icon = 'warning',
   danger = false,
+  hideCancel = false,
 }) => {
   const { theme } = useTheme();
   const { colors, spacing, radius } = theme;
@@ -98,20 +100,22 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
               {/* Buttons */}
               <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
-                <TouchableOpacity
-                  onPress={onCancel}
-                  style={{
-                    flex: 1,
-                    paddingVertical: spacing.md,
-                    borderRadius: radius.full,
-                    backgroundColor: colors.surfaceContainerHighest,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 15, color: colors.onSurface }}>
-                    {cancelText}
-                  </Text>
-                </TouchableOpacity>
+                {!hideCancel && (
+                  <TouchableOpacity
+                    onPress={onCancel}
+                    style={{
+                      flex: 1,
+                      paddingVertical: spacing.md,
+                      borderRadius: radius.full,
+                      backgroundColor: colors.surfaceContainerHighest,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 15, color: colors.onSurface }}>
+                      {cancelText}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={onConfirm}
                   style={{

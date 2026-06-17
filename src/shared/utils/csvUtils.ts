@@ -32,13 +32,16 @@ function formatDate(dateStr: string | null | undefined): string {
  */
 export function membersToCSV(members: Member[]): string {
   const headers = [
-    'id', 'full_name', 'contact_number', 'birthday', 'member_since',
+    'id', 'first_name', 'last_name', 'contact_number', 'address', 'google_maps_link', 'birthday', 'member_since',
     'role_in_church', 'ministry_group', 'status', 'attendance_rate',
   ];
   const rows = members.map(m => [
     escapeCSV(m.id),
-    escapeCSV(m.full_name),
+    escapeCSV(m.first_name),
+    escapeCSV(m.last_name),
     escapeCSV(m.contact_number),
+    escapeCSV(m.address),
+    escapeCSV(m.google_maps_link),
     formatDate(m.birthday),
     formatDate(m.member_since),
     escapeCSV(m.role_in_church),
@@ -159,8 +162,11 @@ function parseCSV(csv: string): Record<string, string>[] {
  * Only populates fields present in the standard export format.
  */
 export function parseCSVMembers(csv: string): Array<{
-  full_name: string;
+  first_name: string;
+  last_name: string;
   contact_number?: string;
+  address?: string;
+  google_maps_link?: string;
   birthday?: string;
   member_since?: string;
   role_in_church?: string;
@@ -170,13 +176,16 @@ export function parseCSVMembers(csv: string): Array<{
 }> {
   const rows = parseCSV(csv);
   return rows.map(row => ({
-    full_name: row.full_name || row.name || '',
+    first_name: row.first_name || row.full_name?.split(' ')[0] || row.name || '',
+    last_name: row.last_name || row.full_name?.split(' ').slice(1).join(' ') || '',
     contact_number: row.contact_number || undefined,
+    address: row.address || undefined,
+    google_maps_link: row.google_maps_link || undefined,
     birthday: row.birthday || undefined,
     member_since: row.member_since || undefined,
     role_in_church: row.role_in_church || undefined,
     ministry_group: row.ministry_group || undefined,
     status: row.status || 'active',
     attendance_rate: row.attendance_rate ? parseInt(row.attendance_rate, 10) : undefined,
-  })).filter(m => m.full_name);
+  })).filter(m => m.first_name || m.last_name);
 }

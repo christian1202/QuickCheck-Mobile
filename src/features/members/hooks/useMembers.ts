@@ -34,7 +34,7 @@ export function useMembers() {
   }, [memberService]);
 
   const createMember = useCallback(async (data: Member) => {
-    logger.info('useMembers', 'Creating member', { name: data.full_name });
+    logger.info('useMembers', 'Creating member', { name: `${data.first_name} ${data.last_name}` });
     const result = await store.createMember(memberService, data);
     return result;
   }, [memberService]);

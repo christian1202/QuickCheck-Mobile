@@ -23,22 +23,34 @@ import { useToast } from '../../../core/providers/ToastProvider';
 
 interface SectionTitleProps {
   title: string;
-  colors: { onSurfaceVariant: string };
+  colors: { onSurfaceVariant: string; primary: string };
   spacing: Record<string, number>;
+  onInfoPress?: () => void;
 }
 
-const SectionTitle: React.FC<SectionTitleProps> = ({ title, colors, spacing }) => (
-  <Text style={{
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 10,
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-    color: colors.onSurfaceVariant,
+const SectionTitle: React.FC<SectionTitleProps> = ({ title, colors, spacing, onInfoPress }) => (
+  <View style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: spacing.md,
     marginTop: spacing['2xl'],
   }}>
-    {title}
-  </Text>
+    <Text style={{
+      fontFamily: 'Inter-SemiBold',
+      fontSize: 10,
+      letterSpacing: 1.6,
+      textTransform: 'uppercase',
+      color: colors.onSurfaceVariant,
+    }}>
+      {title}
+    </Text>
+    {onInfoPress && (
+      <TouchableOpacity onPress={onInfoPress} style={{ padding: spacing.xs }}>
+        <MaterialIcons name="info-outline" size={16} color={colors.primary} />
+      </TouchableOpacity>
+    )}
+  </View>
 );
 
 interface SettingRowProps {
@@ -137,6 +149,9 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
   
   // Confirmation state
   const [confirmAction, setConfirmAction] = useState<{ type: 'preEvent' | 'absence'; val: boolean } | null>(null);
+  
+  // Info Dialog state
+  const [infoDialog, setInfoDialog] = useState<{ title: string; message: string } | null>(null);
 
   const [churchName, setChurchName] = useState('Grace Community Church');
   const [userName, setUserName] = useState(user?.fullName || '');
@@ -278,7 +293,8 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
           await memberService.createMember({
             ...m,
             local_id: 'local_001',
-            full_name: m.full_name,
+            first_name: m.first_name,
+            last_name: m.last_name,
           } as any);
           imported++;
         } catch {
@@ -393,7 +409,15 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         </Card>
 
         {/* Appearance */}
-        <SectionTitle title="APPEARANCE" colors={colors} spacing={spacing} />
+        <SectionTitle 
+          title="APPEARANCE" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Appearance', 
+            message: 'Toggle the system-wide visual theme. Dark mode provides a high-contrast, low-light optimized experience.' 
+          })} 
+        />
         <Card>
           <SettingRow
             label="Dark Mode"
@@ -411,7 +435,15 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         </Card>
 
         {/* Notifications */}
-        <SectionTitle title="NOTIFICATIONS" colors={colors} spacing={spacing} />
+        <SectionTitle 
+          title="NOTIFICATIONS" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Notifications', 
+            message: 'Configure how and when the app alerts you. Reminders ping you before events start, and updates summarize absence data weekly.' 
+          })} 
+        />
         <Card>
           <SettingRow
             label="Pre-event reminders"
@@ -465,7 +497,15 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         </Card>
 
         {/* Attendance Logic */}
-        <SectionTitle title="ATTENDANCE LOGIC" colors={colors} spacing={spacing} />
+        <SectionTitle 
+          title="ATTENDANCE LOGIC" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Attendance Logic', 
+            message: 'At-risk threshold defines when a member is marked "At-Risk" on their profile based on their overall attendance %. Consecutive absence limits trigger the Member Care Visitation alerts on your dashboard.' 
+          })} 
+        />
         <Card>
           <View style={{ paddingVertical: spacing.lg }}>
             <View style={{
@@ -612,7 +652,15 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         </Card>
 
         {/* Google Sheets Integration */}
-        <SectionTitle title="GOOGLE SHEETS INTEGRATION" colors={colors} spacing={spacing} />
+        <SectionTitle 
+          title="GOOGLE SHEETS INTEGRATION" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Google Sheets', 
+            message: 'Link your app directly to a Google Sheet. Once connected, your member and attendance data can be exported to the cloud or auto-saved seamlessly.' 
+          })} 
+        />
         <Card>
           <SettingRow
             label="Google Account"
@@ -721,8 +769,16 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
           )}
         </Card>
 
-        {/* Auto-Save */}
-        <SectionTitle title="AUTO-SAVE" colors={colors} spacing={spacing} />
+        {/* Auto-Save & Sync */}
+        <SectionTitle 
+          title="AUTO-SAVE & SYNC" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Auto-Save', 
+            message: 'When enabled, the app automatically syncs any local changes (like new members or attendance marks) directly to your linked Google Sheet in the background.' 
+          })} 
+        />
         <Card>
           <SettingRow
             label="Auto-Save to Device"
@@ -858,7 +914,18 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         )}
 
         {/* CSV Export / Import */}
-        <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.md }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing['2xl'], marginBottom: spacing.md }}>
+          <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.onSurfaceVariant }}>
+            CSV EXPORT / IMPORT
+          </Text>
+          <TouchableOpacity onPress={() => setInfoDialog({ 
+            title: 'CSV Data', 
+            message: 'Export your data to a raw CSV file that can be shared via email or opened in Excel. You can also import members in bulk from a comma-separated format.' 
+          })} style={{ padding: spacing.xs }}>
+            <MaterialIcons name="info-outline" size={16} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: 'row', gap: spacing.md }}>
           <Button
             title="Export CSV"
             onPress={handleCsvExport}
@@ -889,7 +956,7 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                 minHeight: 100,
                 textAlignVertical: 'top',
               }}
-              placeholder="Paste CSV content here...\n\nExpected format:\nfull_name,contact_number,...\nJohn Doe,555-1234,..."
+              placeholder="Paste CSV content here...\n\nExpected format:\nfirst_name,last_name,contact_number,...\nJohn,Doe,555-1234,..."
               placeholderTextColor={colors.outlineVariant}
               value={csvImportText}
               onChangeText={setCsvImportText}
@@ -915,7 +982,15 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
         )}
 
         {/* Support */}
-        <SectionTitle title="SUPPORT" colors={colors} spacing={spacing} />
+        <SectionTitle 
+          title="SUPPORT" 
+          colors={colors} 
+          spacing={spacing} 
+          onInfoPress={() => setInfoDialog({ 
+            title: 'Support', 
+            message: 'Need help or found a bug? Tap here to send an email directly to the developer with your issue description.' 
+          })} 
+        />
         <Card>
           <SettingRow
             label="Report an Issue"
@@ -977,6 +1052,18 @@ export const SettingsScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
           setConfirmAction(null);
         }}
         onCancel={() => setConfirmAction(null)}
+      />
+
+      {/* Info Dialog */}
+      <ConfirmDialog
+        visible={infoDialog !== null}
+        title={infoDialog?.title || ''}
+        message={infoDialog?.message || ''}
+        confirmText="Got it"
+        icon="info"
+        hideCancel
+        onConfirm={() => setInfoDialog(null)}
+        onCancel={() => setInfoDialog(null)}
       />
 
     </SafeAreaView>

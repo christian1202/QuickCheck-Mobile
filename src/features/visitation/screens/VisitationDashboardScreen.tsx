@@ -44,7 +44,7 @@ export const VisitationDashboardScreen: React.FC<{ navigation?: any }> = ({ navi
         }
       >
         <SectionHeader 
-          title={`Members Needing Pastoral Visit (${visitationList.length})`}
+          title={`Members Needing Member Care (${visitationList.length})`}
         />
 
         {visitationList.length === 0 && !isLoading ? (
@@ -89,7 +89,7 @@ export const VisitationDashboardScreen: React.FC<{ navigation?: any }> = ({ navi
                 borderColor: colors.errorContainer,
               }}
             >
-              <Avatar uri={member.photo_url} name={member.full_name} size={48} />
+              <Avatar uri={member.photo_url} name={`${member.first_name} ${member.last_name}`} size={48} />
               
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <Text style={{
@@ -97,7 +97,7 @@ export const VisitationDashboardScreen: React.FC<{ navigation?: any }> = ({ navi
                   fontSize: 16,
                   color: colors.onSurface,
                 }}>
-                  {member.full_name}
+                  {member.first_name} {member.last_name}
                 </Text>
                 <Text style={{
                   fontFamily: 'Inter',

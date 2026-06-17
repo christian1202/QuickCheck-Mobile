@@ -53,9 +53,12 @@ export const schema = appSchema({
       name: "members",
       columns: [
         { name: "local_id", type: "string", isIndexed: true },
-        { name: "full_name", type: "string" },
+        { name: "first_name", type: "string" },
+        { name: "last_name", type: "string" },
         { name: "photo_url", type: "string", isOptional: true },
         { name: "contact_number", type: "string", isOptional: true },
+        { name: "address", type: "string", isOptional: true },
+        { name: "google_maps_link", type: "string", isOptional: true },
         { name: "role_in_church", type: "string", isOptional: true },
         { name: "ministry_group_id", type: "string", isOptional: true, isIndexed: true },
         { name: "member_since", type: "string", isOptional: true },

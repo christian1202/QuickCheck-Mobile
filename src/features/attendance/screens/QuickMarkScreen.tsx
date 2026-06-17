@@ -5,7 +5,7 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
-import { Avatar, SearchBar, Card, Button, ConfettiOverlay } from '../../../shared/ui';
+import { Avatar, SearchBar, Card, Button, ConfettiOverlay, ConfirmDialog } from '../../../shared/ui';
 import type { Member } from '../../../core/types/domain';
 import { useAttendance } from '..';
 import { useMembers } from '../../members';
@@ -21,15 +21,37 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
   const [marks, setMarks] = useState<Record<string, MarkStatus>>({});
   const [submitting, setSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [pendingHouseholdMark, setPendingHouseholdMark] = useState<{ lastName: string, memberIds: string[], status: MarkStatus } | null>(null);
 
   useEffect(() => { fetchMembers(); }, []);
 
   const markMember = useCallback((memberId: string, status: MarkStatus) => {
+    const isSame = marks[memberId] === status;
+    const newStatus = isSame ? null : status;
+
     setMarks(prev => ({
       ...prev,
-      [memberId]: prev[memberId] === status ? null : status,
+      [memberId]: newStatus,
     }));
-  }, []);
+
+    if (!isSame && status) {
+      const member = members.find(m => m.id === memberId);
+      if (member && member.last_name) {
+        const householdMembers = members.filter(m => 
+          m.last_name === member.last_name && 
+          m.id !== memberId && 
+          !marks[m.id]
+        );
+        if (householdMembers.length > 0) {
+          setPendingHouseholdMark({
+            lastName: member.last_name,
+            memberIds: householdMembers.map(m => m.id),
+            status
+          });
+        }
+      }
+    }
+  }, [members, marks]);
 
   const markAllPresent = useCallback(() => {
     const allPresent: Record<string, MarkStatus> = {};
@@ -45,9 +67,10 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
     unmarked: members.length - Object.values(marks).filter(s => s !== null).length,
   };
 
-  const filteredMembers = members.filter(m =>
-    !search || m.full_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMembers = members.filter(m => {
+    const full = `${m.first_name} ${m.last_name}`.toLowerCase();
+    return !search || full.includes(search.toLowerCase());
+  });
 
   const handleFinish = async () => {
     setSubmitting(true);
@@ -78,14 +101,14 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
         borderRadius: radius.xl,
         marginBottom: spacing.md,
       }}>
-        <Avatar uri={member.photo_url} name={member.full_name} size={48} />
+        <Avatar uri={member.photo_url} name={`${member.first_name} ${member.last_name}`} size={48} />
         <View style={{ flex: 1, marginLeft: spacing.md }}>
           <Text style={{
             fontFamily: 'Inter-SemiBold',
             fontSize: 15,
             color: colors.onSurface,
           }} numberOfLines={1}>
-            {member.full_name}
+            {member.first_name} {member.last_name}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
             <View style={{
@@ -207,6 +230,31 @@ export const QuickMarkScreen: React.FC<{ navigation?: any }> = ({ navigation }) 
         play={showConfetti} 
         onAnimationEnd={() => setShowConfetti(false)} 
       />
+
+      <ConfirmDialog
+        visible={!!pendingHouseholdMark}
+        title="Household Quick Mark"
+        message={`Mark ${pendingHouseholdMark?.memberIds.length} other member(s) of the ${pendingHouseholdMark?.lastName} Family as ${pendingHouseholdMark?.status?.toUpperCase()}?`}
+        confirmText="Yes, Mark All"
+        cancelText="No, Just One"
+        onConfirm={() => {
+          if (pendingHouseholdMark) {
+            setMarks(prev => {
+              const newMarks = { ...prev };
+              pendingHouseholdMark.memberIds.forEach(id => {
+                newMarks[id] = pendingHouseholdMark.status;
+              });
+              return newMarks;
+            });
+            if (pendingHouseholdMark.status === 'present') {
+              setShowConfetti(true);
+            }
+          }
+          setPendingHouseholdMark(null);
+        }}
+        onCancel={() => setPendingHouseholdMark(null)}
+      />
+
     </SafeAreaView>
   );
 };

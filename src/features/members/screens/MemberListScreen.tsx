@@ -26,9 +26,10 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
     setFilters({ status, search: search || undefined });
   }, [statusFilter, search, setFilters]);
 
-  const filteredMembers = members.filter(m =>
-    !search || m.full_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMembers = members.filter(m => {
+    const full = `${m.first_name} ${m.last_name}`.toLowerCase();
+    return !search || full.includes(search.toLowerCase());
+  });
 
   const handleMemberPress = useCallback((memberId: string) => {
     navigation?.navigate('MemberReport', { memberId });
@@ -119,7 +120,7 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
                   {/* Avatar */}
                   <Avatar
                     uri={member.photo_url}
-                    name={member.full_name}
+                    name={`${member.first_name} ${member.last_name}`}
                     size={72}
                     showStatusRing
                     statusColor={
@@ -136,7 +137,7 @@ export const MemberListScreen: React.FC<{ navigation?: any }> = ({ navigation })
                     color: colors.onSurface,
                     marginTop: spacing.md,
                   }}>
-                    {member.full_name}
+                    {member.first_name} {member.last_name}
                   </Text>
 
                   {/* Ministry Group Tag */}

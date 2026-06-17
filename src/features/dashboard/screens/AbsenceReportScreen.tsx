@@ -86,14 +86,14 @@ export const AbsenceReportScreen: React.FC<{ navigation?: any; route?: any }> = 
             gap: spacing.lg,
             marginBottom: spacing['2xl'],
           }}>
-            <Avatar uri={member.photo_url} name={member.full_name} size={56} />
+            <Avatar uri={member.photo_url} name={`${member.first_name} ${member.last_name}`} size={56} />
             <View style={{ flex: 1 }}>
               <Text style={{
                 fontFamily: 'Inter-SemiBold',
                 fontSize: 16,
                 color: colors.onSurface,
               }}>
-                {member.full_name}
+                {member.first_name} {member.last_name}
               </Text>
               <Text style={{
                 fontFamily: 'Inter',

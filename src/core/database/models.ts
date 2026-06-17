@@ -83,9 +83,12 @@ export class MemberModel extends Model {
   };
 
   @text("local_id") localId!: string;
-  @text("full_name") fullName!: string;
+  @text("first_name") firstName!: string;
+  @text("last_name") lastName!: string;
   @text("photo_url") photoUrl!: string | null;
   @text("contact_number") contactNumber!: string | null;
+  @text("address") address!: string | null;
+  @text("google_maps_link") googleMapsLink!: string | null;
   @text("role_in_church") roleInChurch!: string | null;
   @text("ministry_group_id") ministryGroupId!: string | null;
   @text("member_since") memberSince!: string | null;
@@ -105,9 +108,12 @@ export class MemberModel extends Model {
    * Update this member's fields.
    */
   @writer async updateMember(fields: Partial<{
-    fullName: string;
+    firstName: string;
+    lastName: string;
     photoUrl: string | null;
     contactNumber: string | null;
+    address: string | null;
+    googleMapsLink: string | null;
     roleInChurch: string | null;
     ministryGroupId: string | null;
     memberSince: string | null;
@@ -115,17 +121,21 @@ export class MemberModel extends Model {
     emergencyContact: string | null;
     status: string;
   }>) {
-    await this.update((member) => {
-      if (fields.fullName !== undefined) member.fullName = fields.fullName;
-      if (fields.photoUrl !== undefined) member.photoUrl = fields.photoUrl;
-      if (fields.contactNumber !== undefined) member.contactNumber = fields.contactNumber;
-      if (fields.roleInChurch !== undefined) member.roleInChurch = fields.roleInChurch;
-      if (fields.ministryGroupId !== undefined) member.ministryGroupId = fields.ministryGroupId;
-      if (fields.memberSince !== undefined) member.memberSince = fields.memberSince;
-      if (fields.birthday !== undefined) member.birthday = fields.birthday;
-      if (fields.emergencyContact !== undefined) member.emergencyContact = fields.emergencyContact;
-      if (fields.status !== undefined) member.status = fields.status;
+    const member = await this.update((m: any) => {
+      if (fields.firstName !== undefined) m.firstName = fields.firstName;
+      if (fields.lastName !== undefined) m.lastName = fields.lastName;
+      if (fields.photoUrl !== undefined) m.photoUrl = fields.photoUrl;
+      if (fields.contactNumber !== undefined) m.contactNumber = fields.contactNumber;
+      if (fields.address !== undefined) m.address = fields.address;
+      if (fields.googleMapsLink !== undefined) m.googleMapsLink = fields.googleMapsLink;
+      if (fields.roleInChurch !== undefined) m.roleInChurch = fields.roleInChurch;
+      if (fields.ministryGroupId !== undefined) m.ministryGroupId = fields.ministryGroupId;
+      if (fields.memberSince !== undefined) m.memberSince = fields.memberSince;
+      if (fields.birthday !== undefined) m.birthday = fields.birthday;
+      if (fields.emergencyContact !== undefined) m.emergencyContact = fields.emergencyContact;
+      if (fields.status !== undefined) m.status = fields.status;
     });
+    return member;
   }
 }
 

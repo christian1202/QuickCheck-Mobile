@@ -1,8 +1,9 @@
 // AddEditMemberScreen — Member form matching the Stitch mockup
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from '../../../shared/theme';
 import { Avatar, Input, Button, Card, FilterChips } from '../../../shared/ui';
 import { useMembers } from '..';
@@ -29,8 +30,11 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
   const memberId = route?.params?.memberId;
   const isEditing = !!memberId;
 
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [address, setAddress] = useState('');
+  const [googleMapsLink, setGoogleMapsLink] = useState('');
   const [birthday, setBirthday] = useState('');
   const [memberSince, setMemberSince] = useState('');
   const [role, setRole] = useState('');
@@ -39,10 +43,16 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
   const [status, setStatus] = useState<MemberStatus>('active');
   const [saving, setSaving] = useState(false);
 
+  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
+  const [showMemberSincePicker, setShowMemberSincePicker] = useState(false);
+
   useEffect(() => {
     if (memberId && selectedMember) {
-      setFullName(selectedMember.full_name ?? '');
+      setFirstName(selectedMember.first_name ?? '');
+      setLastName(selectedMember.last_name ?? '');
       setContactNumber(selectedMember.contact_number ?? '');
+      setAddress(selectedMember.address ?? '');
+      setGoogleMapsLink(selectedMember.google_maps_link ?? '');
       setBirthday(selectedMember.birthday ?? '');
       setMemberSince(selectedMember.member_since ?? '');
       setRole(selectedMember.role_in_church ?? '');
@@ -53,12 +63,15 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
   }, [memberId, selectedMember]);
 
   const handleSave = useCallback(async () => {
-    if (!fullName.trim()) return;
+    if (!firstName.trim() || !lastName.trim()) return;
     setSaving(true);
     try {
       const memberData = {
-        full_name: fullName,
+        first_name: firstName,
+        last_name: lastName,
         contact_number: contactNumber,
+        address,
+        google_maps_link: googleMapsLink,
         birthday,
         member_since: memberSince,
         role_in_church: role,
@@ -78,7 +91,7 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
     } finally {
       setSaving(false);
     }
-  }, [fullName, contactNumber, birthday, memberSince, role, ministryGroup, emergencyContact, status, isEditing, memberId, updateMember, createMember, navigation]);
+  }, [firstName, lastName, contactNumber, address, googleMapsLink, birthday, memberSince, role, ministryGroup, emergencyContact, status, isEditing, memberId, updateMember, createMember, navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
@@ -127,7 +140,7 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
             <TouchableOpacity>
               <Avatar
                 uri={selectedMember?.photo_url}
-                name={fullName || 'New Member'}
+                name={`${firstName} ${lastName}`.trim() || 'New Member'}
                 size={96}
               />
               <View style={{
@@ -170,13 +183,24 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
             PERSONAL IDENTITY
           </Text>
           <Card style={{ marginBottom: spacing['2xl'] }}>
-            <Input label="FULL NAME" value={fullName} onChangeText={setFullName} placeholder="Enter full name" />
+            <Input label="FIRST NAME" value={firstName} onChangeText={setFirstName} placeholder="Enter first name" />
+            <Input label="LAST NAME" value={lastName} onChangeText={setLastName} placeholder="Enter family name" />
             <Input label="CONTACT NUMBER" value={contactNumber} onChangeText={setContactNumber} placeholder="+1 (555) 000-0000" keyboardType="phone-pad" />
+            <Input label="ADDRESS" value={address} onChangeText={setAddress} placeholder="123 Main St, City" />
+            <Input label="GOOGLE MAPS LINK" value={googleMapsLink} onChangeText={setGoogleMapsLink} placeholder="https://maps.google.com/..." 
+              icon={<MaterialIcons name="map" size={18} color={colors.primary} />}
+              onIconPress={() => {
+                const url = googleMapsLink || (address ? `https://maps.google.com/?q=${encodeURIComponent(address)}` : 'https://maps.google.com/');
+                Linking.openURL(url).catch(() => {});
+              }}
+            />
             <Input label="BIRTHDAY" value={birthday} onChangeText={setBirthday} placeholder="YYYY-MM-DD"
-              icon={<MaterialIcons name="calendar-today" size={18} color={colors.outlineVariant} />}
+              icon={<MaterialIcons name="calendar-today" size={18} color={colors.onSurfaceVariant} />}
+              onIconPress={() => setShowBirthdayPicker(true)}
             />
             <Input label="MEMBER SINCE" value={memberSince} onChangeText={setMemberSince} placeholder="YYYY-MM-DD"
-              icon={<MaterialIcons name="calendar-today" size={18} color={colors.outlineVariant} />}
+              icon={<MaterialIcons name="calendar-today" size={18} color={colors.onSurfaceVariant} />}
+              onIconPress={() => setShowMemberSincePicker(true)}
             />
           </Card>
 
@@ -261,6 +285,34 @@ export const AddEditMemberScreen: React.FC<{ navigation?: any; route?: any }> = 
           />
         </View>
       </KeyboardAvoidingView>
+
+      {showBirthdayPicker && (
+        <DateTimePicker
+          value={(birthday && !isNaN(new Date(birthday).getTime())) ? new Date(birthday) : new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowBirthdayPicker(false);
+            if (selectedDate) {
+              setBirthday(selectedDate.toISOString().split('T')[0]);
+            }
+          }}
+        />
+      )}
+
+      {showMemberSincePicker && (
+        <DateTimePicker
+          value={(memberSince && !isNaN(new Date(memberSince).getTime())) ? new Date(memberSince) : new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowMemberSincePicker(false);
+            if (selectedDate) {
+              setMemberSince(selectedDate.toISOString().split('T')[0]);
+            }
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };

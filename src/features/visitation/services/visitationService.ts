@@ -49,7 +49,7 @@ export function createVisitationService(): IVisitationService {
               break;
             }
             // If excused, we might break the streak or ignore it. Let's assume an excused absence
-            // still means they weren't physically there, but maybe doesn't trigger a pastoral visit.
+            // still means they weren't physically there, but maybe doesn't trigger a member care visit.
             // For now, let's treat excused as 'not an unexcused absence' and break the streak.
             // Actually, the app only supports 'present', 'late', 'absent' natively in quick mark.
           }

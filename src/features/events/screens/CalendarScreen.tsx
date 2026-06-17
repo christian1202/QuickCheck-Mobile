@@ -400,13 +400,13 @@ export const CalendarScreen: React.FC<{ navigation?: any }> = ({ navigation }) =
                     justifyContent: 'space-between',
                   }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-                      <Avatar name={m.full_name} size={32} />
+                      <Avatar name={`${m.first_name} ${m.last_name}`} size={32} />
                       <Text style={{
                         fontFamily: 'Inter-SemiBold',
                         fontSize: 14,
                         color: colors.onSurface,
                       }}>
-                        {m.full_name}
+                        {m.first_name} {m.last_name}
                       </Text>
                     </View>
                     <StatusChip status={m.latest_status ?? 'absent'} size="sm" />

@@ -1,7 +1,7 @@
 // MemberReportScreen — Individual member profile/report matching the Stitch mockup
 // Uses useMembers() + useDI() for attendance queries — real data from WatermelonDB
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../shared/theme';
@@ -153,7 +153,7 @@ export const MemberReportScreen: React.FC<{ navigation?: any; route?: any }> = (
       >
         {/* Member Hero */}
         <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
-          <Avatar uri={member.photo_url} name={member.full_name} size={96} />
+          <Avatar uri={member.photo_url} name={`${member.first_name} ${member.last_name}`} size={96} />
           {(member.status) && (
             <StatusChip status={member.status} size="sm" style={{ marginTop: spacing.md }} />
           )}
@@ -164,7 +164,7 @@ export const MemberReportScreen: React.FC<{ navigation?: any; route?: any }> = (
             marginTop: spacing.md,
             textAlign: 'center',
           }}>
-            {member.full_name}
+            {member.first_name} {member.last_name}
           </Text>
           <Text style={{
             fontFamily: 'Inter',
@@ -173,6 +173,36 @@ export const MemberReportScreen: React.FC<{ navigation?: any; route?: any }> = (
           }}>
             {member.role_in_church || 'Member'} • {member.ministry_group || 'N/A'}
           </Text>
+
+          {/* Contact & Address Section */}
+          <View style={{ marginTop: spacing.xl, width: '100%', gap: spacing.md }}>
+            {member.contact_number && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.surfaceContainerLowest, padding: spacing.md, borderRadius: radius.lg }}>
+                <MaterialIcons name="phone" size={18} color={colors.primary} />
+                <Text style={{ fontFamily: 'Inter', fontSize: 14, color: colors.onSurface }}>
+                  {member.contact_number}
+                </Text>
+              </View>
+            )}
+            
+            {member.address && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.surfaceContainerLowest, padding: spacing.md, borderRadius: radius.lg }}>
+                <MaterialIcons name="home" size={18} color={colors.primary} />
+                <Text style={{ fontFamily: 'Inter', fontSize: 14, color: colors.onSurface, flex: 1 }} numberOfLines={2}>
+                  {member.address}
+                </Text>
+                <TouchableOpacity 
+                  onPress={() => {
+                    const url = member.google_maps_link || `https://maps.google.com/?q=${encodeURIComponent(member.address!)}`;
+                    Linking.openURL(url);
+                  }}
+                  style={{ backgroundColor: colors.primaryContainer, padding: spacing.sm, borderRadius: radius.md }}
+                >
+                  <MaterialIcons name="map" size={18} color={colors.primary} />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Overall Attendance Donut */}

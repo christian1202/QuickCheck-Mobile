@@ -35,7 +35,8 @@
 
 | Feature | Service |
 |---|---|
-| CRUD Operations | memberService → WatermelonDB |
+| CRUD Operations | memberService → WatermelonDB (wrapped in robust DB transactions) |
+| Interactive Form | Native DatePickers for dates, and one-tap Google Maps integration |
 | Search & Filter | memberService.getMembers(filters) |
 | Status Management | Active/Inactive/On Leave/Transferred |
 
@@ -53,6 +54,7 @@
 | Feature | Service |
 |---|---|
 | Quick Mark | attendanceService.markAttendance() |
+| Household Quick Mark | Automatically prompts to mark family members grouped by last name |
 | Per-Event Query | attendanceService.getAttendanceForEvent() |
 | Per-Member Query | attendanceService.getAttendanceForMember() |
 
@@ -196,16 +198,16 @@ npm run test:ci    # CI mode with coverage report
 
 ## 13. Planned Features (Roadmap)
 
-The following features have been planned for future sprints to enhance pastoral care and administration:
+The following features have been planned for future sprints to enhance member care and administration:
 
 | Feature | Description |
 |---|---|
 | **Local Notifications** | Reminders for upcoming events or missing members, scheduled locally on the device. |
-| **Extended Member Profile** | Adding 'Address' and 'Google Maps link' fields alongside the existing Contact Number. |
+| **Extended Member Profile** (Completed) | Adding 'Address' and 'Google Maps link' fields alongside the existing Contact Number. |
 | **One-Tap SMS Follow-ups** | Native integration to send pre-filled SMS/WhatsApp messages to absentees directly from the app. |
 | **Household Grouping** | Grouping family members together to mark their attendance with a single tap. |
 | **First-Time Visitor Mode** | A quick-add form (Name + Phone only) that automatically triggers follow-up reminders. |
-| **Visitation Dashboard** | A dedicated dashboard tracking who needs pastoral visits based on consecutive absences and status. |
+| **Visitation Dashboard** | A dedicated dashboard tracking who needs member care visits based on consecutive absences and status. |
 | **In-App Tutorial & Onboarding** | Welcome carousel and interactive tooltips to guide new secretaries through the app's core features. |
 | **UX & Animation Polish** (Completed) | Fluid screen transitions, beautiful illustrated empty states, and Lottie reward animations (e.g., Confetti) to make the app feel premium. |
 | **Store Deployment (EAS)** | Production builds for iOS and Android, deployed directly to the Apple App Store and Google Play Store. |

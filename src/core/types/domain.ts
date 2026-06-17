@@ -61,9 +61,12 @@ export interface MinistryGroup {
 export interface Member {
   id: string;
   local_id: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   photo_url: string | null;
   contact_number: string | null;
+  address: string | null;
+  google_maps_link: string | null;
   role_in_church: string | null;
   ministry_group: string | null;
   ministry_group_id: string | null;

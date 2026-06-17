@@ -45,11 +45,11 @@
 | C11 | **Co-located Screens** | Screens in `src/features/*/screens/`. | ✅ |
 | C12 | **Unit Tests** | Jest + ts-jest. csvUtils (9) + eventService (12). 21/21 passing. `npm test`. | ✅ |
 | C13 | **Local Notifications** | Reminders for upcoming events or missing members. | Planned |
-| C14 | **Extended Member Profile** | Add Address and Google Maps link (Phone Number already exists). | Planned |
+| C14 | **Extended Member Profile** | Add Address and Google Maps link (Phone Number already exists). | ✅ |
 | C15 | **One-Tap SMS Follow-ups** | Native integration to send pre-filled SMS to absentees. | Planned |
-| C16 | **Household Grouping** | Group family members to mark attendance with a single tap. | Planned |
+| C16 | **Household Grouping** | Group family members to mark attendance with a single tap. | ✅ |
 | C17 | **First-Time Visitor Mode** | Quick-add form (Name + Phone) that triggers follow-up reminders. | Planned |
-| C18 | **Visitation Dashboard** | Dedicated screen tracking who needs pastoral visits based on absence/status. | ✅ |
+| C18 | **Visitation Dashboard** | Dedicated screen tracking who needs member care visits based on absence/status. | ✅ |
 | C19 | **In-App Tutorial & Onboarding** | Interactive walkthrough and onboarding flow for first-time users. | Planned |
 | C20 | **UX & Animation Polish** | Fluid screen transitions, beautiful empty states, and Lottie reward animations (Confetti). | ✅ |
 | C21 | **App Store & Play Store Deployment** | Build production bundles via Expo EAS and publish to Apple App Store and Google Play Store. | Planned |
